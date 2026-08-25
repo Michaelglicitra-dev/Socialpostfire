@@ -58,7 +58,7 @@ Die sieben Logo-Composite-Nodes des Altstands sind ersatzlos entfallen. Stattdes
 nach dem Vorbild von `AIColor.Me Marketing Agent v8`:
 
 ```
-Bild-Modus -> Logo laden (OneDrive-Content-URL, responseFormat file, Property 'logo')
+Bild-Modus -> Logo laden (statische URL, responseFormat file, Property 'logo')
            -> Mit Basisfoto?
                 ja   -> Basisfoto laden ('basis') -> Bild-Request bauen (Foto)
                         -> GPT Bild (Foto + Logo)   [2x image[]]
@@ -77,23 +77,33 @@ sitzt jetzt das Logo. Der **Preis-Badge bleibt echtes `editImage`-Overlay**;
 Koordinaten auf das neue Master-Format 1024x1536 umgerechnet
 (Kreis-Mittelpunkt 852/1364 statt 852/852).
 
-### Logo-Pfad
+### Logo-Quelle: statische URL, kein OneDrive
 
-Das Logo wird über eine **direkte Graph-Content-URL** geholt, nicht mehr per
-OneDrive-Suche. Der Pfad steht als `logo_url` in `Restaurant-Konfiguration`:
+Das Logo liegt als **statische, unauthentifizierte URL** in `logo_url`
+(`Restaurant-Konfiguration`):
 
 ```
-https://graph.microsoft.com/v1.0/me/drive/root:/SocialPostFire/Pizzarello/Pizzarello_transp.png:/content
+https://i.ibb.co/23g2B67Z/Pizzarello-transp.png
 ```
 
-Das entspricht lokal `…\OneDrive\SocialPostFire\Pizzarello\Pizzarello_transp.png`.
-Der Teil nach `root:/` ist **immer relativ zur OneDrive-Wurzel** — der lokale
-Laufwerkspfad davor gehört nicht in die URL.
+`Logo laden` ist deshalb ein reiner GET **ohne Authentifizierung**.
 
-> Vorsicht: Die Direkt-URL ist exakt, inklusive Gross-/Kleinschreibung. Wird das
-> Logo umbenannt oder verschoben, schlägt `Logo laden` mit 404 fehl und der Lauf
-> bricht ab. Der Altstand hat stattdessen per Dateinamen *gesucht* und war dadurch
-> unempfindlicher gegen Verschieben — dafür brauchte er vier Nodes mehr.
+**Warum nicht OneDrive:** Zuerst lief das über eine Graph-Content-URL mit
+`microsoftOneDriveOAuth2Api`. Das hat zwei Probleme gemacht. Erstens war der Pfad
+aus dem Altstand veraltet (`/Pizzarello/assets/pizzarello_transparent.png` statt
+`/SocialPostFire/Pizzarello/Pizzarello_transp.png`) — der Altflow hat das nie
+gemerkt, weil er per Dateinamen *suchte* statt einen festen Pfad zu holen.
+Zweitens, und wichtiger: das Logo ist eine Datei, die sich nie ändert. Sie bei
+**jedem einzelnen Post** hinter einem ablaufenden OAuth-Token zu holen, macht die
+gesamte Bildpipeline von einer Token-Erneuerung abhängig — genau daran ist es dann
+auch gescheitert (`not authorized`, auch nach Reconnect; vermutlich privates vs.
+geschäftliches OneDrive-Konto).
+
+**Folge:** Das Credential `OneDrive Pizzarello` wird im Bot **gar nicht mehr
+gebraucht**. Nach jedem Deploy ist damit eine Credential weniger nachzuziehen.
+
+> Bei einem Logo-Wechsel: neu hochladen, neue URL in `logo_url` eintragen. Beim
+> imgbb-Upload **„Don't autodelete"** wählen, sonst stirbt die URL irgendwann.
 
 ---
 
@@ -168,11 +178,10 @@ Nicht-ASCII-Zeichen im deployten `jsCode`.
 |---|---|---|
 | alle 8 Telegram-Nodes im Bot + 2 im Fehler-Melder | `Telegram AiColorMe` | **`Telegram Pizzarello Bot`** |
 | `OpenAI gpt-5-mini` | `OpenAi account` | `OpenAI Pizzarello` |
-| `Logo laden` | *(leer)* | `OneDrive Pizzarello` |
 | `GPT Bild (Foto + Logo)`, `GPT Bild (nur Logo)`, `Learning bewerten` | *(leer)* | `OpenAI Pizzarello` |
 | `imgbb hochladen`, `imgbb Hochformat`, `Eingangsfoto hochladen` | *(leer)* | `imgbb` |
 | `Buffer Post planen` | *(leer)* | `Buffer` |
-| `Website laden`, `Feiertage laden`, `Basisfoto laden`, `Master laden` | *(leer)* | **keine** (korrekt) |
+| `Website laden`, `Feiertage laden`, `Basisfoto laden`, `Master laden`, `Logo laden` | *(leer)* | **keine** (korrekt) |
 
 > **Trigger-Bot, Download-Bot und Sende-Bot müssen dieselbe Credential nutzen** —
 > sonst schlägt der `file_id`-Download des Eingangsfotos wortlos fehl.

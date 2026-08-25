@@ -150,7 +150,7 @@ const cfg = {
     pur: { name: 'Pur', bild: 'No text at all in the image. Only the clean food photo. Absolutely no headline, no words, no badges and no captions inside the image.' },
     zitat: { name: 'Zitat', bild: 'Editorial quote look: one short clean sans-serif line set in calm negative space, cream-white, no band and no box, clearly separated from the food.' }
   },
-  logo_url: 'https://graph.microsoft.com/v1.0/me/drive/root:/SocialPostFire/Pizzarello/Pizzarello_transp.png:/content',
+  logo_url: 'https://i.ibb.co/23g2B67Z/Pizzarello-transp.png',
   bild_size: '1024x1536',
   saeulen_rotation: { '1': 'angebote', '2': 'saisonal', '3': 'community', '4': 'angebote', '5': 'saisonal', '6': 'community', '7': 'angebote' },
   hashtags: {
@@ -736,8 +736,7 @@ const logoLaden = node({
   version: 4.2,
   config: {
     name: 'Logo laden',
-    parameters: { method: 'GET', url: expr("{{ $('Restaurant-Konfiguration').first().json.logo_url }}"), authentication: 'predefinedCredentialType', nodeCredentialType: 'microsoftOneDriveOAuth2Api', options: { response: { response: { responseFormat: 'file', outputPropertyName: 'logo' } }, timeout: 30000 } },
-    credentials: { microsoftOneDriveOAuth2Api: newCredential('OneDrive Pizzarello') },
+    parameters: { method: 'GET', url: expr("{{ $('Restaurant-Konfiguration').first().json.logo_url }}"), options: { response: { response: { responseFormat: 'file', outputPropertyName: 'logo' } }, timeout: 30000 } },
     retryOnFail: true, maxTries: 3, waitBetweenTries: 3000,
     position: [4020, 620]
   },
