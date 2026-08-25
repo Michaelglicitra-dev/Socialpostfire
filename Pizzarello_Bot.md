@@ -77,6 +77,24 @@ sitzt jetzt das Logo. Der **Preis-Badge bleibt echtes `editImage`-Overlay**;
 Koordinaten auf das neue Master-Format 1024x1536 umgerechnet
 (Kreis-Mittelpunkt 852/1364 statt 852/852).
 
+### Logo-Pfad
+
+Das Logo wird über eine **direkte Graph-Content-URL** geholt, nicht mehr per
+OneDrive-Suche. Der Pfad steht als `logo_url` in `Restaurant-Konfiguration`:
+
+```
+https://graph.microsoft.com/v1.0/me/drive/root:/SocialPostFire/Pizzarello/Pizzarello_transp.png:/content
+```
+
+Das entspricht lokal `…\OneDrive\SocialPostFire\Pizzarello\Pizzarello_transp.png`.
+Der Teil nach `root:/` ist **immer relativ zur OneDrive-Wurzel** — der lokale
+Laufwerkspfad davor gehört nicht in die URL.
+
+> Vorsicht: Die Direkt-URL ist exakt, inklusive Gross-/Kleinschreibung. Wird das
+> Logo umbenannt oder verschoben, schlägt `Logo laden` mit 404 fehl und der Lauf
+> bricht ab. Der Altstand hat stattdessen per Dateinamen *gesucht* und war dadurch
+> unempfindlicher gegen Verschieben — dafür brauchte er vier Nodes mehr.
+
 ---
 
 ## 4. Mehrkanal-Ausspielung
