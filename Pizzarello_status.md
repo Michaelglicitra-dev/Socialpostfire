@@ -1,5 +1,15 @@
 # Pizzarello Marketing-Automation — Handoff / Projektstand
 
+> ⚠️ **VERALTET (Stand 22.07.2026).** Diese Datei beschreibt eine **frühere Architektur**
+> (Workflow-IDs `I7H3jZEfSEFjE6Q6` / `NFQX1gO8ajKkAypC`, Claude als Text-KI, Freigabe per
+> Telegram-Buttons). Diese Workflows sind **nicht mehr die aktiven**.
+>
+> 👉 **Aktueller Stand: [`Pizzarello_Handover.md`](./Pizzarello_Handover.md)**
+> (Workflows `tzRlOxsLZ8eyCdgT` + `pNFLlk3GPQO3lcjS`, OpenAI-only, Freigabe in der Web-App)
+>
+> Weiter relevant sind hier nur noch die **KRITISCHEN LEKTIONEN** in Abschnitt 5
+> (MCP-Fallstricke) — die gelten unverändert.
+
 > Übergabedokument, damit eine neue Claude-Code-Session (z. B. vom iPhone/Cloud) sofort weiterarbeiten kann.
 > Voraussetzung: Der **n8n-MCP-Server** muss in der Environment verfügbar sein (Test: „Liste meine n8n-Workflows").
 > Stand: 22.07.2026
