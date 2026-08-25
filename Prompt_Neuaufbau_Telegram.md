@@ -157,23 +157,166 @@ Trigger
   state = DRAFT_OPEN, draft_json + last_message_id speichern → ENDE
 ```
 
-### Bild-Pipeline — **unverändert aus `workflows/hauptflow.ts` übernehmen**
+### Bild-Pipeline — **mit EINER wesentlichen Änderung gegenüber dem Altstand**
 
-Diese Kette funktioniert nachweislich und darf nicht neu erfunden werden:
 ```
 Bild-Modus (generate | edit_url | edit_prev)
-  → Gen-Request → GPT Bild (gen)      ODER
-    Basisfoto laden → Kombi-Request → GPT Bild (edits)
+  → Logo laden  (OneDrive, responseFormat: file, outputPropertyName: 'logo')
+  → Bild-Request bauen  (führt Binaries zusammen: Basisfoto + logo)
+  → GPT Bild  (/v1/images/edits, multipart, MEHRERE image[]-Felder)
   → Bild extrahieren
-  → Logo suchen (OneDrive) → Logo-ID waehlen → Logo herunterladen
-  → Logo konvertieren → Bild und Logo buendeln
-  → Logo skalieren (155×155) → Logo einfuegen (composite @ 850,30)
-  → Preis-Badge? → Preis-Badge stempeln (editImage multiStep)
+  → Preis-Badge? → Preis-Badge stempeln (editImage multiStep)   ← BLEIBT
   → Finalbild extrahieren → imgbb hochladen
 ```
-Ebenfalls 1:1 übernehmen: `Restaurant-Konfiguration` (Marke, Farben, **bild_guideline v2**,
-layouts, hashtags), `Post-Schema` (Output-Parser), die vier dataTable-Tools, die Learning-Schleife
-und den Buffer-Teil.
+
+Ebenfalls übernehmen: `Restaurant-Konfiguration` (Marke, Farben, **bild_guideline v2**, layouts,
+hashtags), `Post-Schema` (Output-Parser), die vier dataTable-Tools, die Learning-Schleife.
+
+#### 🔄 ÄNDERUNG: Logo NICHT mehr nachträglich aufkleben
+
+**Problem im Altstand:** Das Logo wurde nach der Generierung per `editImage`-`composite`
+aufgeklebt (`Logo skalieren` 155×155 → `Logo einfuegen` @ 850,30). Ergebnis wirkt aufgeklebt,
+nie „wie aus einem Guss".
+
+**Neu:** Das Logo wird als **zusätzliches Eingangsbild an die Bildgenerierung übergeben**, damit
+das Modell es selbst stimmig ins Bild integriert (Perspektive, Licht, Materialität).
+
+**Diese Nodes entfallen ersatzlos:**
+`Logo suchen` · `Logo-ID waehlen` · `Logo herunterladen` · `Logo konvertieren` ·
+`Bild und Logo buendeln` · `Logo skalieren` · `Logo einfuegen`
+
+**Erprobtes Vorbild:** Workflow **`AIColor.Me Marketing Agent v8`** (ID `luWRBIdlesNnIMsz`),
+Nodes `Logo laden` → `Social-Prompt bauen` → `GPT-Image Social-Bild`. Dort läuft das seit Monaten
+stabil. **Vor dem Bauen dort reinschauen und das Muster exakt übernehmen.** Kern davon:
+
+*1) Logo als Binary laden* — HTTP Request direkt auf die OneDrive-Content-URL:
+```
+url:  https://graph.microsoft.com/v1.0/me/drive/root:/Pizzarello/assets/pizzarello_transparent.png:/content
+authentication: predefinedCredentialType,  nodeCredentialType: microsoftOneDriveOAuth2Api
+options.response.response: { responseFormat: 'file', outputPropertyName: 'logo' }
+```
+→ Das Logo liegt danach als Binary-Property **`logo`** vor (kein Suchen/ID-Auflösen nötig).
+
+*2) Binaries auf EINEM Item zusammenführen* (im Prompt-Builder-Code-Node):
+```js
+const logoBin = $('Logo laden').first().binary || {};
+const binary = Object.assign({}, $input.first().binary);
+if (logoBin.logo) binary.logo = logoBin.logo;
+// binary.image0 = Basisfoto (Archiv-/Eingangsfoto), falls vorhanden
+return [{ json: { prompt: prompt }, binary }];
+```
+
+*3) Mehrere Bilder an gpt-image-1 übergeben* — `/v1/images/edits`, `contentType: multipart-form-data`,
+**mehrere `image[]`-Einträge**, jeweils `parameterType: 'formBinaryData'` mit **unterschiedlichem**
+`inputDataFieldName`:
+```
+{ name:'model',  value:'gpt-image-1' }
+{ name:'prompt', value:'={{ $json.prompt }}' }
+{ name:'size',   value:'={{ $json.size }}' }
+{ name:'quality',value:'high' }
+{ parameterType:'formBinaryData', name:'image[]', inputDataFieldName:'image0' }   // Basisfoto
+{ parameterType:'formBinaryData', name:'image[]', inputDataFieldName:'logo' }     // Logo
+```
+> Bei reiner Neugenerierung ohne Basisfoto: trotzdem `/v1/images/edits` mit **nur dem Logo** als
+> `image[]` verwenden — nicht `/v1/images/generations`, denn dort kann kein Bild mitgegeben werden.
+
+*4) Prompt muss die Beilagen ausdrücklich benennen* (das ist entscheidend, sonst ignoriert das
+Modell sie). Nach dem Vorbild von AIColor.Me, angepasst auf Pizzarello:
+```
+ES SIND ZWEI BILDER BEIGEFUEGT: 1) das FOTO als Bildgrundlage, 2) das PIZZARELLO-LOGO.
+- Das beigefuegte Foto treu uebernehmen (Gericht, Komposition, Personen nicht veraendern).
+- Das beigefuegte Logo GENAU EINMAL, unveraendert in Form und Farbe, dezent und klein
+  in eine ruhige Ecke integrieren (bevorzugt oben rechts) - als natuerlicher Teil der
+  Aufnahme, nicht als aufgeklebtes Element.
+- Erfinde KEIN eigenes Logo, keinen Schriftzug, kein Emblem.
+```
+Die bisherige Regel „Keep the TOP-RIGHT corner completely empty" muss dabei **entfallen** —
+dort sitzt jetzt das Logo.
+
+**Was bleibt wie bisher:** Der **Preis-Badge** wird weiterhin real per `editImage` gestempelt.
+Preise müssen exakt stimmen; KI-gerenderte Zahlen sind unzuverlässig. Der Prompt muss die
+untere rechte Ecke also weiterhin ruhig halten.
+
+---
+
+## 🆕 Mehrkanal-Ausspielung: Instagram + Facebook + TikTok
+
+**Ziel:** Was der Gastronom **einmal** freigibt, geht in den **jeweils passenden Formaten** an alle
+aktiven Kanäle bei Buffer. Facebook- und TikTok-Kanäle existieren **noch nicht** — der Flow muss
+so gebaut sein, dass später **nur die Buffer-Kanal-ID eingetragen** werden muss, sonst nichts.
+
+### Formatstrategie (bewusst sparsam, nicht dreimal generieren)
+
+| Kanal | Zielformat | Wie erzeugt |
+|---|---|---|
+| **Instagram** | 1080×1350 (4:5) | **Master** — direkt generiert mit `size: 1024x1536` |
+| **Facebook** | 1080×1350 (4:5) | **derselbe Master, unverändert** — Facebook zeigt 4:5 im Feed problemlos |
+| **TikTok** | 1080×1920 (9:16) | Master → `editImage` auf 9:16-Leinwand (siehe unten) |
+
+**Begründung:** Nur **ein** kostenpflichtiger Bild-Call pro Post. Instagram und Facebook teilen
+sich denselben Master; nur TikTok braucht echtes Hochformat.
+
+> ⚠️ **Technische Einschränkung:** `gpt-image-1` kann **kein echtes 9:16**. Unterstützt sind nur
+> `1024x1024`, `1024x1536` (2:3) und `1536x1024` (3:2). Ein direkt generiertes „TikTok-Bild" gibt
+> es also nicht — 9:16 muss immer per Nachbearbeitung entstehen.
+
+### TikTok-Variante per `editImage` (kein zweiter KI-Call)
+
+Bewährtes Social-Muster, das **nie** Text anschneidet und nichts neu rendert:
+```
+1. Master kopieren, stark hochskalieren + weichzeichnen (blur)  → Fülle für 1080×1920
+2. Master scharf, unverändert, mittig darüber komponieren (composite)
+3. Ergebnis = 1080×1920, Ränder oben/unten sind die unscharfe Verlängerung des Motivs
+```
+Alternative, falls `blur` Probleme macht: Leinwand in der Markenfarbe `#1e1a17` (dunkel) statt
+Blur — ebenfalls sauber, weil das Bild-Design ohnehin auf dunklem Grund basiert.
+
+**Wichtig:** Die TikTok-Variante wird **erst nach der Freigabe** erzeugt, nicht vorab — sonst
+zahlt man Rechenzeit für Entwürfe, die verworfen werden.
+
+### Konfiguration — so vorbereiten, dass später nur IDs fehlen
+
+In `Restaurant-Konfiguration`:
+```js
+buffer: {
+  posting_zeit: '17:00',
+  kanaele: [
+    { key:'instagram', channelId:'6a805d6bb2d9d57743816131', aktiv:true,
+      format:'master',   tags:'max5' },
+    { key:'facebook',  channelId:'',  aktiv:false,
+      format:'master',   tags:'full' },
+    { key:'tiktok',     channelId:'', aktiv:false,
+      format:'vertical', tags:'full' }
+  ],
+  pinterest_url: 'https://www.pizzarello.net'
+}
+```
+**Aktivierung eines Kanals = `channelId` eintragen + `aktiv:true`.** Sonst keine Codeänderung.
+
+### Ablauf nach der Freigabe
+
+```
+[✅ Freigeben]
+   → Aktive Kanaele ermitteln   (Code: kanaele.filter(k => k.aktiv && k.channelId))
+   → Braucht 9:16?              (nur wenn ein aktiver Kanal format:'vertical' hat)
+        ja → TikTok-Variante rendern (editImage) → imgbb hochladen
+   → Buffer-Requests bauen      (EIN Request pro aktivem Kanal, mit passender Bild-URL
+                                 und kanalspezifischem Hashtag-Umfang)
+   → Split In Batches / Loop    → Buffer Post planen  (pro Kanal ein createPost)
+   → Ergebnisse sammeln
+   → Bestaetigung an Telegram:  "Freigegeben - geplant fuer 17:00 Uhr auf: Instagram ✅"
+                                 (bzw. Liste aller Kanäle + Fehler, falls einer scheitert)
+```
+
+**Regeln:**
+- Kein aktiver Kanal → klare Meldung an den Gastronomen, **nicht** stillschweigend nichts tun.
+- Ein Kanal scheitert → die anderen trotzdem planen, Fehler in der Bestätigung benennen.
+- Bildformat pro Kanal aus `format` ableiten (`master` → Master-URL, `vertical` → 9:16-URL).
+- Die erzeugten URLs im `pizzarello_post_log` mitschreiben (Kanal, URL, geplante Zeit).
+
+> **Offener Punkt zum Prüfen:** Ob Buffer für TikTok reine **Bild**-Posts unterstützt (TikTok ist
+> primär Video), muss verifiziert werden, sobald ein TikTok-Kanal verbunden ist. Falls nur Video
+> geht, ist das eine Produktentscheidung — im Zweifel TikTok zunächst `aktiv:false` lassen.
 
 ---
 
@@ -220,7 +363,10 @@ und den Buffer-Teil.
   danach archivieren.
 - **Entfallen ersatzlos:** Web Push (Service Worker, Manifest, VAPID, Node `Web-Push senden`),
   Data Table `pizzarello_push_subs`, Data Table `pizzarello_pending` (durch `pizzarello_sessions`
-  ersetzt), sämtliche `[DIAG …]`-Diagnosetexte.
+  ersetzt), sämtliche `[DIAG …]`-Diagnosetexte — **sowie die sieben Logo-Composite-Nodes**
+  (`Logo suchen`, `Logo-ID waehlen`, `Logo herunterladen`, `Logo konvertieren`,
+  `Bild und Logo buendeln`, `Logo skalieren`, `Logo einfuegen`), ersetzt durch das eine
+  `Logo laden` + Übergabe an die Generierung.
 - **Bleibt:** `pizzarello_angebote`, `pizzarello_speisekarte`, `pizzarello_fotos`,
   `pizzarello_learnings`, `pizzarello_post_log`.
 
@@ -247,11 +393,16 @@ Deshalb **im selben Zug**:
 | 1 | „Mach was für Freitag" | Rückfrage als **normale Nachricht**; Antwort führt zum Entwurf |
 | 2 | Foto + Bildunterschrift senden | Entwurf **auf Basis des Fotos** (kein Archivbild) |
 | 3 | Bei offenem Entwurf „Titel kürzer" tippen | neue Variante, **kein** Button nötig |
-| 4 | [✅ Freigeben] tippen | Buttons verschwinden, Bestätigung **mit Uhrzeit**, Buffer geplant |
+| 4 | [✅ Freigeben] tippen | Buttons verschwinden, Bestätigung **mit Uhrzeit und Kanalliste**, Buffer geplant |
 | 5 | Tagespost 09:30, Entscheidung erst 6 h später | funktioniert — keine laufende Execution nötig |
 | 6 | n8n mitten im Gespräch neu starten | Gespräch läuft weiter (Zustand liegt in der Tabelle) |
 | 7 | Zweimal schnell hintereinander senden | zweite Nachricht wird höflich abgefangen (`BUSY`) |
 | 8 | Zweimal auf denselben Button tippen | zweiter Tap läuft ins Leere, kein Doppel-Post |
+| 9 | **Logo im Ergebnis** | genau **einmal** vorhanden, unverfälscht, wirkt integriert statt aufgeklebt; kein erfundenes Zweitlogo |
+| 10 | **Freigabe mit nur Instagram aktiv** | genau **ein** Buffer-Post; keine TikTok-Variante gerendert (Kosten sparen) |
+| 11 | **`facebook` auf `aktiv:true` + ID setzen** | ohne weitere Codeänderung gehen **zwei** Posts raus, beide mit dem Master-Bild |
+| 12 | **`tiktok` auf `aktiv:true` + ID setzen** | 9:16-Variante wird erzeugt, hochgeladen und als dritter Post geplant |
+| 13 | Kein Kanal aktiv | klare Meldung an den Gastronomen statt stiller Wirkungslosigkeit |
 
 ---
 
@@ -267,15 +418,17 @@ Deshalb **im selben Zug**:
 ## Vorgehen
 
 1. `Pizzarello_Handover.md` lesen (Architektur-Altstand, Fallstricke).
-2. `workflows/hauptflow.ts` lesen — daraus Bild-Pipeline, Konfiguration, Agent-Setup,
-   Learning-Schleife und Buffer-Teil übernehmen.
-3. `get_sdk_reference` + `get_node_types` für Telegram-Trigger, Telegram-Node
-   (`sendMessage`/`sendPhoto`/`answerCallbackQuery`/`editMessageReplyMarkup`/`sendChatAction`)
-   und dataTable ziehen — **Parameternamen nicht raten**.
-4. `pizzarello_sessions` anlegen.
-5. Workflow als **neuen** Workflow bauen, validieren, deployen, publishen, Credentials setzen.
-6. Abnahmetests 1–8 durchgehen.
-7. Erst dann Altflow + Web-App archivieren.
+2. `workflows/hauptflow.ts` lesen — daraus Konfiguration, Agent-Setup, Post-Aufbereitung,
+   Preis-Badge und Learning-Schleife übernehmen.
+3. **`AIColor.Me Marketing Agent v8` (`luWRBIdlesNnIMsz`) ansehen** — Nodes `Logo laden`,
+   `Social-Prompt bauen`, `GPT-Image Social-Bild`. Das ist die Referenz für die Logo-Übergabe.
+4. `get_sdk_reference` + `get_node_types` für Telegram-Trigger, Telegram-Node
+   (`sendMessage`/`sendPhoto`/`answerCallbackQuery`/`editMessageReplyMarkup`/`sendChatAction`),
+   `editImage` (resize/blur/composite) und dataTable ziehen — **Parameternamen nicht raten**.
+5. `pizzarello_sessions` anlegen.
+6. Workflow als **neuen** Workflow bauen, validieren, deployen, publishen, Credentials setzen.
+7. Abnahmetests 1–13 durchgehen (9–13 decken Logo und Mehrkanal ab).
+8. Erst dann Altflow + Web-App archivieren.
 
 > **Vor dem ersten Deploy dem Nutzer ansagen**, dass danach die Credentials neu gesetzt werden
 > müssen — und Änderungen bündeln statt einzeln zu deployen.
