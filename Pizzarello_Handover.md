@@ -1,5 +1,14 @@
 # Pizzarello Social-Automation — Übergabe an neue Claude-Code-Session
 
+> ⚠️ **TEILWEISE ÜBERHOLT (25.08.2026).** Die hier beschriebene Zweiteilung
+> (Hauptflow `tzRlOxsLZ8eyCdgT` + Web-App `pNFLlk3GPQO3lcjS`) wurde durch den rein
+> Telegram-basierten **`Pizzarello Bot`** (`B7LuGXIaNnPC5ulk`) ersetzt.
+> 👉 **Aktueller Stand: [`Pizzarello_Bot.md`](./Pizzarello_Bot.md)**
+>
+> Weiterhin gültig sind hier: Abschnitt 2 (Zugänge, IDs, Credentials),
+> Abschnitt 7 (MCP/SDK-Fallstricke) und die Lektionen aus Abschnitt 8.
+> Der Altflow ist noch aktiv und bleibt es, bis der Neubau die Abnahmetests besteht.
+
 > **Stand: 23.08.2026** · Dieses Dokument ersetzt `Pizzarello_status.md` (beschreibt eine ältere Architektur mit anderen Workflow-IDs — nur noch für historische Lektionen relevant).
 > Voraussetzung für die Weiterarbeit: **n8n-MCP-Server** muss in der Environment verfügbar sein.
 
