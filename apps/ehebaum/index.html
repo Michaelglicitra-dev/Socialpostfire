@@ -237,7 +237,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 </head>
 <body>
 <div id="app" class="eb-root"></div>
-<script id="app-state" type="application/json">{"sessions": [], "draft": {"date": null, "ratings": {}, "actions": []}}</script>
+<script id="app-state" type="application/json">{"sessions": [], "draft": {"date": "2026-08-27T20:23:12.185Z", "ratings": {}, "actions": []}, "tab": "themen", "inRetro": true, "openBranches": {"familie": true}, "openComments": {}, "expandedSession": null}</script>
 <script>
 function appMain(){
 "use strict";
@@ -476,7 +476,15 @@ function persistNow(){
   if (!canWrite) { setSaveState("local"); return Promise.resolve(); }
   if (!artifactApi){ setSaveState("local"); return Promise.resolve(); }
   setSaveState("saving");
-  var doc = buildDocument({ sessions: sessions, draft: draft });
+  var doc = buildDocument({
+    sessions: sessions,
+    draft: draft,
+    tab: tab,
+    inRetro: inRetro,
+    openBranches: openBranches,
+    openComments: openComments,
+    expandedSession: expandedSession
+  });
   return artifactApi.publish(doc).then(function(){
     setSaveState("saved");
   }).catch(function(err){
@@ -717,6 +725,7 @@ function onAppClick(e){
     inRetro = false;
     render();
     scrollToTop();
+    schedulePersist();
   } else if (action === "finish-retro"){
     finishRetro();
   } else if (action === "toggle-branch"){
@@ -782,6 +791,13 @@ function boot(){
       var parsed = JSON.parse(raw.textContent);
       if (parsed && Array.isArray(parsed.sessions)) sessions = parsed.sessions;
       if (parsed && parsed.draft && parsed.draft.date) draft = parsed.draft;
+      if (parsed && typeof parsed.tab === "string") tab = parsed.tab;
+      if (parsed && typeof parsed.inRetro === "boolean") inRetro = parsed.inRetro;
+      if (parsed && parsed.openBranches && typeof parsed.openBranches === "object") openBranches = parsed.openBranches;
+      if (parsed && parsed.openComments && typeof parsed.openComments === "object") openComments = parsed.openComments;
+      if (parsed && (typeof parsed.expandedSession === "string" || parsed.expandedSession === null)) expandedSession = parsed.expandedSession;
+      /* a draft can only be "in retro" if it actually exists */
+      if (inRetro && !draft.date) inRetro = false;
     }
   } catch (e) { /* start fresh */ }
 
