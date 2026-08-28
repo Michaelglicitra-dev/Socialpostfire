@@ -106,3 +106,51 @@ dann pixelgenau ab (gleiche Koordinaten, deckender Kreis).
   Config wandert endlich in eine Data Table (siehe Handover, Abschnitt 9).
 - Ein echter **Rettungs-Pfad** bei Moderations-Ablehnung (entschärfter Prompt, zweiter Versuch)
   bräuchte zwei zusätzliche Nodes und damit einen vollständigen Deploy.
+
+---
+
+## Deploy-Stand 28.08.2026
+
+Der Draft von `B7LuGXIaNnPC5ulk` ist per MCP aktualisiert (`update_workflow`), **noch nicht publiziert** —
+die Produktion laeuft weiter auf der alten aktiven Version, bis `publish_workflow` laeuft.
+
+Der komplette SDK-Quellcode des Bots liegt jetzt als `workflows/bot.ts` im Repo (vorher hatte
+der Bot ueberhaupt keine Quelle). Er wurde aus dem Live-Export generiert
+(`_gen_sdk.py` aus `_deploy_source.json`, gegengeprueft mit `_verify_local.js`), und der
+deployte Draft wurde Feld fuer Feld gegen die Vorlage geprueft: Nodes, Parameter,
+Verbindungen und Workflow-Settings stimmen exakt ueberein.
+
+### Vor dem Publish von Hand nachziehen
+
+1. **Credentials an 12 HTTP-Nodes** (`update_workflow` wirft sie prinzipbedingt ab —
+   per Test bestaetigt, `newCredential()` bindet nicht an bestehende Credentials):
+
+   | Credential | Nodes |
+   |---|---|
+   | OpenAI Pizzarello | GPT Bild (Foto + Logo), GPT Bild (nur Logo), Learning bewerten |
+   | imgbb | imgbb hochladen, imgbb Hochformat, Eingangsfoto hochladen |
+   | Buffer | Buffer Post planen |
+   | *(keine)* | Master laden, Website laden, Feiertage laden, Logo laden, Basisfoto laden |
+
+   Die letzten fuenf sind unauthentifiziert und brauchen nichts. Ebenfalls pruefen (n8n
+   markiert fehlende Credentials rot): die 9 Telegram-Nodes, der Telegram-Trigger und
+   `OpenAI gpt-5-mini`.
+
+2. **Retry-Feinwerte**: das SDK uebertraegt `retryOnFail`, aber **nicht** `maxTries` /
+   `waitBetweenTries`. Nach dem Deploy stehen betroffene Nodes auf dem Default (3 Versuche,
+   1 s Pause). Wieder setzen, falls gewuenscht: `Logo laden` 5 Versuche / 5 s,
+   `GPT Bild (Foto + Logo)` und `GPT Bild (nur Logo)` je 3 Versuche / 5 s.
+
+3. **onError pruefen**: an beiden GPT-Bild-Nodes muss *On Error* auf
+   „Continue (using regular output)" stehen — im Deploy gesetzt, nach manuellen
+   UI-Aenderungen aber leicht zu verlieren.
+
+Danach `publish_workflow` (oder „Publish" in der n8n-UI). Der Telegram-Trigger bekommt beim
+Publish eine neue `webhookId` und registriert seinen Webhook neu — dafuer muss sein
+Credential haengen, sonst empfaengt der Bot keine Nachrichten mehr.
+
+### Kuenftige Deploys
+
+`workflows/bot.ts` bearbeiten → `validate_workflow` → `update_workflow` → Credentials
+nachziehen → `publish_workflow`. Oder, fuer reine Prompt-Iterationen: die Dateien in diesem
+Ordner direkt in die Code-Nodes der n8n-UI kopieren — das kostet keine Credentials.

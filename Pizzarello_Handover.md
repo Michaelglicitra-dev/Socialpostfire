@@ -70,6 +70,13 @@ workflows/hauptflow.ts   → Workflow tzRlOxsLZ8eyCdgT  (~1.200 Zeilen)
 workflows/webapp.ts      → Workflow pNFLlk3GPQO3lcjS  (~1.100 Zeilen)
 ```
 
+> ⚠️ **Nachtrag 28.08.2026:** Der heute aktive Workflow ist **`Pizzarello Bot` (`B7LuGXIaNnPC5ulk`)**,
+> nicht mehr Hauptflow/Web-App. Seine Quelle liegt seit jetzt als `workflows/bot.ts` im Repo, die
+> Bildgenerierungs-Nodes zusaetzlich einzeln unter `workflows/bot_bildgenerierung/`.
+> `update_workflow` wirft weiterhin die Credentials aller HTTP-Nodes ab (erneut per Test bestätigt) und
+> überträgt `maxTries`/`waitBetweenTries` nicht — Workflow-Settings (errorWorkflow, binaryMode) lassen
+> sich dagegen über das dritte Argument von `workflow()` mitgeben und bleiben erhalten.
+
 > ⚠️ Diese Dateien sind die **einzige** vollständige Quelle. `get_workflow_details` liefert nur Node-JSON, keinen SDK-Code. Vor jeder Änderung: Datei bearbeiten → `validate_workflow` → `update_workflow` → `publish_workflow`.
 
 **Deploy-Zyklus:**
