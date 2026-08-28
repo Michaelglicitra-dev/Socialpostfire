@@ -1,0 +1,1 @@
+={{ (function(){ var t = String($('Post aufbereiten').first().json.post.preis_text || ''); var e = String.fromCharCode(0x20ac); var w = 0; for (var i = 0; i < t.length; i++) { var c = t.charAt(i); if (c === ',' || c === '.' || c === ' ') w += 17; else if (c >= '0' && c <= '9') w += 33; else if (c === e) w += 33; else w += 36; } return Math.round(852 - w / 2); })() }}
