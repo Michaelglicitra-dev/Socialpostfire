@@ -21,6 +21,8 @@ Post-Agent -> Post aufbereiten -> Bild-Modus -> Logo laden -> Mit Basisfoto?
 | `04_Bild-Request_bauen_Logo.js` | Bild-Request bauen (Logo) | `jsCode` |
 | `05_Bild_extrahieren.js` | Bild extrahieren | `jsCode` |
 | `06_Preis-Badge_positionX.txt` | Preis-Badge stempeln | Operation 4 (`text`), Feld `positionX` |
+| `07_Freigabe-Ergebnis.js` | Freigabe-Ergebnis | `jsCode` |
+| `08_Freigabe-Ergebnis-Text.js` | Freigabe-Ergebnis-Text | `jsCode` |
 | `_test_prompts.js` | — | lokaler Prompt-Simulator (`node _test_prompts.js`) |
 
 Zusätzlich per Hand zu setzen (Node-Einstellung, kein Code):
@@ -154,3 +156,21 @@ Credential haengen, sonst empfaengt der Bot keine Nachrichten mehr.
 `workflows/bot.ts` bearbeiten → `validate_workflow` → `update_workflow` → Credentials
 nachziehen → `publish_workflow`. Oder, fuer reine Prompt-Iterationen: die Dateien in diesem
 Ordner direkt in die Code-Nodes der n8n-UI kopieren — das kostet keine Credentials.
+
+---
+
+## Nachtrag 30.08.2026 — Post-Text verschwand nach der Freigabe
+
+`Freigabe bestaetigen` ist ein `editMessageText` auf `sess_last_message_id` — also auf genau
+die Nachricht, die den vollen Post-Text und die Hashtags trug. Der Bestaetigungstext bestand
+bisher nur aus Kopfzeile, Headline und Kanal-Status; die Bestaetigung hat den Text damit
+ueberschrieben. (Bestand schon vor der Bildketten-Ueberarbeitung, faellt nur auf, seit die
+Bestaetigung durchlaeuft.)
+
+`Freigabe-Ergebnis` und `Freigabe-Ergebnis-Text` bauen jetzt Headline, Post-Text und Hashtags
+mit in die Bestaetigung ein, danach erst die Statuszeilen je Kanal. Der Post-Text wird auf
+2.500 Zeichen begrenzt, damit die Statuszeilen nicht in Telegrams 4.096-Zeichen-Limit laufen.
+
+Der Verwurf-Pfad (`Verwurf-Daten`) ueberschreibt die Nachricht ebenfalls, zeigt dort aber
+bewusst nur Headline und Hinweis — bei einem verworfenen Entwurf ist der volle Text eher
+Rauschen. Laesst sich analog ergaenzen, wenn gewuenscht.
