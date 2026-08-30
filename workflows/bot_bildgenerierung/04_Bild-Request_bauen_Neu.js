@@ -26,8 +26,7 @@ p.push('SUBJECT: ' + (brief && '.!?'.indexOf(brief.slice(-1)) === -1 ? brief + '
 p.push(modul || '');
 p.push(g.look || '');
 if (!szene) p.push(g.motiv || '');
-p.push('The attached image is the Pizzarello logo only - it is not the subject of the picture.');
-p.push('ZONES (every element has its own area and they never overlap): the attached Pizzarello logo sits exactly once, small and quiet, in the BOTTOM-LEFT corner as a natural part of the picture; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays completely empty and calm, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the headline keeps to the upper third; the subject sits between them and reaches into neither bottom corner.');
+p.push('ZONES (every element has its own area and they never overlap): the BOTTOM-LEFT corner stays empty and calm - the real Pizzarello logo is composited there afterwards; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays empty and calm as well, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the headline keeps to the upper third; the subject sits between them and reaches into neither bottom corner.');
 if (post.layout === 'pur' || !headline) {
   p.push('NO TEXT: the picture carries no headline, no words and no captions at all.');
 } else {
@@ -39,8 +38,5 @@ p.push(g.stil || '');
 p.push(g.verbote || '');
 
 const prompt = p.filter(function (s) { return String(s || '').length > 0; }).join(' ');
-const logoBin = $('Logo laden').first().binary || {};
-const binary = {};
-if (logoBin.logo) binary.logo = logoBin.logo;
-if (!binary.logo) throw new Error('Logo-Binary fehlt');
-return [{ json: { prompt: prompt, size: String(cfg.bild_size || '1024x1536'), prompt_len: prompt.length }, binary: binary }];
+const size = String(cfg.bild_size || '1024x1536');
+return [{ json: { openai_gen_body: { model: 'gpt-image-1', prompt: prompt, size: size, quality: 'high', output_format: 'png', n: 1 }, size: size, prompt_len: prompt.length } }];

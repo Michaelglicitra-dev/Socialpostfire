@@ -24,7 +24,7 @@ const cfg = {
       typo: 'TYPE: the lettering belongs to the photograph - evenly lit, part of the scene, never a pasted-on graphic. A single thin terracotta rule may sit directly under the headline.',
       stil: 'STYLE DISCIPLINE: the frame stays uncluttered and one clear subject leads it. People appear as hands and forearms, or as soft blurred shapes far in the background. The colour stays muted apart from the food. The picture is sharp and clean, with smooth surfaces and no film grain.',
       stil_foto: 'STYLE DISCIPLINE: keep the colour muted apart from the food, keep the picture sharp, clean and free of film grain, and calm down whatever is already around the dish rather than adding anything to it.',
-      verbote: 'HARD RULES: the attached Pizzarello logo is the only mark in the picture and appears exactly once - draw no logo, wordmark or emblem of your own. Render no price, no number, no percentage and no currency symbol, and no badge, sticker, seal, ribbon or date stamp of any kind. Every letter stays fully inside the frame with a margin of at least 12 percent from every edge; wrap a long headline onto two lines rather than letting it touch an edge.'
+      verbote: 'HARD RULES: draw no logo, wordmark, emblem or signature of any kind - the real Pizzarello logo is composited into the picture afterwards, so the picture you produce carries none. Render no price, no number, no percentage and no currency symbol, and no badge, sticker, seal, ribbon or date stamp. Every letter stays fully inside the frame with a margin of at least 12 percent from every edge; wrap a long headline onto two lines rather than letting it touch an edge.'
     }
   },
   layouts: {
@@ -37,6 +37,7 @@ const cfg = {
   },
   logo_url: 'https://i.ibb.co/23g2B67Z/Pizzarello-transp.png',
   bild_size: '1024x1536',
+  logo_layout: { box_breite: 420, box_hoehe: 200, rand: 64 },
   saeulen_rotation: { '1': 'angebote', '2': 'saisonal', '3': 'community', '4': 'angebote', '5': 'saisonal', '6': 'community', '7': 'angebote' },
   hashtags: {
     angebote: ['#pizzarello', '#tagesangebot', '#pizzaderwoche', '#oberhausen', '#pizzaliebe', '#handmadepizza'],

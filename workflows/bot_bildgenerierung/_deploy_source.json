@@ -1,11 +1,11 @@
 {
   "id": "B7LuGXIaNnPC5ulk",
   "name": "Pizzarello Bot",
-  "description": "Telegram-Bot fuer Pizzarello: freier Chat mit KI-Agent, Fotos, Inline-Buttons und taeglicher Auto-Post um 09:30. Zustand liegt in pizzarello_sessions, jede Nachricht startet eine eigene kurze Execution. Freigabe plant Buffer-Posts je aktivem Kanal.",
+  "description": "Telegram-Bot fuer Pizzarello: Chat mit KI-Agent, Fotos, Buttons, taeglicher Auto-Post 09:30. Bildkette v2: disjunkte Zonen (Logo unten links, Badge unten rechts, Headline oben), englische Prompts.",
   "active": true,
-  "versionId": "54eeff8e-be42-4d3b-9e9e-2ee7ea4b1ac7",
-  "activeVersionId": "6beda382-171f-4f62-a87d-f47105d1b127",
-  "updatedAt": "2026-08-26T14:18:13.655Z",
+  "versionId": "f617d236-82e5-48d6-8e8b-e9dc412e92c1",
+  "activeVersionId": "4ab1cf76-df84-484f-afdf-3524c947e09f",
+  "updatedAt": "2026-08-30T20:26:32.400Z",
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": true,
@@ -34,7 +34,7 @@
         0,
         1184
       ],
-      "webhookId": "15d8ebe5-41f4-4702-96c3-b28d41997332"
+      "webhookId": "5b57e05e-9a4a-4b8e-9127-3cf000059441"
     },
     {
       "parameters": {
@@ -59,6 +59,19 @@
       "typeVersion": 2,
       "position": [
         448,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const inp = $input.first().json || {};\nconst cfg = {\n  restaurant: {\n    name: 'Pizzarello',\n    kueche: 'Pizzeria in Oberhausen - handgemachte, hauchduenn-knusprige Pizza zum Abholen und Bestellen',\n    standort: 'Friedrich-Karl-Strasse 19, 46045 Oberhausen',\n    telefon: '0208 / 888 802',\n    website: 'https://www.pizzarello.net',\n    oeffnungszeiten: 'Mo + Di Ruhetag (ausser Feiertage), Mi-Fr 17:00-22:00 Uhr, Sa-So 13:00-22:00 Uhr',\n    ton: 'familiaer-italienisch, herzlich, ein bisschen verspielt, Du-Ansprache',\n    brand_farben: { primaer: '#C8102E', sekundaer: '#2E7D32', akzent: '#F5E6C8', dunkel: '#1e1a17' },\n    bild_guideline: {\n      look: 'BRAND LOOK: a modern premium editorial campaign picture, lit like a studio set - the light is soft and directional and keeps every texture crisp: crust, char, cheese pull. The palette is muted, so the food carries the only real colour in the frame; one warm terracotta accent may appear as a single thin rule or one tiny detail. Photorealistic, calm, confident, with generous empty space.',\n      motiv: 'SUBJECT STAGING: the dish sits on one calm single-tone ground - brushed warm-grey steel, matte anthracite or deep black - and is shot close and precise, slightly from above (60 to 75 degrees) or straight top-down. Craft is visible: at most one or two hands or forearms hold, cut or serve it. The ingredients are readable and deliberately placed (single mortadella rosettes, burrata drops, pistachio). The frame holds the dish and the bare ground, and nothing else.',\n      grading: 'KEEP THE PHOTO: keep the dish, the composition, the people and the setting exactly as they are - replace nothing, add no food and no person. Only re-grade the picture towards the brand look: a neutral grey or brushed-metal mood, soft directional light, muted surroundings so the food carries the only colour, fully photorealistic.',\n      module: {\n        produkt: 'MOTIF: the finished pizza on the bare ground, held or presented by one pair of hands.',\n        event: 'MOTIF: a dark calm ground with the atmosphere only hinted far behind (soft blurred shapes, hands, glasses), the food clearly staged in front of it.',\n        angebot: 'MOTIF: a detail crop of the product, large and running out of the left or bottom edge, on a dark ground.',\n        saison: 'MOTIF: the seasonal ingredient staged fresh and raw next to the finished dish, close and precise.',\n        bts: 'MOTIF: an honest craft moment - hands shaping dough or sliding a pizza into the stone oven - framed cleanly against a dark studio-like ground.',\n        flyer: 'MOTIF: a campaign ad on an almost black ground with one large food detail running out of the lower or side edge, and wide calm space above it for the headline.'\n      },\n      typo: 'TYPE: the lettering belongs to the photograph - evenly lit, part of the scene, never a pasted-on graphic. A single thin terracotta rule may sit directly under the headline.',\n      stil: 'STYLE DISCIPLINE: the frame stays uncluttered and one clear subject leads it. People appear as hands and forearms, or as soft blurred shapes far in the background. The colour stays muted apart from the food. The picture is sharp and clean, with smooth surfaces and no film grain.',\n      stil_foto: 'STYLE DISCIPLINE: keep the colour muted apart from the food, keep the picture sharp, clean and free of film grain, and calm down whatever is already around the dish rather than adding anything to it.',\n      verbote: 'HARD RULES: draw no logo, wordmark, emblem or signature of any kind - the real Pizzarello logo is composited into the picture afterwards, so the picture you produce carries none. Render no price, no number, no percentage and no currency symbol, and no badge, sticker, seal, ribbon or date stamp. Every letter stays fully inside the frame with a margin of at least 12 percent from every edge; wrap a long headline onto two lines rather than letting it touch an edge.'\n    }\n  },\n  layouts: {\n    klassik: { name: 'Klassik', bild: 'HEADLINE ZONE: one calm line (two if needed) in the upper third, cream-white; the dish keeps to the lower two thirds, so text and food never touch.' },\n    menue_karte: { name: 'Menue-Karte', bild: 'HEADLINE ZONE: top-left in the upper third, with one short ingredient line under it separated by dots (\"Zutat - Zutat - Zutat\"); the dish sits fully visible below it.' },\n    angebots_sticker: { name: 'Angebots-Sticker', bild: 'HEADLINE ZONE: the upper third, the headline being the largest element with at most one short line under it at half the size; the dish is a detail crop along the left or bottom edge.' },\n    event_poster: { name: 'Event-Poster', bild: 'HEADLINE ZONE: the upper third, bold and condensed, with generous empty space around it; nothing else competes with it.' },\n    pur: { name: 'Pur', bild: 'NO TEXT: the picture carries no headline, no words and no captions at all.' },\n    zitat: { name: 'Zitat', bild: 'HEADLINE ZONE: one short line in the upper third, set in calm empty space, cream-white, with no box and no band around it.' }\n  },\n  logo_url: 'https://i.ibb.co/23g2B67Z/Pizzarello-transp.png',\n  bild_size: '1024x1536',\n  logo_layout: { box_breite: 420, box_hoehe: 200, rand: 64 },\n  saeulen_rotation: { '1': 'angebote', '2': 'saisonal', '3': 'community', '4': 'angebote', '5': 'saisonal', '6': 'community', '7': 'angebote' },\n  hashtags: {\n    angebote: ['#pizzarello', '#tagesangebot', '#pizzaderwoche', '#oberhausen', '#pizzaliebe', '#handmadepizza'],\n    saisonal: ['#pizzarello', '#saisonal', '#frischezutaten', '#regional', '#oberhausen', '#italienischekueche', '#handmadepizza'],\n    community: ['#pizzarello', '#stammgaeste', '#behindthescenes', '#oberhausen', '#supportlocal', '#lapizzaevita']\n  },\n  telegram_chat_id: '7582948490',\n  buffer: {\n    organizationId: '69f7afabd110cb66bf840334',\n    posting_zeit: '17:00',\n    kanaele: [\n      { key: 'instagram', name: 'Instagram', channelId: '6a805d6bb2d9d57743816131', aktiv: true, format: 'master', tags: 'max5' },\n      { key: 'facebook', name: 'Facebook', channelId: '', aktiv: false, format: 'master', tags: 'full' },\n      { key: 'tiktok', name: 'TikTok', channelId: '', aktiv: false, format: 'vertical', tags: 'full' }\n    ],\n    pinterest_url: 'https://www.pizzarello.net'\n  }\n};\nreturn [{ json: Object.assign({}, inp, cfg) }];"
+      },
+      "id": "5cb86f01-fdcd-44ca-93e8-42a8c51b5308",
+      "name": "Restaurant-Konfiguration",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
         1280
       ]
     },
@@ -93,19 +106,6 @@
       "position": [
         224,
         1376
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const inp = $input.first().json || {};\nconst cfg = {\n  restaurant: {\n    name: 'Pizzarello',\n    kueche: 'Pizzeria in Oberhausen - handgemachte, hauchduenn-knusprige Pizza zum Abholen und Bestellen',\n    standort: 'Friedrich-Karl-Strasse 19, 46045 Oberhausen',\n    telefon: '0208 / 888 802',\n    website: 'https://www.pizzarello.net',\n    oeffnungszeiten: 'Mo + Di Ruhetag (ausser Feiertage), Mi-Fr 17:00-22:00 Uhr, Sa-So 13:00-22:00 Uhr',\n    ton: 'familiaer-italienisch, herzlich, ein bisschen verspielt, Du-Ansprache',\n    brand_farben: { primaer: '#C8102E', sekundaer: '#2E7D32', akzent: '#F5E6C8', dunkel: '#1e1a17' },\n    bild_guideline: {\n      look: 'BRAND LOOK: a modern premium editorial campaign picture, lit like a studio set - the light is soft and directional and keeps every texture crisp: crust, char, cheese pull. The palette is muted, so the food carries the only real colour in the frame; one warm terracotta accent may appear as a single thin rule or one tiny detail. Photorealistic, calm, confident, with generous empty space.',\n      motiv: 'SUBJECT STAGING: the dish sits on one calm single-tone ground - brushed warm-grey steel, matte anthracite or deep black - and is shot close and precise, slightly from above (60 to 75 degrees) or straight top-down. Craft is visible: at most one or two hands or forearms hold, cut or serve it. The ingredients are readable and deliberately placed (single mortadella rosettes, burrata drops, pistachio). The frame holds the dish and the bare ground, and nothing else.',\n      grading: 'KEEP THE PHOTO: keep the dish, the composition, the people and the setting exactly as they are - replace nothing, add no food and no person. Only re-grade the picture towards the brand look: a neutral grey or brushed-metal mood, soft directional light, muted surroundings so the food carries the only colour, fully photorealistic.',\n      module: {\n        produkt: 'MOTIF: the finished pizza on the bare ground, held or presented by one pair of hands.',\n        event: 'MOTIF: a dark calm ground with the atmosphere only hinted far behind (soft blurred shapes, hands, glasses), the food clearly staged in front of it.',\n        angebot: 'MOTIF: a detail crop of the product, large and running out of the left or bottom edge, on a dark ground.',\n        saison: 'MOTIF: the seasonal ingredient staged fresh and raw next to the finished dish, close and precise.',\n        bts: 'MOTIF: an honest craft moment - hands shaping dough or sliding a pizza into the stone oven - framed cleanly against a dark studio-like ground.',\n        flyer: 'MOTIF: a campaign ad on an almost black ground with one large food detail running out of the lower or side edge, and wide calm space above it for the headline.'\n      },\n      typo: 'TYPE: the lettering belongs to the photograph - evenly lit, part of the scene, never a pasted-on graphic. A single thin terracotta rule may sit directly under the headline.',\n      stil: 'STYLE DISCIPLINE: the frame stays uncluttered and one clear subject leads it. People appear as hands and forearms, or as soft blurred shapes far in the background. The colour stays muted apart from the food. The picture is sharp and clean, with smooth surfaces and no film grain.',\n      stil_foto: 'STYLE DISCIPLINE: keep the colour muted apart from the food, keep the picture sharp, clean and free of film grain, and calm down whatever is already around the dish rather than adding anything to it.',\n      verbote: 'HARD RULES: the attached Pizzarello logo is the only mark in the picture and appears exactly once - draw no logo, wordmark or emblem of your own. Render no price, no number, no percentage and no currency symbol, and no badge, sticker, seal, ribbon or date stamp of any kind. Every letter stays fully inside the frame with a margin of at least 12 percent from every edge; wrap a long headline onto two lines rather than letting it touch an edge.'\n    }\n  },\n  layouts: {\n    klassik: { name: 'Klassik', bild: 'HEADLINE ZONE: one calm line (two if needed) in the upper third, cream-white; the dish keeps to the lower two thirds, so text and food never touch.' },\n    menue_karte: { name: 'Menue-Karte', bild: 'HEADLINE ZONE: top-left in the upper third, with one short ingredient line under it separated by dots (\"Zutat - Zutat - Zutat\"); the dish sits fully visible below it.' },\n    angebots_sticker: { name: 'Angebots-Sticker', bild: 'HEADLINE ZONE: the upper third, the headline being the largest element with at most one short line under it at half the size; the dish is a detail crop along the left or bottom edge.' },\n    event_poster: { name: 'Event-Poster', bild: 'HEADLINE ZONE: the upper third, bold and condensed, with generous empty space around it; nothing else competes with it.' },\n    pur: { name: 'Pur', bild: 'NO TEXT: the picture carries no headline, no words and no captions at all.' },\n    zitat: { name: 'Zitat', bild: 'HEADLINE ZONE: one short line in the upper third, set in calm empty space, cream-white, with no box and no band around it.' }\n  },\n  logo_url: 'https://i.ibb.co/23g2B67Z/Pizzarello-transp.png',\n  bild_size: '1024x1536',\n  saeulen_rotation: { '1': 'angebote', '2': 'saisonal', '3': 'community', '4': 'angebote', '5': 'saisonal', '6': 'community', '7': 'angebote' },\n  hashtags: {\n    angebote: ['#pizzarello', '#tagesangebot', '#pizzaderwoche', '#oberhausen', '#pizzaliebe', '#handmadepizza'],\n    saisonal: ['#pizzarello', '#saisonal', '#frischezutaten', '#regional', '#oberhausen', '#italienischekueche', '#handmadepizza'],\n    community: ['#pizzarello', '#stammgaeste', '#behindthescenes', '#oberhausen', '#supportlocal', '#lapizzaevita']\n  },\n  telegram_chat_id: '7582948490',\n  buffer: {\n    organizationId: '69f7afabd110cb66bf840334',\n    posting_zeit: '17:00',\n    kanaele: [\n      { key: 'instagram', name: 'Instagram', channelId: '6a805d6bb2d9d57743816131', aktiv: true, format: 'master', tags: 'max5' },\n      { key: 'facebook', name: 'Facebook', channelId: '', aktiv: false, format: 'master', tags: 'full' },\n      { key: 'tiktok', name: 'TikTok', channelId: '', aktiv: false, format: 'vertical', tags: 'full' }\n    ],\n    pinterest_url: 'https://www.pizzarello.net'\n  }\n};\nreturn [{ json: Object.assign({}, inp, cfg) }];"
-      },
-      "id": "5cb86f01-fdcd-44ca-93e8-42a8c51b5308",
-      "name": "Restaurant-Konfiguration",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        672,
-        1280
       ]
     },
     {
@@ -183,7 +183,97 @@
         1568,
         688
       ],
-      "webhookId": "5a4bdf5b-6185-4080-95f3-c5190d6f13f7"
+      "webhookId": "8cb3574f-87dd-4ded-af48-7d3407125e39"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Restaurant-Konfiguration').first().json.telegram_chat_id }}",
+        "text": "Bin noch am Bauen, einen Moment - ich melde mich gleich mit dem Ergebnis.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "a9052470-8647-441e-bebb-4c8955ccc0f7",
+      "name": "Bin beschaeftigt",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1568,
+        1040
+      ],
+      "webhookId": "27c1368f-7ec7-4eb9-a0af-dc60b3f79bf2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image",
+              "value": "={{ $('Update normalisieren').first().json.photo_b64 }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "04cd9507-186b-49ad-aa3d-ae65a2534b0a",
+      "name": "Eingangsfoto hochladen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2016,
+        1184
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const e = $('Eingang').first().json;\nconst r = $('Router').first().json;\nconst txt = String(e.text || '').trim();\nlet d = {};\ntry { d = JSON.parse(r.sess_draft_json || '{}'); } catch (er) { d = {}; }\nlet modus = 'neu';\nlet agent_input = '';\nif (r.state === 'AWAITING_ANSWER') {\n  modus = 'antwort';\n  agent_input = 'Antwort des Wirts auf deine Rueckfrage: \"' + txt + '\". Beruecksichtige die urspruengliche Anfrage samt dieser Antwort und erstelle jetzt EINEN fertigen Social-Media-Post. Stelle nur dann noch eine weitere Rueckfrage, wenn es immer noch voellig unklar ist.';\n} else if (r.state === 'DRAFT_OPEN') {\n  modus = 'aenderung';\n  agent_input = 'AENDERUNGSWUNSCH des Wirts zum aktuellen Entwurf (Headline: \"' + String(d.headline || '') + '\"): \"' + txt + '\". Entscheide: Wenn der Wunsch ein ANDERES oder neues Motiv verlangt, setze bild_neu=true. Wenn nur Text oder Details geaendert werden sollen, setze bild_neu=false, damit das bisherige Bild als Basis bleibt und nur angepasst wird. Erstelle einen verbesserten Post, der den Wunsch strikt beachtet. Rufe get_learnings erneut auf und verletze keine gespeicherten Regeln.';\n} else {\n  modus = 'neu';\n  agent_input = 'Neue Eingabe vom Wirt: \"' + txt + '\". Es wurde KEIN eigenes Foto geschickt - waehle mit get_bildarchiv ein passendes Archiv-Foto als Bildgrundlage. Erstelle daraus EINEN fertigen Social-Media-Post.';\n}\nreturn [{ json: { chat_id: e.chat_id, modus: modus, typ: 'text', agent_input: agent_input, photo_url: (modus === 'neu' ? '' : r.sess_photo_url), prev_image_url: String(d.image_url || ''), saeule: String(d.saeule || 'angebote'), reason: (modus === 'aenderung' ? txt : '') } }];"
+      },
+      "id": "5f58fcab-23da-4403-81e9-5f846a716f11",
+      "name": "Text-Auftrag",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        1376
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst heute = $now.setZone('Europe/Berlin');\nconst wtage = ['', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];\nconst saeule = cfg.saeulen_rotation[String(heute.weekday)] || 'angebote';\nconst agent_input = 'Taeglicher Auto-Post fuer die Saeule \"' + saeule + '\" am ' + wtage[heute.weekday] + '. Es wurde KEIN eigenes Foto geschickt - waehle mit get_bildarchiv ein passendes Archiv-Foto als Bildgrundlage. Nutze get_speisekarte und die Website-Infos fuer korrekte Fakten. Stelle NIEMALS eine Rueckfrage - entscheide eigenstaendig. Erstelle EINEN fertigen Social-Media-Post.';\nreturn [{ json: { chat_id: String(cfg.telegram_chat_id), modus: 'tagespost', typ: 'schedule', agent_input: agent_input, photo_url: '', prev_image_url: '', saeule: saeule, reason: '' } }];"
+      },
+      "id": "659359e0-9aff-4734-bf73-6d8800aef40e",
+      "name": "Tagespost-Auftrag",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        1568
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "88aebcfb-2575-43da-b5cc-4dda42263114",
+      "name": "Ignorieren",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        1712
+      ]
     },
     {
       "parameters": {
@@ -235,6 +325,17 @@
       ]
     },
     {
+      "parameters": {},
+      "id": "e7bb836e-74ce-41cf-8e06-1937ea6ddd7d",
+      "name": "Toter Entwurf",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2016,
+        928
+      ]
+    },
+    {
       "parameters": {
         "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst r = $('Router').first().json;\nlet d = {};\ntry { d = JSON.parse(r.sess_draft_json || '{}'); } catch (e) { d = {}; }\nif (!d.image_url) throw new Error('Entwurf konnte nicht gelesen werden (draft_json leer)');\nconst kanaele = (cfg.buffer.kanaele || []).filter(function (k) { return k.aktiv && k.channelId && String(k.channelId).indexOf('<') === -1; });\nconst braucht_vertikal = kanaele.some(function (k) { return k.format === 'vertical'; });\nconst parts = String(cfg.buffer.posting_zeit || '17:00').split(':');\nlet due = $now.setZone('Europe/Berlin').set({ hour: Number(parts[0]), minute: Number(parts[1] || 0), second: 0, millisecond: 0 });\nif (due.diffNow('minutes').minutes < 15) due = due.plus({ days: 1 });\nreturn [{ json: {\n  post_id: String(d.post_id || r.sess_post_id || ''),\n  image_url: String(d.image_url),\n  headline: String(d.headline || ''),\n  post_text: String(d.post_text || ''),\n  hashtags: Array.isArray(d.hashtags) ? d.hashtags : [],\n  saeule: String(d.saeule || 'angebote'),\n  datum: String(d.datum || $now.setZone('Europe/Berlin').toISODate()),\n  preis_text: String(d.preis_text || ''),\n  kanaele: kanaele,\n  kanal_anzahl: kanaele.length,\n  braucht_vertikal: braucht_vertikal,\n  dueAt: due.toUTC().toISO({ suppressMilliseconds: true }),\n  zeit_text: due.toFormat('dd.MM. HH:mm')\n} }];"
       },
@@ -245,6 +346,32 @@
       "position": [
         2240,
         16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $('Router').first().json;\nconst cfg = $('Restaurant-Konfiguration').first().json;\nlet d = {};\ntry { d = JSON.parse(r.sess_draft_json || '{}'); } catch (er) { d = {}; }\nconst agent_input = 'Der Wirt moechte eine ANDERE VARIANTE des aktuellen Entwurfs (bisherige Headline: \"' + String(d.headline || '') + '\"). Erstelle einen deutlich anderen Post zum selben Anlass: neue Headline, neuer Text, anderes Motiv. Setze bild_neu=true. Wiederhole die bisherige Headline nicht. Rufe get_learnings auf und verletze keine gespeicherten Regeln.';\nreturn [{ json: { chat_id: String(cfg.telegram_chat_id), modus: 'variante', typ: 'callback', agent_input: agent_input, photo_url: r.sess_photo_url, prev_image_url: String(d.image_url || ''), saeule: String(d.saeule || 'angebote'), reason: '' } }];"
+      },
+      "id": "e49543a4-857f-4488-97dd-89461f7f2246",
+      "name": "Variante-Auftrag",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $('Router').first().json;\nlet d = {};\ntry { d = JSON.parse(r.sess_draft_json || '{}'); } catch (e) { d = {}; }\nconst NL = String.fromCharCode(10);\nconst WEG = String.fromCodePoint(0x1F5D1);\nconst esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };\nconst text = '<b>' + WEG + ' Verworfen</b>' + NL + NL + '<i>' + esc(String(d.headline || '')) + '</i>' + NL + NL + 'Der Entwurf geht nicht raus. Schreib mir einfach, wenn du etwas Neues brauchst.';\nreturn [{ json: {\n  bestaetigung: text.slice(0, 4000),\n  datum: String(d.datum || $now.setZone('Europe/Berlin').toISODate()),\n  saeule: String(d.saeule || 'angebote'),\n  headline: String(d.headline || ''),\n  post_text: String(d.post_text || ''),\n  hashtags: Array.isArray(d.hashtags) ? d.hashtags.join(' ') : '',\n  image_url: String(d.image_url || ''),\n  status: 'VERWORFEN',\n  buffer_ids: 'per Button verworfen',\n  kanaele: 'keiner',\n  geplant_fuer: ''\n} }];"
+      },
+      "id": "ef2f78e9-c2a1-4a29-97d4-3495a6745f30",
+      "name": "Verwurf-Daten",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5456,
+        976
       ]
     },
     {
@@ -314,6 +441,19 @@
     },
     {
       "parameters": {
+        "jsCode": "const f = $('Freigabe vorbereiten').first().json;\nconst NL = String.fromCharCode(10);\nconst WARN = String.fromCodePoint(0x26A0);\nconst esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };\nconst tags = Array.isArray(f.hashtags) ? f.hashtags.join(' ') : String(f.hashtags || '');\nconst body = '<b>' + esc(f.headline) + '</b>' + NL + NL + esc(f.post_text).slice(0, 2500) + NL + NL + esc(tags);\nconst text = '<b>' + WARN + ' Freigegeben - aber kein Kanal aktiv</b>' + NL + NL + body + NL + NL + 'Der Post konnte nirgends eingeplant werden, weil aktuell kein Social-Media-Kanal verbunden ist. Bitte die Buffer-Kanal-ID im Workflow eintragen.' + NL + NL + 'Bild: ' + esc(f.image_url);\nreturn [{ json: { text: text.slice(0, 4000) } }];"
+      },
+      "id": "dabcdc18-ccc0-43df-9d3d-644e74648b57",
+      "name": "Freigabe-Ergebnis-Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5680,
+        240
+      ]
+    },
+    {
+      "parameters": {
         "url": "={{ $('Freigabe vorbereiten').first().json.image_url }}",
         "options": {
           "response": {
@@ -333,6 +473,19 @@
         0
       ],
       "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst f = $('Freigabe vorbereiten').first().json;\nlet vertikal_url = '';\ntry { vertikal_url = String(($('imgbb Hochformat').first().json.data || {}).url || ''); } catch (e) { vertikal_url = ''; }\nconst q = 'mutation($input: CreatePostInput!){ createPost(input:$input){ __typename ... on PostActionSuccess { post { id dueAt status } } ... on MutationError { message } } }';\nconst NL2 = String.fromCharCode(10) + String.fromCharCode(10);\nconst tagsFull = f.hashtags.join(' ');\nconst tagsMax5 = f.hashtags.slice(0, 5).join(' ');\nconst meta = {\n  facebook: { facebook: { type: 'post' } },\n  instagram: { instagram: { type: 'post', shouldShareToFeed: true } },\n  pinterest: { pinterest: { title: String(f.headline).slice(0, 100), url: cfg.buffer.pinterest_url } }\n};\nconst out = [];\nfor (const k of f.kanaele) {\n  const bild = (k.format === 'vertical') ? (vertikal_url || f.image_url) : f.image_url;\n  const tags = (k.tags === 'max5') ? tagsMax5 : tagsFull;\n  const input = { text: f.post_text + NL2 + tags, channelId: k.channelId, schedulingType: 'automatic', mode: 'customScheduled', dueAt: f.dueAt, assets: [{ image: { url: bild } }] };\n  if (meta[k.key]) input.metadata = meta[k.key];\n  out.push({ json: { kanal_key: k.key, kanal_name: k.name, bild_url: bild, graphql: { query: q, variables: { input: input } } } });\n}\nreturn out;"
+      },
+      "id": "dab285ee-2ee3-4643-8709-2c08b9db7bd5",
+      "name": "Buffer-Requests bauen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5008,
+        0
+      ]
     },
     {
       "parameters": {
@@ -452,29 +605,31 @@
     },
     {
       "parameters": {
-        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst f = $('Freigabe vorbereiten').first().json;\nlet vertikal_url = '';\ntry { vertikal_url = String(($('imgbb Hochformat').first().json.data || {}).url || ''); } catch (e) { vertikal_url = ''; }\nconst q = 'mutation($input: CreatePostInput!){ createPost(input:$input){ __typename ... on PostActionSuccess { post { id dueAt status } } ... on MutationError { message } } }';\nconst NL2 = String.fromCharCode(10) + String.fromCharCode(10);\nconst tagsFull = f.hashtags.join(' ');\nconst tagsMax5 = f.hashtags.slice(0, 5).join(' ');\nconst meta = {\n  facebook: { facebook: { type: 'post' } },\n  instagram: { instagram: { type: 'post', shouldShareToFeed: true } },\n  pinterest: { pinterest: { title: String(f.headline).slice(0, 100), url: cfg.buffer.pinterest_url } }\n};\nconst out = [];\nfor (const k of f.kanaele) {\n  const bild = (k.format === 'vertical') ? (vertikal_url || f.image_url) : f.image_url;\n  const tags = (k.tags === 'max5') ? tagsMax5 : tagsFull;\n  const input = { text: f.post_text + NL2 + tags, channelId: k.channelId, schedulingType: 'automatic', mode: 'customScheduled', dueAt: f.dueAt, assets: [{ image: { url: bild } }] };\n  if (meta[k.key]) input.metadata = meta[k.key];\n  out.push({ json: { kanal_key: k.key, kanal_name: k.name, bild_url: bild, graphql: { query: q, variables: { input: input } } } });\n}\nreturn out;"
+        "method": "POST",
+        "url": "https://api.buffer.com",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.graphql) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
       },
-      "id": "dab285ee-2ee3-4643-8709-2c08b9db7bd5",
-      "name": "Buffer-Requests bauen",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "id": "4469e5e2-822f-40b1-b15a-3d36b17fb492",
+      "name": "Buffer Post planen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
-        5008,
+        5232,
         0
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const f = $('Freigabe vorbereiten').first().json;\nconst NL = String.fromCharCode(10);\nconst WARN = String.fromCodePoint(0x26A0);\nconst esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };\nconst text = '<b>' + WARN + ' Freigegeben - aber kein Kanal aktiv</b>' + NL + NL + '<i>' + esc(f.headline) + '</i>' + NL + NL + 'Der Post konnte nirgends eingeplant werden, weil aktuell kein Social-Media-Kanal verbunden ist. Bitte die Buffer-Kanal-ID im Workflow eintragen.' + NL + NL + 'Bild: ' + esc(f.image_url);\nreturn [{ json: { text: text.slice(0, 4000) } }];"
-      },
-      "id": "dabcdc18-ccc0-43df-9d3d-644e74648b57",
-      "name": "Freigabe-Ergebnis-Text",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        5680,
-        240
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -494,7 +649,7 @@
         5904,
         240
       ],
-      "webhookId": "1d12a46c-73b7-4b24-88ba-c13d1f4313da"
+      "webhookId": "97c17272-9073-40a7-916b-ea8508ef9766"
     },
     {
       "parameters": {
@@ -600,19 +755,6 @@
     },
     {
       "parameters": {
-        "jsCode": "const r = $('Router').first().json;\nconst cfg = $('Restaurant-Konfiguration').first().json;\nlet d = {};\ntry { d = JSON.parse(r.sess_draft_json || '{}'); } catch (er) { d = {}; }\nconst agent_input = 'Der Wirt moechte eine ANDERE VARIANTE des aktuellen Entwurfs (bisherige Headline: \"' + String(d.headline || '') + '\"). Erstelle einen deutlich anderen Post zum selben Anlass: neue Headline, neuer Text, anderes Motiv. Setze bild_neu=true. Wiederhole die bisherige Headline nicht. Rufe get_learnings auf und verletze keine gespeicherten Regeln.';\nreturn [{ json: { chat_id: String(cfg.telegram_chat_id), modus: 'variante', typ: 'callback', agent_input: agent_input, photo_url: r.sess_photo_url, prev_image_url: String(d.image_url || ''), saeule: String(d.saeule || 'angebote'), reason: '' } }];"
-      },
-      "id": "e49543a4-857f-4488-97dd-89461f7f2246",
-      "name": "Variante-Auftrag",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2240,
-        576
-      ]
-    },
-    {
-      "parameters": {
         "jsCode": "const j = $input.first().json || {};\nreturn [{ json: { chat_id: String(j.chat_id || ''), modus: String(j.modus || 'neu'), typ: String(j.typ || 'text'), agent_input: String(j.agent_input || ''), photo_url: String(j.photo_url || ''), prev_image_url: String(j.prev_image_url || ''), saeule: String(j.saeule || 'angebote'), reason: String(j.reason || '') } }];"
       },
       "id": "7ad97653-bc06-46aa-81b6-e02b07a59218",
@@ -626,16 +768,103 @@
     },
     {
       "parameters": {
-        "jsCode": "const r = $('Router').first().json;\nlet d = {};\ntry { d = JSON.parse(r.sess_draft_json || '{}'); } catch (e) { d = {}; }\nconst NL = String.fromCharCode(10);\nconst WEG = String.fromCodePoint(0x1F5D1);\nconst esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };\nconst text = '<b>' + WEG + ' Verworfen</b>' + NL + NL + '<i>' + esc(String(d.headline || '')) + '</i>' + NL + NL + 'Der Entwurf geht nicht raus. Schreib mir einfach, wenn du etwas Neues brauchst.';\nreturn [{ json: {\n  bestaetigung: text.slice(0, 4000),\n  datum: String(d.datum || $now.setZone('Europe/Berlin').toISODate()),\n  saeule: String(d.saeule || 'angebote'),\n  headline: String(d.headline || ''),\n  post_text: String(d.post_text || ''),\n  hashtags: Array.isArray(d.hashtags) ? d.hashtags.join(' ') : '',\n  image_url: String(d.image_url || ''),\n  status: 'VERWORFEN',\n  buffer_ids: 'per Button verworfen',\n  kanaele: 'keiner',\n  geplant_fuer: ''\n} }];"
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "8WhvJ2bY2B6wKyGY",
+          "cachedResultName": "pizzarello_sessions"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $json.chat_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $json.chat_id }}",
+            "state": "BUSY",
+            "photo_url": "={{ $json.photo_url }}",
+            "updated": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "post_id",
+              "displayName": "post_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "draft_json",
+              "displayName": "draft_json",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "photo_url",
+              "displayName": "photo_url",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "last_message_id",
+              "displayName": "last_message_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "updated",
+              "displayName": "updated",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
       },
-      "id": "ef2f78e9-c2a1-4a29-97d4-3495a6745f30",
-      "name": "Verwurf-Daten",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "id": "ae8931e4-b35e-40c9-b677-e6277ad3919f",
+      "name": "Status BUSY setzen",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
       "position": [
-        5456,
-        976
-      ]
+        2688,
+        496
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -775,71 +1004,7 @@
         5904,
         976
       ],
-      "webhookId": "5706c9e2-a613-4041-bf5c-5a9242344d7e"
-    },
-    {
-      "parameters": {},
-      "id": "e7bb836e-74ce-41cf-8e06-1937ea6ddd7d",
-      "name": "Toter Entwurf",
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        2016,
-        928
-      ]
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('Restaurant-Konfiguration').first().json.telegram_chat_id }}",
-        "text": "Bin noch am Bauen, einen Moment - ich melde mich gleich mit dem Ergebnis.",
-        "additionalFields": {
-          "appendAttribution": false,
-          "disable_web_page_preview": true
-        }
-      },
-      "id": "a9052470-8647-441e-bebb-4c8955ccc0f7",
-      "name": "Bin beschaeftigt",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        1568,
-        1040
-      ],
-      "webhookId": "95812317-55e2-465d-b174-4d3271e82b85"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.imgbb.com/1/upload",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpCustomAuth",
-        "sendBody": true,
-        "contentType": "form-urlencoded",
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "image",
-              "value": "={{ $('Update normalisieren').first().json.photo_b64 }}"
-            }
-          ]
-        },
-        "options": {
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
-        }
-      },
-      "id": "04cd9507-186b-49ad-aa3d-ae65a2534b0a",
-      "name": "Eingangsfoto hochladen",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        2016,
-        1184
-      ],
-      "retryOnFail": true
+      "webhookId": "40aeab5d-bed9-415f-999b-93b02dac556a"
     },
     {
       "parameters": {
@@ -852,43 +1017,6 @@
       "position": [
         2240,
         1184
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const e = $('Eingang').first().json;\nconst r = $('Router').first().json;\nconst txt = String(e.text || '').trim();\nlet d = {};\ntry { d = JSON.parse(r.sess_draft_json || '{}'); } catch (er) { d = {}; }\nlet modus = 'neu';\nlet agent_input = '';\nif (r.state === 'AWAITING_ANSWER') {\n  modus = 'antwort';\n  agent_input = 'Antwort des Wirts auf deine Rueckfrage: \"' + txt + '\". Beruecksichtige die urspruengliche Anfrage samt dieser Antwort und erstelle jetzt EINEN fertigen Social-Media-Post. Stelle nur dann noch eine weitere Rueckfrage, wenn es immer noch voellig unklar ist.';\n} else if (r.state === 'DRAFT_OPEN') {\n  modus = 'aenderung';\n  agent_input = 'AENDERUNGSWUNSCH des Wirts zum aktuellen Entwurf (Headline: \"' + String(d.headline || '') + '\"): \"' + txt + '\". Entscheide: Wenn der Wunsch ein ANDERES oder neues Motiv verlangt, setze bild_neu=true. Wenn nur Text oder Details geaendert werden sollen, setze bild_neu=false, damit das bisherige Bild als Basis bleibt und nur angepasst wird. Erstelle einen verbesserten Post, der den Wunsch strikt beachtet. Rufe get_learnings erneut auf und verletze keine gespeicherten Regeln.';\n} else {\n  modus = 'neu';\n  agent_input = 'Neue Eingabe vom Wirt: \"' + txt + '\". Es wurde KEIN eigenes Foto geschickt - waehle mit get_bildarchiv ein passendes Archiv-Foto als Bildgrundlage. Erstelle daraus EINEN fertigen Social-Media-Post.';\n}\nreturn [{ json: { chat_id: e.chat_id, modus: modus, typ: 'text', agent_input: agent_input, photo_url: (modus === 'neu' ? '' : r.sess_photo_url), prev_image_url: String(d.image_url || ''), saeule: String(d.saeule || 'angebote'), reason: (modus === 'aenderung' ? txt : '') } }];"
-      },
-      "id": "5f58fcab-23da-4403-81e9-5f846a716f11",
-      "name": "Text-Auftrag",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2240,
-        1376
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst heute = $now.setZone('Europe/Berlin');\nconst wtage = ['', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];\nconst saeule = cfg.saeulen_rotation[String(heute.weekday)] || 'angebote';\nconst agent_input = 'Taeglicher Auto-Post fuer die Saeule \"' + saeule + '\" am ' + wtage[heute.weekday] + '. Es wurde KEIN eigenes Foto geschickt - waehle mit get_bildarchiv ein passendes Archiv-Foto als Bildgrundlage. Nutze get_speisekarte und die Website-Infos fuer korrekte Fakten. Stelle NIEMALS eine Rueckfrage - entscheide eigenstaendig. Erstelle EINEN fertigen Social-Media-Post.';\nreturn [{ json: { chat_id: String(cfg.telegram_chat_id), modus: 'tagespost', typ: 'schedule', agent_input: agent_input, photo_url: '', prev_image_url: '', saeule: saeule, reason: '' } }];"
-      },
-      "id": "659359e0-9aff-4734-bf73-6d8800aef40e",
-      "name": "Tagespost-Auftrag",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2240,
-        1568
-      ]
-    },
-    {
-      "parameters": {},
-      "id": "88aebcfb-2575-43da-b5cc-4dda42263114",
-      "name": "Ignorieren",
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        1568,
-        1712
       ]
     },
     {
@@ -934,6 +1062,17 @@
       "position": [
         2688,
         1312
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "4446d3ea-cda1-4349-9b79-fea0ef280a9e",
+      "name": "Kein Learning",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3584,
+        1520
       ]
     },
     {
@@ -1085,47 +1224,8 @@
       ]
     },
     {
-      "parameters": {},
-      "id": "4446d3ea-cda1-4349-9b79-fea0ef280a9e",
-      "name": "Kein Learning",
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        3584,
-        1520
-      ]
-    },
-    {
       "parameters": {
-        "method": "POST",
-        "url": "https://api.buffer.com",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($json.graphql) }}",
-        "options": {
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          },
-          "timeout": 60000
-        }
-      },
-      "id": "4469e5e2-822f-40b1-b15a-3d36b17fb492",
-      "name": "Buffer Post planen",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        5232,
-        0
-      ],
-      "alwaysOutputData": true
-    },
-    {
-      "parameters": {
-        "jsCode": "const f = $('Freigabe vorbereiten').first().json;\nconst reqs = $('Buffer-Requests bauen').all().map(function (i) { return i.json; });\nconst items = $input.all();\nconst NL = String.fromCharCode(10);\nconst OK = String.fromCodePoint(0x2705);\nconst FAIL = String.fromCodePoint(0x274C);\nconst esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };\nconst ids = [], zeilen = [], kanalNamen = [], urls = [];\nlet okCount = 0;\nitems.forEach(function (i, idx) {\n  const req = reqs[idx] || { kanal_name: 'unbekannt', kanal_key: 'unbekannt', bild_url: '' };\n  const cp = i.json && i.json.data && i.json.data.createPost;\n  if (cp && cp.post) {\n    okCount++;\n    ids.push(req.kanal_key + ':' + cp.post.id);\n    kanalNamen.push(req.kanal_name);\n    urls.push(req.kanal_key + '=' + req.bild_url);\n    let zeit = '';\n    try { zeit = DateTime.fromISO(String(cp.post.dueAt)).setZone('Europe/Berlin').toFormat('dd.MM. HH:mm'); } catch (e) { zeit = f.zeit_text; }\n    zeilen.push(OK + ' ' + req.kanal_name + ' - geplant fuer ' + zeit + ' Uhr');\n  } else {\n    let msg = 'unbekannter Fehler';\n    if (cp && cp.message) msg = String(cp.message);\n    else if (i.json && i.json.errors) msg = JSON.stringify(i.json.errors).slice(0, 120);\n    ids.push(req.kanal_key + ':ERROR ' + msg);\n    urls.push(req.kanal_key + '=' + req.bild_url);\n    zeilen.push(FAIL + ' ' + req.kanal_name + ' - ' + msg);\n  }\n});\nconst kopf = okCount > 0 ? '<b>' + OK + ' Freigegeben</b>' : '<b>' + FAIL + ' Uebergabe an Buffer fehlgeschlagen</b>';\nconst fuss = okCount > 0 ? 'Du musst nichts weiter tun.' : 'Bitte pruefe die Buffer-Verbindung.';\nconst text = kopf + NL + NL + '<i>' + esc(f.headline) + '</i>' + NL + NL + zeilen.map(esc).join(NL) + NL + NL + fuss;\nreturn [{ json: {\n  bestaetigung: text.slice(0, 4000),\n  datum: f.datum,\n  saeule: f.saeule,\n  headline: f.headline,\n  post_text: f.post_text,\n  hashtags: f.hashtags.join(' '),\n  image_url: f.image_url,\n  status: okCount > 0 ? 'GEPLANT' : 'FEHLER',\n  buffer_ids: ids.join(' | '),\n  kanaele: (kanalNamen.join(', ') || 'keiner') + (urls.length ? ' | ' + urls.join(' ') : ''),\n  geplant_fuer: f.zeit_text\n} }];"
+        "jsCode": "const f = $('Freigabe vorbereiten').first().json;\nconst reqs = $('Buffer-Requests bauen').all().map(function (i) { return i.json; });\nconst items = $input.all();\nconst NL = String.fromCharCode(10);\nconst OK = String.fromCodePoint(0x2705);\nconst FAIL = String.fromCodePoint(0x274C);\nconst esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };\nconst ids = [], zeilen = [], kanalNamen = [], urls = [];\nlet okCount = 0;\nitems.forEach(function (i, idx) {\n  const req = reqs[idx] || { kanal_name: 'unbekannt', kanal_key: 'unbekannt', bild_url: '' };\n  const cp = i.json && i.json.data && i.json.data.createPost;\n  if (cp && cp.post) {\n    okCount++;\n    ids.push(req.kanal_key + ':' + cp.post.id);\n    kanalNamen.push(req.kanal_name);\n    urls.push(req.kanal_key + '=' + req.bild_url);\n    let zeit = '';\n    try { zeit = DateTime.fromISO(String(cp.post.dueAt)).setZone('Europe/Berlin').toFormat('dd.MM. HH:mm'); } catch (e) { zeit = f.zeit_text; }\n    zeilen.push(OK + ' ' + req.kanal_name + ' - geplant fuer ' + zeit + ' Uhr');\n  } else {\n    let msg = 'unbekannter Fehler';\n    if (cp && cp.message) msg = String(cp.message);\n    else if (i.json && i.json.errors) msg = JSON.stringify(i.json.errors).slice(0, 120);\n    ids.push(req.kanal_key + ':ERROR ' + msg);\n    urls.push(req.kanal_key + '=' + req.bild_url);\n    zeilen.push(FAIL + ' ' + req.kanal_name + ' - ' + msg);\n  }\n});\nconst kopf = okCount > 0 ? '<b>' + OK + ' Freigegeben</b>' : '<b>' + FAIL + ' Uebergabe an Buffer fehlgeschlagen</b>';\nconst fuss = okCount > 0 ? 'Du musst nichts weiter tun.' : 'Bitte pruefe die Buffer-Verbindung.';\nconst tags = Array.isArray(f.hashtags) ? f.hashtags.join(' ') : String(f.hashtags || '');\nconst body = '<b>' + esc(f.headline) + '</b>' + NL + NL + esc(f.post_text).slice(0, 2500) + NL + NL + esc(tags);\nconst text = kopf + NL + NL + body + NL + NL + zeilen.map(esc).join(NL) + NL + NL + fuss;\nreturn [{ json: {\n  bestaetigung: text.slice(0, 4000),\n  datum: f.datum,\n  saeule: f.saeule,\n  headline: f.headline,\n  post_text: f.post_text,\n  hashtags: f.hashtags.join(' '),\n  image_url: f.image_url,\n  status: okCount > 0 ? 'GEPLANT' : 'FEHLER',\n  buffer_ids: ids.join(' | '),\n  kanaele: (kanalNamen.join(', ') || 'keiner') + (urls.length ? ' | ' + urls.join(' ') : ''),\n  geplant_fuer: f.zeit_text\n} }];"
       },
       "id": "624a8940-2b61-4e90-a860-7651139c2729",
       "name": "Freigabe-Ergebnis",
@@ -1274,107 +1374,7 @@
         5904,
         0
       ],
-      "webhookId": "9dadbc20-f2c1-4457-b144-99ac9a8c7915"
-    },
-    {
-      "parameters": {
-        "operation": "upsert",
-        "dataTableId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "8WhvJ2bY2B6wKyGY",
-          "cachedResultName": "pizzarello_sessions"
-        },
-        "matchType": "allConditions",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "chat_id",
-              "keyValue": "={{ $json.chat_id }}"
-            }
-          ]
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "chat_id": "={{ $json.chat_id }}",
-            "state": "BUSY",
-            "photo_url": "={{ $json.photo_url }}",
-            "updated": "={{ $now.toISO() }}"
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "chat_id",
-              "displayName": "chat_id",
-              "type": "string",
-              "required": false,
-              "display": true,
-              "removed": false
-            },
-            {
-              "id": "state",
-              "displayName": "state",
-              "type": "string",
-              "required": false,
-              "display": true,
-              "removed": false
-            },
-            {
-              "id": "post_id",
-              "displayName": "post_id",
-              "type": "string",
-              "required": false,
-              "display": true,
-              "removed": false
-            },
-            {
-              "id": "draft_json",
-              "displayName": "draft_json",
-              "type": "string",
-              "required": false,
-              "display": true,
-              "removed": false
-            },
-            {
-              "id": "photo_url",
-              "displayName": "photo_url",
-              "type": "string",
-              "required": false,
-              "display": true,
-              "removed": false
-            },
-            {
-              "id": "last_message_id",
-              "displayName": "last_message_id",
-              "type": "string",
-              "required": false,
-              "display": true,
-              "removed": false
-            },
-            {
-              "id": "updated",
-              "displayName": "updated",
-              "type": "string",
-              "required": false,
-              "display": true,
-              "removed": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": true
-        },
-        "options": {}
-      },
-      "id": "ae8931e4-b35e-40c9-b677-e6277ad3919f",
-      "name": "Status BUSY setzen",
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1.1,
-      "position": [
-        2688,
-        496
-      ],
-      "alwaysOutputData": true
+      "webhookId": "d352435d-b3d0-4c0f-880f-1fa5a9a7d328"
     },
     {
       "parameters": {
@@ -1390,7 +1390,7 @@
         2912,
         496
       ],
-      "webhookId": "b7bbf7f4-e39d-47a5-9861-0a7729844f79",
+      "webhookId": "693f26fc-7fa8-4a00-8e0b-f4be046ae3da",
       "onError": "continueRegularOutput"
     },
     {
@@ -1655,7 +1655,20 @@
         5008,
         480
       ],
-      "webhookId": "106b6bdd-3af5-4c3d-b872-973bef063f95"
+      "webhookId": "97509f64-a86f-4dd1-970c-7ca917d86ddb"
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst k = $('Kontext').first().json;\nconst o = ($('Post-Agent').first().json.output) || {};\nconst post = {\n  headline: String(o.headline || '').trim(),\n  post_text: String(o.post_text || '').trim(),\n  hashtags: Array.isArray(o.hashtags) ? o.hashtags : [],\n  layout: o.layout,\n  bild_typ: String(o.bild_typ || '').trim().toLowerCase(),\n  bild_neu: (o.bild_neu === true || o.bild_neu === 'true'),\n  bild_headline: String(o.bild_headline || ''),\n  image_brief: String(o.image_brief || ''),\n  preis_text: String(o.preis_text || '').trim(),\n  archiv_foto_url: String(o.archiv_foto_url || '').trim()\n};\nconst EURO = String.fromCharCode(0x20ac);\nlet preis = post.preis_text.replace(/euro/ig, EURO).replace(/EUR/g, EURO).replace(/  +/g, ' ').trim();\nif (!/[0-9]/.test(preis)) preis = '';\nif (preis && preis.indexOf(EURO) === -1) preis = preis + ' ' + EURO;\npost.preis_text = preis.slice(0, 16);\nif (post.archiv_foto_url.indexOf('http') !== 0) post.archiv_foto_url = '';\nif (!post.headline || !post.post_text) throw new Error('Agent-Ausgabe unvollstaendig: ' + JSON.stringify(o).slice(0, 300));\nconst erlaubte = ['klassik', 'menue_karte', 'angebots_sticker', 'event_poster', 'pur', 'zitat'];\nif (erlaubte.indexOf(post.layout) === -1) post.layout = 'klassik';\nconst bildTypen = ['produkt', 'event', 'angebot', 'saison', 'flyer', 'bts'];\nif (bildTypen.indexOf(post.bild_typ) === -1) post.bild_typ = '';\nif (post.layout === 'pur') post.bild_headline = '';\nelse if (!post.bild_headline) post.bild_headline = post.headline.split(' ').slice(0, 5).join(' ');\nconst norm = post.hashtags.map(function (t) { t = String(t).trim().replace(/ /g, ''); if (!t) return ''; return t.charAt(0) === '#' ? t : '#' + t; }).filter(function (t) { return t.length > 1; });\nconst setTags = cfg.hashtags[k.saeule] || cfg.hashtags.angebote;\npost.hashtags = setTags.concat(norm.filter(function (t) { return setTags.indexOf(t) === -1; })).slice(0, 12);\nif (!post.image_brief) post.image_brief = 'Appetizing signature dish from ' + cfg.restaurant.name;\nreturn [{ json: { post: post } }];"
+      },
+      "id": "8540d0ec-51ce-4c98-a58b-f293e4508e55",
+      "name": "Post aufbereiten",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5008,
+        672
+      ]
     },
     {
       "parameters": {
@@ -1758,19 +1771,6 @@
     },
     {
       "parameters": {
-        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst k = $('Kontext').first().json;\nconst o = ($('Post-Agent').first().json.output) || {};\nconst post = {\n  headline: String(o.headline || '').trim(),\n  post_text: String(o.post_text || '').trim(),\n  hashtags: Array.isArray(o.hashtags) ? o.hashtags : [],\n  layout: o.layout,\n  bild_typ: String(o.bild_typ || '').trim().toLowerCase(),\n  bild_neu: (o.bild_neu === true || o.bild_neu === 'true'),\n  bild_headline: String(o.bild_headline || ''),\n  image_brief: String(o.image_brief || ''),\n  preis_text: String(o.preis_text || '').trim(),\n  archiv_foto_url: String(o.archiv_foto_url || '').trim()\n};\nconst EURO = String.fromCharCode(0x20ac);\nlet preis = post.preis_text.replace(/euro/ig, EURO).replace(/EUR/g, EURO).replace(/  +/g, ' ').trim();\nif (!/[0-9]/.test(preis)) preis = '';\nif (preis && preis.indexOf(EURO) === -1) preis = preis + ' ' + EURO;\npost.preis_text = preis.slice(0, 16);\nif (post.archiv_foto_url.indexOf('http') !== 0) post.archiv_foto_url = '';\nif (!post.headline || !post.post_text) throw new Error('Agent-Ausgabe unvollstaendig: ' + JSON.stringify(o).slice(0, 300));\nconst erlaubte = ['klassik', 'menue_karte', 'angebots_sticker', 'event_poster', 'pur', 'zitat'];\nif (erlaubte.indexOf(post.layout) === -1) post.layout = 'klassik';\nconst bildTypen = ['produkt', 'event', 'angebot', 'saison', 'flyer', 'bts'];\nif (bildTypen.indexOf(post.bild_typ) === -1) post.bild_typ = '';\nif (post.layout === 'pur') post.bild_headline = '';\nelse if (!post.bild_headline) post.bild_headline = post.headline.split(' ').slice(0, 5).join(' ');\nconst norm = post.hashtags.map(function (t) { t = String(t).trim().replace(/ /g, ''); if (!t) return ''; return t.charAt(0) === '#' ? t : '#' + t; }).filter(function (t) { return t.length > 1; });\nconst setTags = cfg.hashtags[k.saeule] || cfg.hashtags.angebote;\npost.hashtags = setTags.concat(norm.filter(function (t) { return setTags.indexOf(t) === -1; })).slice(0, 12);\nif (!post.image_brief) post.image_brief = 'Appetizing signature dish from ' + cfg.restaurant.name;\nreturn [{ json: { post: post } }];"
-      },
-      "id": "8540d0ec-51ce-4c98-a58b-f293e4508e55",
-      "name": "Post aufbereiten",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        5008,
-        672
-      ]
-    },
-    {
-      "parameters": {
         "jsCode": "const a = $('Auftrag').first().json;\nconst post = $('Post aufbereiten').first().json.post || {};\nlet base_url = '';\nlet anpassung = false;\nif (post.bild_typ === 'flyer') base_url = '';\nelse if (a.modus === 'aenderung' && !post.bild_neu && a.prev_image_url) { base_url = a.prev_image_url; anpassung = true; }\nelse if (a.photo_url) base_url = a.photo_url;\nelse if (post.archiv_foto_url) base_url = post.archiv_foto_url;\nconst mode = base_url ? 'edit_url' : 'generate';\nreturn [{ json: { mode: mode, base_url: base_url, hat_basisfoto: mode === 'edit_url', anpassung: anpassung, logo_drin: anpassung } }];"
       },
       "id": "3eb106cc-6c6f-472a-87c4-e196fd322923",
@@ -1812,9 +1812,7 @@
         5456,
         672
       ],
-      "retryOnFail": true,
-      "maxTries": 5,
-      "waitBetweenTries": 5000
+      "retryOnFail": true
     },
     {
       "parameters": {
@@ -1883,7 +1881,20 @@
     },
     {
       "parameters": {
-        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst post = $('Post aufbereiten').first().json.post;\nconst a = $('Auftrag').first().json;\nconst bm = $('Bild-Modus').first().json;\nconst g = cfg.restaurant.bild_guideline || {};\nconst f = cfg.restaurant.brand_farben || {};\nconst lay = (cfg.layouts || {})[post.layout] || { bild: '' };\nconst headline = String(post.bild_headline || '').slice(0, 40);\nconst hatPreis = String(post.preis_text || '') !== '';\nconst anpassung = !!bm.anpassung;\nconst akzent = f.akzent || '#F5E6C8';\nconst fontHint = (post.bild_typ === 'flyer' || post.layout === 'event_poster') ? 'a bold condensed sans-serif in the spirit of Barlow Condensed' : 'a modern geometric sans-serif in the spirit of Poppins, medium or regular weight';\nconst p = [];\n\nif (anpassung) {\n  p.push('Image 1 is the current, already finished post. Keep it as it is: the same photo, composition, dish, people, colours, light, lettering and the Pizzarello logo that is already part of it.');\n  p.push('Apply only this one change, requested by the restaurant owner in German: \"' + String(a.reason || 'kleine Verbesserung') + '\". Change nothing else.');\n  p.push('Image 2 is the Pizzarello logo, attached for reference only - it is already part of image 1. Do not add a second one, do not move it and do not restyle it.');\n  if (post.layout === 'pur' || !headline) {\n    p.push('The picture carries no headline: leave it free of lettering.');\n  } else {\n    p.push('The headline must read exactly, letter for letter: \"' + headline + '\" - keep its existing position, font and size.');\n  }\n  p.push(hatPreis ? 'Image 1 already carries a round price badge in the bottom-right corner: leave it exactly where it is and exactly as large as it is, do not move, resize or re-draw it, and invent no further price, number or currency symbol.' : 'Add no price, no number and no currency symbol.');\n  p.push('Every letter stays fully inside the frame with a margin of at least 12 percent from every edge.');\n} else {\n  p.push('Image 1 is a photo from the restaurant. Turn it into a finished vertical 2:3 social media post for an Italian pizzeria.');\n  p.push(g.grading || '');\n  p.push(g.look || '');\n  const brief = String(post.image_brief || '').trim();\n  if (brief) {\n    p.push('SUBJECT (this is what image 1 already shows - do not re-invent it and add nothing to it): ' + ('.!?'.indexOf(brief.slice(-1)) === -1 ? brief + '.' : brief));\n  }\n  p.push('If image 1 has no calm empty area in the upper third, extend its ground upwards to open one up instead of cropping into the dish.');\n  p.push('Image 2 is the Pizzarello logo.');\n  p.push('ZONES (every element has its own area and they never overlap): the attached Pizzarello logo sits exactly once, small and quiet, in the BOTTOM-LEFT corner as a natural part of the picture; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays completely empty and calm, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the headline keeps to the upper third; the dish sits between them and reaches into neither bottom corner.');\n  if (post.layout === 'pur' || !headline) {\n    p.push('NO TEXT: the picture carries no headline, no words and no captions at all.');\n  } else {\n    p.push(lay.bild || '');\n    p.push('Render the headline spelled exactly, letter for letter: \"' + headline + '\". The wording is German, perfect spelling is critical, and it is the only lettering in the picture. Set it in ' + fontHint + ', in cream-white ' + akzent + '.');\n    p.push(g.typo || '');\n  }\n  p.push(g.stil_foto || g.stil || '');\n  p.push(g.verbote || '');\n}\n\nconst prompt = p.filter(function (s) { return String(s || '').length > 0; }).join(' ');\nconst logoBin = $('Logo laden').first().binary || {};\nconst inBin = $input.first().binary || {};\nconst binary = {};\nif (inBin.basis) binary.image0 = inBin.basis;\nif (logoBin.logo) binary.logo = logoBin.logo;\nif (!binary.image0) throw new Error('Basisfoto-Binary fehlt');\nif (!binary.logo) throw new Error('Logo-Binary fehlt');\nreturn [{ json: { prompt: prompt, size: String(cfg.bild_size || '1024x1536'), prompt_len: prompt.length }, binary: binary }];"
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst post = $('Post aufbereiten').first().json.post;\nconst k = $('Kontext').first().json;\nconst g = cfg.restaurant.bild_guideline || {};\nconst f = cfg.restaurant.brand_farben || {};\nconst lay = (cfg.layouts || {})[post.layout] || { bild: '' };\nconst headline = String(post.bild_headline || '').slice(0, 40);\nconst hatPreis = String(post.preis_text || '') !== '';\nconst akzent = f.akzent || '#F5E6C8';\nfunction pickModul(saeule, layout) {\n  if (layout === 'event_poster') return 'event';\n  if (saeule === 'saisonal') return 'saison';\n  if (saeule === 'angebote' || layout === 'angebots_sticker') return 'angebot';\n  if (saeule === 'community') return 'bts';\n  return 'produkt';\n}\nconst modulKey = (g.module || {})[post.bild_typ] ? post.bild_typ : pickModul(k.saeule, post.layout);\nconst modul = (g.module || {})[modulKey] || '';\nconst szene = (modulKey === 'flyer' || modulKey === 'event');\nconst fontHint = (post.bild_typ === 'flyer' || post.layout === 'event_poster') ? 'a bold condensed sans-serif in the spirit of Barlow Condensed' : 'a modern geometric sans-serif in the spirit of Poppins, medium or regular weight';\nconst p = [];\n\np.push('Create a new vertical 2:3 social media image for an Italian pizzeria.');\nconst brief = String(post.image_brief || '').trim();\np.push('SUBJECT: ' + (brief && '.!?'.indexOf(brief.slice(-1)) === -1 ? brief + '.' : brief));\np.push(modul || '');\np.push(g.look || '');\nif (!szene) p.push(g.motiv || '');\np.push('ZONES (every element has its own area and they never overlap): the BOTTOM-LEFT corner stays empty and calm - the real Pizzarello logo is composited there afterwards; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays empty and calm as well, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the headline keeps to the upper third; the subject sits between them and reaches into neither bottom corner.');\nif (post.layout === 'pur' || !headline) {\n  p.push('NO TEXT: the picture carries no headline, no words and no captions at all.');\n} else {\n  p.push(lay.bild || '');\n  p.push('Render the headline spelled exactly, letter for letter: \"' + headline + '\". The wording is German, perfect spelling is critical, and it is the only lettering in the picture. Set it in ' + fontHint + ', in cream-white ' + akzent + '.');\n  p.push(g.typo || '');\n}\np.push(g.stil || '');\np.push(g.verbote || '');\n\nconst prompt = p.filter(function (s) { return String(s || '').length > 0; }).join(' ');\nconst size = String(cfg.bild_size || '1024x1536');\nreturn [{ json: { openai_gen_body: { model: 'gpt-image-1', prompt: prompt, size: size, quality: 'high', output_format: 'png', n: 1 }, size: size, prompt_len: prompt.length } }];"
+      },
+      "id": "9eca0fc7-bce5-4d83-99d8-67f4a71a5fdb",
+      "name": "Bild-Request bauen (Neu)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6128,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst post = $('Post aufbereiten').first().json.post;\nconst a = $('Auftrag').first().json;\nconst bm = $('Bild-Modus').first().json;\nconst g = cfg.restaurant.bild_guideline || {};\nconst f = cfg.restaurant.brand_farben || {};\nconst lay = (cfg.layouts || {})[post.layout] || { bild: '' };\nconst headline = String(post.bild_headline || '').slice(0, 40);\nconst hatPreis = String(post.preis_text || '') !== '';\nconst anpassung = !!bm.anpassung;\nconst akzent = f.akzent || '#F5E6C8';\nconst fontHint = (post.bild_typ === 'flyer' || post.layout === 'event_poster') ? 'a bold condensed sans-serif in the spirit of Barlow Condensed' : 'a modern geometric sans-serif in the spirit of Poppins, medium or regular weight';\nconst p = [];\n\nif (anpassung) {\n  p.push('Image 1 is the current, already finished post. Keep it as it is: the same photo, composition, dish, people, colours, light, lettering and the Pizzarello logo that is already part of it.');\n  p.push('Apply only this one change, requested by the restaurant owner in German: \"' + String(a.reason || 'kleine Verbesserung') + '\". Change nothing else.');\n  p.push('Image 1 already carries the Pizzarello logo in its bottom-left corner: leave it exactly where and as large as it is, and draw no further logo anywhere.');\n  if (post.layout === 'pur' || !headline) {\n    p.push('The picture carries no headline: leave it free of lettering.');\n  } else {\n    p.push('The headline must read exactly, letter for letter: \"' + headline + '\" - keep its existing position, font and size.');\n  }\n  p.push(hatPreis ? 'Image 1 already carries a round price badge in the bottom-right corner: leave it exactly where it is and exactly as large as it is, do not move, resize or re-draw it, and invent no further price, number or currency symbol.' : 'Add no price, no number and no currency symbol.');\n  p.push('Every letter stays fully inside the frame with a margin of at least 12 percent from every edge.');\n} else {\n  p.push('Image 1 is a photo from the restaurant. Turn it into a finished vertical 2:3 social media post for an Italian pizzeria.');\n  p.push(g.grading || '');\n  p.push(g.look || '');\n  const brief = String(post.image_brief || '').trim();\n  if (brief) {\n    p.push('SUBJECT (this is what image 1 already shows - do not re-invent it and add nothing to it): ' + ('.!?'.indexOf(brief.slice(-1)) === -1 ? brief + '.' : brief));\n  }\n  p.push('If image 1 has no calm empty area in the upper third, extend its ground upwards to open one up instead of cropping into the dish.');\n  p.push('ZONES (every element has its own area and they never overlap): the BOTTOM-LEFT corner stays empty and calm - the real Pizzarello logo is composited there afterwards; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays empty and calm as well, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the headline keeps to the upper third; the dish sits between them and reaches into neither bottom corner.');\n  if (post.layout === 'pur' || !headline) {\n    p.push('NO TEXT: the picture carries no headline, no words and no captions at all.');\n  } else {\n    p.push(lay.bild || '');\n    p.push('Render the headline spelled exactly, letter for letter: \"' + headline + '\". The wording is German, perfect spelling is critical, and it is the only lettering in the picture. Set it in ' + fontHint + ', in cream-white ' + akzent + '.');\n    p.push(g.typo || '');\n  }\n  p.push(g.stil_foto || g.stil || '');\n  p.push(g.verbote || '');\n}\n\nconst prompt = p.filter(function (s) { return String(s || '').length > 0; }).join(' ');\nconst inBin = $input.first().binary || {};\nconst binary = {};\nif (inBin.basis) binary.image0 = inBin.basis;\nif (!binary.image0) throw new Error('Basisfoto-Binary fehlt');\nreturn [{ json: { prompt: prompt, size: String(cfg.bild_size || '1024x1536'), prompt_len: prompt.length }, binary: binary }];"
       },
       "id": "933f9e9c-d10b-4e99-9640-454046668acb",
       "name": "Bild-Request bauen (Foto)",
@@ -1932,11 +1943,6 @@
               "parameterType": "formBinaryData",
               "name": "image[]",
               "inputDataFieldName": "image0"
-            },
-            {
-              "parameterType": "formBinaryData",
-              "name": "image[]",
-              "inputDataFieldName": "logo"
             }
           ]
         },
@@ -1950,7 +1956,7 @@
         }
       },
       "id": "4d71f13c-b286-4577-a8f9-e54a5d2fc5b5",
-      "name": "GPT Bild (Foto + Logo)",
+      "name": "GPT Bild (Foto)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -1958,8 +1964,6 @@
         688
       ],
       "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 5000,
       "onError": "continueRegularOutput"
     },
     {
@@ -1974,78 +1978,6 @@
         6576,
         688
       ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst post = $('Post aufbereiten').first().json.post;\nconst k = $('Kontext').first().json;\nconst g = cfg.restaurant.bild_guideline || {};\nconst f = cfg.restaurant.brand_farben || {};\nconst lay = (cfg.layouts || {})[post.layout] || { bild: '' };\nconst headline = String(post.bild_headline || '').slice(0, 40);\nconst hatPreis = String(post.preis_text || '') !== '';\nconst akzent = f.akzent || '#F5E6C8';\nfunction pickModul(saeule, layout) {\n  if (layout === 'event_poster') return 'event';\n  if (saeule === 'saisonal') return 'saison';\n  if (saeule === 'angebote' || layout === 'angebots_sticker') return 'angebot';\n  if (saeule === 'community') return 'bts';\n  return 'produkt';\n}\nconst modulKey = (g.module || {})[post.bild_typ] ? post.bild_typ : pickModul(k.saeule, post.layout);\nconst modul = (g.module || {})[modulKey] || '';\nconst szene = (modulKey === 'flyer' || modulKey === 'event');\nconst fontHint = (post.bild_typ === 'flyer' || post.layout === 'event_poster') ? 'a bold condensed sans-serif in the spirit of Barlow Condensed' : 'a modern geometric sans-serif in the spirit of Poppins, medium or regular weight';\nconst p = [];\n\np.push('Create a new vertical 2:3 social media image for an Italian pizzeria.');\nconst brief = String(post.image_brief || '').trim();\np.push('SUBJECT: ' + (brief && '.!?'.indexOf(brief.slice(-1)) === -1 ? brief + '.' : brief));\np.push(modul || '');\np.push(g.look || '');\nif (!szene) p.push(g.motiv || '');\np.push('The attached image is the Pizzarello logo only - it is not the subject of the picture.');\np.push('ZONES (every element has its own area and they never overlap): the attached Pizzarello logo sits exactly once, small and quiet, in the BOTTOM-LEFT corner as a natural part of the picture; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays completely empty and calm, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the headline keeps to the upper third; the subject sits between them and reaches into neither bottom corner.');\nif (post.layout === 'pur' || !headline) {\n  p.push('NO TEXT: the picture carries no headline, no words and no captions at all.');\n} else {\n  p.push(lay.bild || '');\n  p.push('Render the headline spelled exactly, letter for letter: \"' + headline + '\". The wording is German, perfect spelling is critical, and it is the only lettering in the picture. Set it in ' + fontHint + ', in cream-white ' + akzent + '.');\n  p.push(g.typo || '');\n}\np.push(g.stil || '');\np.push(g.verbote || '');\n\nconst prompt = p.filter(function (s) { return String(s || '').length > 0; }).join(' ');\nconst logoBin = $('Logo laden').first().binary || {};\nconst binary = {};\nif (logoBin.logo) binary.logo = logoBin.logo;\nif (!binary.logo) throw new Error('Logo-Binary fehlt');\nreturn [{ json: { prompt: prompt, size: String(cfg.bild_size || '1024x1536'), prompt_len: prompt.length }, binary: binary }];"
-      },
-      "id": "9eca0fc7-bce5-4d83-99d8-67f4a71a5fdb",
-      "name": "Bild-Request bauen (Logo)",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        6128,
-        880
-      ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.openai.com/v1/images/edits",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "openAiApi",
-        "sendBody": true,
-        "contentType": "multipart-form-data",
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "model",
-              "value": "gpt-image-1"
-            },
-            {
-              "name": "prompt",
-              "value": "={{ $json.prompt }}"
-            },
-            {
-              "name": "size",
-              "value": "={{ $json.size }}"
-            },
-            {
-              "name": "quality",
-              "value": "high"
-            },
-            {
-              "name": "n",
-              "value": "1"
-            },
-            {
-              "parameterType": "formBinaryData",
-              "name": "image[]",
-              "inputDataFieldName": "logo"
-            }
-          ]
-        },
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "json"
-            }
-          },
-          "timeout": 240000
-        }
-      },
-      "id": "887e6eb6-3adf-4a1d-8a5e-caf32fafedae",
-      "name": "GPT Bild (nur Logo)",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        6352,
-        880
-      ],
-      "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 5000,
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -2076,9 +2008,38 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        6800,
+        7472,
         688
       ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.openai_gen_body) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 240000
+        }
+      },
+      "id": "887e6eb6-3adf-4a1d-8a5e-caf32fafedae",
+      "name": "GPT Bild (Neu)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6352,
+        880
+      ],
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -2132,7 +2093,7 @@
       "type": "n8n-nodes-base.editImage",
       "typeVersion": 1,
       "position": [
-        7024,
+        7696,
         688
       ]
     },
@@ -2145,7 +2106,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        7248,
+        7920,
         688
       ]
     },
@@ -2172,7 +2133,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        7472,
+        8144,
         688
       ],
       "retryOnFail": true
@@ -2186,7 +2147,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        7696,
+        8368,
         688
       ]
     },
@@ -2205,10 +2166,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        7920,
+        8592,
         688
       ],
-      "webhookId": "95360523-a6ac-4209-9a69-2a419178d108"
+      "webhookId": "54d59a40-f1ca-4fdd-adab-d9b36cef5800"
     },
     {
       "parameters": {
@@ -2260,10 +2221,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        8144,
+        8816,
         688
       ],
-      "webhookId": "fd79c493-2309-4ff7-a41d-d16004dcbe5e"
+      "webhookId": "3760aa4b-f101-4163-806d-a999bf4a6430"
     },
     {
       "parameters": {
@@ -2363,10 +2324,65 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
-        8368,
+        9040,
         688
       ],
       "alwaysOutputData": true
+    },
+    {
+      "name": "Logo buendeln",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6800,
+        688
+      ],
+      "parameters": {
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst lay = cfg.logo_layout || {};\nconst boxB = Number(lay.box_breite || 420);\nconst boxH = Number(lay.box_hoehe || 200);\nconst rand = Number(lay.rand || 64);\nconst masse = String(cfg.bild_size || '1024x1536').split('x');\nconst bildB = Number(masse[0] || 1024);\nconst bildH = Number(masse[1] || 1536);\nconst logoBin = $('Logo laden').first().binary || {};\nconst inBin = $input.first().binary || {};\nif (!inBin.data) throw new Error('Kein Basisbild fuer das Logo-Overlay');\nif (!logoBin.logo) throw new Error('Logo-Binary fehlt fuer das Overlay');\nconst binary = { data: inBin.data, logo: logoBin.logo };\nreturn [{ json: {\n  logo_box_breite: boxB,\n  logo_box_hoehe: boxH,\n  logo_x: rand,\n  logo_y: bildH - rand - boxH,\n  bild_breite: bildB,\n  bild_hoehe: bildH\n}, binary: binary }];"
+      }
+    },
+    {
+      "name": "Logo skalieren",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        7024,
+        688
+      ],
+      "parameters": {
+        "operation": "resize",
+        "dataPropertyName": "logo",
+        "width": "={{ $json.logo_box_breite }}",
+        "height": "={{ $json.logo_box_hoehe }}",
+        "resizeOption": "maximumArea",
+        "options": {
+          "destinationKey": "logo",
+          "format": "png",
+          "quality": 100
+        }
+      }
+    },
+    {
+      "name": "Logo einfuegen",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        7248,
+        688
+      ],
+      "parameters": {
+        "operation": "composite",
+        "dataPropertyName": "data",
+        "dataPropertyNameComposite": "logo",
+        "operator": "Over",
+        "positionX": "={{ $('Logo buendeln').first().json.logo_x }}",
+        "positionY": "={{ $('Logo buendeln').first().json.logo_y }}",
+        "options": {
+          "destinationKey": "data",
+          "format": "png",
+          "quality": 100
+        }
+      }
     }
   ],
   "connections": {
@@ -2403,6 +2419,17 @@
         ]
       ]
     },
+    "Restaurant-Konfiguration": {
+      "main": [
+        [
+          {
+            "node": "Session laden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Taeglich 09:30": {
       "main": [
         [
@@ -2419,17 +2446,6 @@
         [
           {
             "node": "Eingang",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Restaurant-Konfiguration": {
-      "main": [
-        [
-          {
-            "node": "Session laden",
             "type": "main",
             "index": 0
           }
@@ -2515,6 +2531,44 @@
         ]
       ]
     },
+    "Eingangsfoto hochladen": {
+      "main": [
+        [
+          {
+            "node": "Foto-Auftrag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text-Auftrag": {
+      "main": [
+        [
+          {
+            "node": "Auftrag",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Aenderungswunsch?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tagespost-Auftrag": {
+      "main": [
+        [
+          {
+            "node": "Auftrag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Entwurf noch gueltig?": {
       "main": [
         [
@@ -2569,6 +2623,28 @@
         ]
       ]
     },
+    "Variante-Auftrag": {
+      "main": [
+        [
+          {
+            "node": "Auftrag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verwurf-Daten": {
+      "main": [
+        [
+          {
+            "node": "Verwurf loggen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Kanal aktiv?": {
       "main": [
         [
@@ -2605,11 +2681,33 @@
         ]
       ]
     },
+    "Freigabe-Ergebnis-Text": {
+      "main": [
+        [
+          {
+            "node": "Kein Kanal melden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Master laden": {
       "main": [
         [
           {
             "node": "Hochformat Hintergrund",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buffer-Requests bauen": {
+      "main": [
+        [
+          {
+            "node": "Buffer Post planen",
             "type": "main",
             "index": 0
           }
@@ -2671,22 +2769,11 @@
         ]
       ]
     },
-    "Buffer-Requests bauen": {
+    "Buffer Post planen": {
       "main": [
         [
           {
-            "node": "Buffer Post planen",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Freigabe-Ergebnis-Text": {
-      "main": [
-        [
-          {
-            "node": "Kein Kanal melden",
+            "node": "Freigabe-Ergebnis",
             "type": "main",
             "index": 0
           }
@@ -2704,17 +2791,6 @@
         ]
       ]
     },
-    "Variante-Auftrag": {
-      "main": [
-        [
-          {
-            "node": "Auftrag",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Auftrag": {
       "main": [
         [
@@ -2726,11 +2802,11 @@
         ]
       ]
     },
-    "Verwurf-Daten": {
+    "Status BUSY setzen": {
       "main": [
         [
           {
-            "node": "Verwurf loggen",
+            "node": "Tippen anzeigen",
             "type": "main",
             "index": 0
           }
@@ -2759,45 +2835,7 @@
         ]
       ]
     },
-    "Eingangsfoto hochladen": {
-      "main": [
-        [
-          {
-            "node": "Foto-Auftrag",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Foto-Auftrag": {
-      "main": [
-        [
-          {
-            "node": "Auftrag",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Text-Auftrag": {
-      "main": [
-        [
-          {
-            "node": "Auftrag",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Aenderungswunsch?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Tagespost-Auftrag": {
       "main": [
         [
           {
@@ -2877,17 +2915,6 @@
         ]
       ]
     },
-    "Buffer Post planen": {
-      "main": [
-        [
-          {
-            "node": "Freigabe-Ergebnis",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Freigabe-Ergebnis": {
       "main": [
         [
@@ -2915,17 +2942,6 @@
         [
           {
             "node": "Session zuruecksetzen",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Status BUSY setzen": {
-      "main": [
-        [
-          {
-            "node": "Tippen anzeigen",
             "type": "main",
             "index": 0
           }
@@ -3137,7 +3153,7 @@
         ],
         [
           {
-            "node": "Bild-Request bauen (Logo)",
+            "node": "Bild-Request bauen (Neu)",
             "type": "main",
             "index": 0
           }
@@ -3159,18 +3175,7 @@
       "main": [
         [
           {
-            "node": "GPT Bild (Foto + Logo)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "GPT Bild (Foto + Logo)": {
-      "main": [
-        [
-          {
-            "node": "Bild extrahieren",
+            "node": "GPT Bild (Foto)",
             "type": "main",
             "index": 0
           }
@@ -3181,29 +3186,7 @@
       "main": [
         [
           {
-            "node": "Preis-Badge?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Bild-Request bauen (Logo)": {
-      "main": [
-        [
-          {
-            "node": "GPT Bild (nur Logo)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "GPT Bild (nur Logo)": {
-      "main": [
-        [
-          {
-            "node": "Bild extrahieren",
+            "node": "Logo buendeln",
             "type": "main",
             "index": 0
           }
@@ -3288,6 +3271,72 @@
         [
           {
             "node": "Session DRAFT_OPEN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT Bild (Foto)": {
+      "main": [
+        [
+          {
+            "node": "Bild extrahieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT Bild (Neu)": {
+      "main": [
+        [
+          {
+            "node": "Bild extrahieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bild-Request bauen (Neu)": {
+      "main": [
+        [
+          {
+            "node": "GPT Bild (Neu)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logo buendeln": {
+      "main": [
+        [
+          {
+            "node": "Logo skalieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logo skalieren": {
+      "main": [
+        [
+          {
+            "node": "Logo einfuegen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logo einfuegen": {
+      "main": [
+        [
+          {
+            "node": "Preis-Badge?",
             "type": "main",
             "index": 0
           }

@@ -174,3 +174,54 @@ mit in die Bestaetigung ein, danach erst die Statuszeilen je Kanal. Der Post-Tex
 Der Verwurf-Pfad (`Verwurf-Daten`) ueberschreibt die Nachricht ebenfalls, zeigt dort aber
 bewusst nur Headline und Hinweis — bei einem verworfenen Entwurf ist der volle Text eher
 Rauschen. Laesst sich analog ergaenzen, wenn gewuenscht.
+
+---
+
+## Umbau 30.08.2026 — Logo wird wieder real aufkomponiert
+
+Im ersten Testbild hat gpt-image-1 das Logo **nachgemalt**: die Unterzeile unter „Pizzarello"
+kam als Buchstabensalat heraus. Ursache war die Architektur, nicht der Prompt — das Logo ging
+als zweites Bild an `images/edits`, und das Modell zeichnet ein Referenzbild, statt es zu
+kopieren. Bei einem Wortmarken-Logo faellt das sofort auf.
+
+**Neu in der Kette** (3 Nodes zwischen `Bild extrahieren` und `Preis-Badge?`):
+
+```
+Bild extrahieren -> Logo buendeln -> Logo skalieren -> Logo einfuegen -> Preis-Badge? -> ...
+```
+
+- `Logo buendeln` (`09_Logo_buendeln.js`) haengt das Logo-Binary aus `Logo laden` an das
+  generierte Bild und rechnet Groesse und Position aus `cfg.logo_layout` und `cfg.bild_size`.
+- `Logo skalieren`: editImage `resize` auf die Binary-Property `logo`, `maximumArea` in eine
+  Box von 420x200. Weil die Hoehe bindet (fuer jedes Seitenverhaeltnis bis 2,1:1), ist die
+  Logo-Hoehe danach exakt 200 px — und damit die Unterkante berechenbar, ohne die
+  Original-Masse der Logo-Datei zu kennen.
+- `Logo einfuegen`: editImage `composite`, `Over`, bei x=64 / y=1272. Das Logo sitzt damit
+  64 px vom linken und 64 px vom unteren Rand.
+
+Groesse und Rand haengen an einer Stelle: `logo_layout: { box_breite: 420, box_hoehe: 200,
+rand: 64 }` in der Config. Wird die Box-Hoehe geaendert, wandert die Position automatisch mit.
+
+**Weitere Aenderungen aus diesem Umbau:**
+
+- Das Logo geht **nicht mehr** an die Bild-KI. Der Foto-Pfad schickt nur noch das Basisfoto.
+- Der Generierungs-Pfad hatte das Logo nur mitgeschickt, um ueberhaupt `images/edits` nutzen zu
+  koennen. Ohne Logo braucht er kein Eingangsbild mehr und laeuft jetzt wieder ueber
+  **`images/generations`** mit JSON-Body — sauberer, und das Risiko „Logo wird zum Bildmotiv"
+  ist damit strukturell weg.
+- Umbenannt, weil die alten Namen nicht mehr stimmten (keine `$()`-Referenzen betroffen,
+  vorher geprueft): `GPT Bild (Foto + Logo)` -> **`GPT Bild (Foto)`**,
+  `GPT Bild (nur Logo)` -> **`GPT Bild (Neu)`**,
+  `Bild-Request bauen (Logo)` -> **`Bild-Request bauen (Neu)`**.
+- `verbote` sagt jetzt „zeichne ueberhaupt kein Logo" statt „das beigefuegte Logo ist das
+  einzige" — die Zonen-Anweisung haelt die untere linke Ecke frei.
+- Bei einem Aenderungswunsch traegt das Basisbild das echte Logo bereits. Der Prompt sagt,
+  es exakt zu belassen; der erneute Composite deckt es danach pixelgenau ab — dieselbe Logik
+  wie beim Preis-Badge.
+
+### Vor dem Publish
+
+Credentials an den 12 HTTP-Nodes neu setzen (dieselbe Liste wie oben, `GPT Bild (Foto)` und
+`GPT Bild (Neu)` sind durch die Umbenennung neue Node-Identitaeten). `maxTries` /
+`waitBetweenTries` sind bewusst nicht mehr im Quellcode, weil das SDK sie nicht uebertraegt —
+wer laengere Retries will, setzt sie in der UI.

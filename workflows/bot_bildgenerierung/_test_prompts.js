@@ -23,10 +23,10 @@ function ctxFor(post, auftrag, bm, saeule) {
 }
 const basePost = { headline: 'Frisch aus dem Ofen', layout: 'klassik', bild_typ: 'produkt', bild_neu: false, bild_headline: 'FRISCH AUS DEM OFEN', image_brief: 'A thin-crust margherita pizza with basil, held by one hand over a brushed-steel counter', preis_text: '', archiv_foto_url: '' };
 const faelle = [
-  ['GEN produkt', '04_Bild-Request_bauen_Logo.js', Object.assign({}, basePost), { modus: 'neu' }, { anpassung: false }],
-  ['GEN angebot + Preis', '04_Bild-Request_bauen_Logo.js', Object.assign({}, basePost, { bild_typ: 'angebot', layout: 'angebots_sticker', preis_text: '5,99 ' + String.fromCharCode(0x20ac), bild_headline: 'PIZZA DES TAGES' }), { modus: 'neu' }, { anpassung: false }],
-  ['GEN flyer', '04_Bild-Request_bauen_Logo.js', Object.assign({}, basePost, { bild_typ: 'flyer', layout: 'event_poster', image_brief: 'An evening street festival in front of the pizzeria with string lights', bild_headline: 'STRASSENFEST AM SAMSTAG' }), { modus: 'neu' }, { anpassung: false }],
-  ['GEN pur', '04_Bild-Request_bauen_Logo.js', Object.assign({}, basePost, { layout: 'pur', bild_headline: '' }), { modus: 'neu' }, { anpassung: false }],
+  ['GEN produkt', '04_Bild-Request_bauen_Neu.js', Object.assign({}, basePost), { modus: 'neu' }, { anpassung: false }],
+  ['GEN angebot + Preis', '04_Bild-Request_bauen_Neu.js', Object.assign({}, basePost, { bild_typ: 'angebot', layout: 'angebots_sticker', preis_text: '5,99 ' + String.fromCharCode(0x20ac), bild_headline: 'PIZZA DES TAGES' }), { modus: 'neu' }, { anpassung: false }],
+  ['GEN flyer', '04_Bild-Request_bauen_Neu.js', Object.assign({}, basePost, { bild_typ: 'flyer', layout: 'event_poster', image_brief: 'An evening street festival in front of the pizzeria with string lights', bild_headline: 'STRASSENFEST AM SAMSTAG' }), { modus: 'neu' }, { anpassung: false }],
+  ['GEN pur', '04_Bild-Request_bauen_Neu.js', Object.assign({}, basePost, { layout: 'pur', bild_headline: '' }), { modus: 'neu' }, { anpassung: false }],
   ['FOTO archiv', '03_Bild-Request_bauen_Foto.js', Object.assign({}, basePost, { archiv_foto_url: 'https://x/y.jpg' }), { modus: 'neu' }, { anpassung: false }],
   ['FOTO anpassung', '03_Bild-Request_bauen_Foto.js', Object.assign({}, basePost), { modus: 'aenderung', reason: 'Mach die Headline groesser und das Bild etwas heller' }, { anpassung: true }]
 ];

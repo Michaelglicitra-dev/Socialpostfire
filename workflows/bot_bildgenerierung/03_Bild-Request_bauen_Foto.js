@@ -15,7 +15,7 @@ const p = [];
 if (anpassung) {
   p.push('Image 1 is the current, already finished post. Keep it as it is: the same photo, composition, dish, people, colours, light, lettering and the Pizzarello logo that is already part of it.');
   p.push('Apply only this one change, requested by the restaurant owner in German: "' + String(a.reason || 'kleine Verbesserung') + '". Change nothing else.');
-  p.push('Image 2 is the Pizzarello logo, attached for reference only - it is already part of image 1. Do not add a second one, do not move it and do not restyle it.');
+  p.push('Image 1 already carries the Pizzarello logo in its bottom-left corner: leave it exactly where and as large as it is, and draw no further logo anywhere.');
   if (post.layout === 'pur' || !headline) {
     p.push('The picture carries no headline: leave it free of lettering.');
   } else {
@@ -32,8 +32,7 @@ if (anpassung) {
     p.push('SUBJECT (this is what image 1 already shows - do not re-invent it and add nothing to it): ' + ('.!?'.indexOf(brief.slice(-1)) === -1 ? brief + '.' : brief));
   }
   p.push('If image 1 has no calm empty area in the upper third, extend its ground upwards to open one up instead of cropping into the dish.');
-  p.push('Image 2 is the Pizzarello logo.');
-  p.push('ZONES (every element has its own area and they never overlap): the attached Pizzarello logo sits exactly once, small and quiet, in the BOTTOM-LEFT corner as a natural part of the picture; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays completely empty and calm, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the headline keeps to the upper third; the dish sits between them and reaches into neither bottom corner.');
+  p.push('ZONES (every element has its own area and they never overlap): the BOTTOM-LEFT corner stays empty and calm - the real Pizzarello logo is composited there afterwards; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays empty and calm as well, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the headline keeps to the upper third; the dish sits between them and reaches into neither bottom corner.');
   if (post.layout === 'pur' || !headline) {
     p.push('NO TEXT: the picture carries no headline, no words and no captions at all.');
   } else {
@@ -46,11 +45,8 @@ if (anpassung) {
 }
 
 const prompt = p.filter(function (s) { return String(s || '').length > 0; }).join(' ');
-const logoBin = $('Logo laden').first().binary || {};
 const inBin = $input.first().binary || {};
 const binary = {};
 if (inBin.basis) binary.image0 = inBin.basis;
-if (logoBin.logo) binary.logo = logoBin.logo;
 if (!binary.image0) throw new Error('Basisfoto-Binary fehlt');
-if (!binary.logo) throw new Error('Logo-Binary fehlt');
 return [{ json: { prompt: prompt, size: String(cfg.bild_size || '1024x1536'), prompt_len: prompt.length }, binary: binary }];
