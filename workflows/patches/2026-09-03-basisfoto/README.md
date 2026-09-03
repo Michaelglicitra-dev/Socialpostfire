@@ -63,33 +63,58 @@ Vier Aenderungen, alle im Workflow *Pizzarello Bot*:
 | 3 | **Bild-Request bauen (Foto)** (geaendert) | Setzt auf dem Binary `image0` jetzt explizit `fileName` (`basisfoto.png`), `fileExtension` und `mimeType`, nachdem es das Format nochmal an den Magic Bytes geprueft hat. Damit geht der Multipart-Teil `image[]` immer mit gueltiger Endung und korrektem Content-Type raus. Der Prompt-Aufbau ist unveraendert (Zeile fuer Zeile identisch mit vorher). |
 | 4 | **Bild extrahieren** (geaendert) | Unterscheidet jetzt Moderation, ungueltiges Basisfoto, Rate-Limit und Timeout und meldet jeden Fall im Klartext - beim Basisfoto-Fehler samt der Bildquelle, die ihn ausgeloest hat. |
 
-## Anwenden
+## Wichtig: Entwurf und veroeffentlichte Version liefen auseinander
 
-Der n8n-MCP-Zugang kann nur ganze Workflows als SDK-Code ersetzen, nicht einzelne
-Nodes patchen - und laut `Pizzarello_status.md` (Abschnitt 5, Kritische Lektionen)
-wirft `update_workflow` dabei die HTTP-Credentials ab und setzt den Workflow auf
-Draft zurueck. Fuer eine Aenderung an drei Nodes waere das ein unnoetiges Risiko
-fuer den laufenden Bot. Darum diese vier Schritte im n8n-Editor:
+Der Workflow hatte zwei Staende, die sich deutlich unterschieden:
 
-1. **Neue Nodes einfuegen:** `neue-nodes.json` komplett kopieren und im geoeffneten
-   Workflow *Pizzarello Bot* auf die Canvas einfuegen (Strg+V). Es erscheinen
-   *Basisfoto pruefen* und *Basisfoto normalisieren*, bereits miteinander
-   verbunden, oberhalb von *Basisfoto laden*.
-2. **Umhaengen:** Die Verbindung *Basisfoto laden -> Bild-Request bauen (Foto)*
-   loeschen und stattdessen verbinden:
-   `Basisfoto laden -> Basisfoto pruefen -> Basisfoto normalisieren -> Bild-Request bauen (Foto)`
-3. **Code ersetzen:** Inhalt von `bild-request-bauen-foto.js` in den Node
-   *Bild-Request bauen (Foto)* und Inhalt von `bild-extrahieren.js` in den Node
-   *Bild extrahieren* einsetzen (jeweils den kompletten bisherigen Code ersetzen).
-4. **Speichern und testen:** Workflow speichern, dann den Zweig *Taeglich 09:30*
-   einmal manuell ausfuehren.
+- **Veroeffentlicht (lief in Produktion, auch am 03.09. um 09:30):** das Logo wird
+  als zweites Bild in den `/v1/images/edits`-Aufruf gegeben (`GPT Bild (Foto + Logo)`,
+  `GPT Bild (nur Logo)`), die Bild-KI malt es also mit.
+- **Unveroeffentlicht (Entwurf vom 30.08.):** das Logo wird nach der Bildgenerierung
+  per Edit Image pixelgenau unten links einkomponiert (`Logo buendeln`, `Logo skalieren`,
+  `Logo einfuegen`), dazu getrennte Nodes `GPT Bild (Foto)` und `GPT Bild (Neu)`.
 
-`neue-nodes.json` wird aus `basisfoto-pruefen.js` erzeugt - nach einer Aenderung am
-JS neu bauen mit:
+Der Fix setzt auf dem **unveroeffentlichten Entwurf** auf - so entschieden. Mit dem
+Veroeffentlichen wechselt die Produktion damit gleichzeitig auf die neue
+Logo-Komposition. Das ist gewollt, aber es ist mehr als nur der Bugfix.
 
-```
-node build-nodes-json.mjs
-```
+Die Fehlerursache ist in beiden Staenden dieselbe: `image 1` ist in beiden Faellen
+das Basisfoto, und genau das hat OpenAI abgelehnt.
+
+## Anwenden: kompletter Austausch des Flows
+
+`pizzarello-bot-fixed.json` enthaelt den vollstaendigen Flow (87 Nodes, alle
+Verbindungen, alle Positionen) auf Basis des unveroeffentlichten Entwurfs plus Fix.
+
+Ueber den n8n-MCP-Zugang laesst sich das **nicht** einspielen: `update_workflow`
+nimmt den Workflow nur als kompletten SDK-Code entgegen, und der ist hier rund
+97.000 Zeichen gross - etwa 30.500 Token in einem einzigen Werkzeugaufruf. Das
+liegt ueber dem, was in einer Antwort uebertragen werden kann, auch minimiert
+(bestenfalls 87.000 Zeichen, ohne Positionen und Credential-Bindungen). Der SDK-Code
+liegt trotzdem als `pizzarello-bot.ts` bei, falls er spaeter anders eingespielt
+werden soll.
+
+Im Editor geht der Austausch in einem Schritt:
+
+1. Workflow *Pizzarello Bot* oeffnen.
+2. Alles markieren (Strg+A) und loeschen.
+3. Inhalt von `pizzarello-bot-fixed.json` kopieren und auf die Canvas einfuegen (Strg+V).
+4. Speichern.
+
+Danach ist Nacharbeit noetig, weil beim Austausch Credentials und
+Workflow-Einstellungen nicht mitkommen:
+
+| Was | Betrifft | Warum |
+|---|---|---|
+| **Telegram-Credential** | 9 Telegram-Nodes + der Trigger | Beim Import ordnet n8n automatisch ein beliebiges vorhandenes `telegramApi`-Credential zu - im Test war das **das falsche** (`Telegram AiColorMe` statt `Telegram Pizzarello Bot`). Unbedingt pruefen, sonst antwortet der Bot ueber den falschen Telegram-Account. |
+| **OpenAI** | `GPT Bild (Foto)`, `GPT Bild (Neu)`, `Learning bewerten`, `OpenAI gpt-5-mini` | HTTP-Request-Nodes bekommen nie automatisch Credentials |
+| **imgbb** | `Eingangsfoto hochladen`, `imgbb hochladen`, `imgbb Hochformat` | dito |
+| **Buffer** | `Buffer Post planen` | dito |
+| **Fehler-Workflow** | Workflow-Einstellungen | war auf *Pizzarello Fehler-Melder* (`QcBt5fGwEQ4Y3JcB`) gesetzt, muss neu eingetragen werden - sonst kommen keine Fehlermeldungen mehr an |
+| **Weitere Einstellungen** | Workflow-Einstellungen | `binaryMode: separate`, `callerPolicy: workflowsFromSameOwner`, `timeSavedMode: fixed` |
+
+Zum Schluss den Workflow **veroeffentlichen** - vorher laeuft die Produktion
+weiter auf der alten Version.
 
 ## Was danach noch passieren kann - und was die Meldung dann heisst
 

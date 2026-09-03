@@ -61,3 +61,10 @@ Der Besitzer schickt per Telegram formlos ein **Angebot/Event (Text)** oder ein 
 - **Ursache:** Das Basisfoto aus dem Bildarchiv geht unveraendert an OpenAI. `/v1/images/edits` nimmt nur PNG/JPEG/WEBP — GIF/BMP/TIFF/HEIC aus dem OneDrive-Archiv, ein fehlender `filename`/Content-Type im Multipart-Feld `image[]` oder eine HTML-Seite statt eines Bildes fuehren alle zu genau dieser Meldung. `GPT Bild (Foto)` steht auf `continueRegularOutput`, deshalb ist der Fehler erst im Folge-Node sichtbar geworden.
 - **Fix:** siehe `workflows/patches/2026-09-03-basisfoto/` — zwei neue Nodes (`Basisfoto pruefen`, `Basisfoto normalisieren`) plus neuer Code fuer `Bild-Request bauen (Foto)` und `Bild extrahieren`. Anwendung im n8n-Editor (nicht per `update_workflow`, das wirft die Credentials ab).
 - **Offen:** `Pizzarello Foto-Archiv Indexer` nimmt im Node `Nur Bilder` noch jedes `image/*` an — sinnvollerweise auf `image/png|jpeg|webp` einschraenken.
+
+## 8. Entwurf vs. veröffentlichte Version (Stand 03.09.2026)
+- Der Workflow **Pizzarello Bot** hatte zwei auseinanderlaufende Stände. Produktion lief auf der **veröffentlichten** Version mit `GPT Bild (Foto + Logo)` / `GPT Bild (nur Logo)` — das Logo ging als zweites Bild in den `/v1/images/edits`-Aufruf.
+- Der **unveröffentlichte Entwurf** vom 30.08. komponiert das Logo stattdessen per Edit Image auf (`Logo buendeln` / `Logo skalieren` / `Logo einfuegen`, dazu `GPT Bild (Foto)` und `GPT Bild (Neu)`).
+- Der Basisfoto-Fix setzt auf dem **Entwurf** auf. Mit dem Veröffentlichen wechselt die Produktion gleichzeitig auf die neue Logo-Komposition.
+- `workflows/pizzarello-bot-fixed.json` ist der komplette Flow (87 Nodes) zum Einfügen im Editor, `workflows/pizzarello-bot.ts` derselbe Stand als SDK-Code. Beide werden aus dem Live-JSON gebaut (`workflows/build-*.mjs`) und gegen den Live-Stand geprüft (`workflows/verify-pizzarello-bot-sdk.mjs`).
+- **MCP-Grenze:** `update_workflow` braucht den ganzen Flow als SDK-Code — hier ~97.000 Zeichen bzw. ~30.500 Token in einem Aufruf. Das ist zu groß für einen einzelnen Werkzeugaufruf, auch minimiert (~87.000 Zeichen).
