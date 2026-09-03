@@ -1,0 +1,53 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Node: \"Basisfoto pruefen\"  (n8n-nodes-base.code, typeVersion 2, Run Once for All Items)\n// Platz im Flow: NEU, direkt hinter \"Basisfoto laden\", vor \"Basisfoto normalisieren\".\n//\n// Warum: /v1/images/edits akzeptiert nur PNG, JPEG und WEBP. Kam hier etwas anderes\n// an (HTML-Fehler- oder Vorschauseite statt Bild, HEIC vom iPhone, leere Antwort),\n// hat OpenAI mit \"Invalid image file or mode for image 1\" geantwortet - und der Flow\n// ist erst viel spaeter im Node \"Bild extrahieren\" mit der irrefuehrenden Meldung\n// \"Die Bild-KI hat keinen Bilddatensatz geliefert\" abgebrochen.\n\nconst bm = $('Bild-Modus').first().json || {};\nconst quelle = String(bm.base_url || 'unbekannt');\nconst inBin = $input.first().binary || {};\nif (!inBin.basis) throw new Error('Basisfoto-Binary fehlt (Node \"Basisfoto laden\" hat nichts geliefert). Quelle: ' + quelle);\n\nlet buf = null;\ntry { buf = await this.helpers.getBinaryDataBuffer(0, 'basis'); } catch (e) { buf = null; }\nif (!buf || buf.length < 32) throw new Error('Das Basisfoto ist leer oder unlesbar (' + (buf ? buf.length : 0) + ' Byte). Quelle: ' + quelle);\n\nconst b = buf;\nconst asc = function (von, bis) { return buf.slice(von, bis).toString('latin1'); };\nlet typ = '';\nif (b[0] === 0x89 && asc(1, 4) === 'PNG') typ = 'png';\nelse if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) typ = 'jpeg';\nelse if (asc(0, 4) === 'RIFF' && asc(8, 12) === 'WEBP') typ = 'webp';\nelse if (asc(0, 4) === 'GIF8') typ = 'gif';\nelse if (asc(0, 2) === 'BM') typ = 'bmp';\nelse if (b[0] === 0x49 && b[1] === 0x49 && b[2] === 0x2a && b[3] === 0x00) typ = 'tiff';\nelse if (b[0] === 0x4d && b[1] === 0x4d && b[2] === 0x00 && b[3] === 0x2a) typ = 'tiff';\nelse if (asc(4, 8) === 'ftyp') typ = 'heic';\n\nif (typ === '') {\n  const probe = asc(0, 80).replace(/[^ -~]/g, '.');\n  throw new Error('Der Bild-Link liefert kein Bild, sondern etwas anderes (vermutlich eine Fehler- oder Vorschauseite). Bitte im Bildarchiv den direkten Bild-Link hinterlegen. Quelle: ' + quelle + ' | Dateianfang: ' + probe);\n}\nif (typ === 'heic') {\n  throw new Error('Das Basisfoto ist ein HEIC/AVIF-Bild (iPhone-Format) - das kann die Bild-KI nicht lesen. Bitte das Foto als JPG oder PNG neu ins Archiv laden. Quelle: ' + quelle);\n}\nif (buf.length > 45 * 1024 * 1024) {\n  throw new Error('Das Basisfoto ist mit ' + Math.round(buf.length / 1048576) + ' MB zu gross (Grenze der Bild-KI: 50 MB). Quelle: ' + quelle);\n}\n\nreturn [{ json: { basis_typ: typ, basis_bytes: buf.length, basis_quelle: quelle }, binary: inBin }];\n"
+      },
+      "id": "a1f0c2d4-6b3e-4a11-9c77-000000000001",
+      "name": "Basisfoto pruefen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5904,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "resize",
+        "dataPropertyName": "basis",
+        "width": 1536,
+        "height": 1536,
+        "resizeOption": "onlyIfLarger",
+        "options": {
+          "destinationKey": "basis",
+          "format": "png",
+          "quality": 100
+        }
+      },
+      "id": "a1f0c2d4-6b3e-4a11-9c77-000000000002",
+      "name": "Basisfoto normalisieren",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        6064,
+        432
+      ]
+    }
+  ],
+  "connections": {
+    "Basisfoto pruefen": {
+      "main": [
+        [
+          {
+            "node": "Basisfoto normalisieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}

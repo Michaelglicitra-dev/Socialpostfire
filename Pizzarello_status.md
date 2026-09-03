@@ -55,3 +55,9 @@ Der Besitzer schickt per Telegram formlos ein **Angebot/Event (Text)** oder ein 
 
 ---
 *Nächster sinnvoller Einstieg: den Telegram-Bug (5.1) anhand echter Execution-Daten fixen, dann die zwei Feedback-Punkte (5.2 Textvariation, 5.3 hellerer/fröhlicher Bildstil) umsetzen.*
+
+## 7. Fix 03.09.2026 — "Bild extrahieren" / Invalid image file or mode
+- **Symptom:** Auto-Post 09:30 bricht in `Bild extrahieren` ab, Meldung "Die Bild-KI hat keinen Bilddatensatz geliefert", darin versteckt: `Invalid image file or mode for image 1` von `POST /v1/images/edits`.
+- **Ursache:** Das Basisfoto aus dem Bildarchiv geht unveraendert an OpenAI. `/v1/images/edits` nimmt nur PNG/JPEG/WEBP — GIF/BMP/TIFF/HEIC aus dem OneDrive-Archiv, ein fehlender `filename`/Content-Type im Multipart-Feld `image[]` oder eine HTML-Seite statt eines Bildes fuehren alle zu genau dieser Meldung. `GPT Bild (Foto)` steht auf `continueRegularOutput`, deshalb ist der Fehler erst im Folge-Node sichtbar geworden.
+- **Fix:** siehe `workflows/patches/2026-09-03-basisfoto/` — zwei neue Nodes (`Basisfoto pruefen`, `Basisfoto normalisieren`) plus neuer Code fuer `Bild-Request bauen (Foto)` und `Bild extrahieren`. Anwendung im n8n-Editor (nicht per `update_workflow`, das wirft die Credentials ab).
+- **Offen:** `Pizzarello Foto-Archiv Indexer` nimmt im Node `Nur Bilder` noch jedes `image/*` an — sinnvollerweise auf `image/png|jpeg|webp` einschraenken.
