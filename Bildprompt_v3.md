@@ -79,7 +79,7 @@ Abgeleitet aus den Referenzbildern:
 | `menue_karte` | promo | geometrisch | oben rechts | Gericht komplett sichtbar + Zutatenzeile |
 | `angebots_sticker` | promo | condensed | oben rechts | Angebot; unten rechts frei für den echten Preis-Badge |
 | `produkt_spotlight` | spotlight | geometrisch | oben rechts | **neu** — Aktion/Gutschein mit CTA-Fläche |
-| `event_poster` | event | condensed | oben rechts | Event/Strassenfest, mehrere Textblöcke |
+| `event_poster` | event | condensed | **unten rechts** | Event/Strassenfest, mehrere Textblöcke |
 | `pur` | promo | – | oben rechts | gar kein Text im Bild |
 | `zitat` | promo | geometrisch | oben rechts | eine kurze Zeile |
 
@@ -99,6 +99,15 @@ Verfügbare Ecken in `cfg.logo_positionen`: `oben_rechts` (850/30), `oben_links`
 `unten_rechts` (850/840), `unten_links` (34/840) — Werte für 1024×1024 bei 155×155 Logo.
 
 > `unten_rechts` ist bei `angebots_sticker` tabu: dort sitzt der echte Preis-Badge.
+> `unten_links` ist bei `produkt_spotlight` und `event_poster` tabu: dort sitzt die CTA-Fläche.
+
+**Vorrangregel.** Layout-Beschreibung und Logo-Ecke können sich widersprechen — genau
+daran ist die erste `promo_poster`-Runde gescheitert (Layout sagte „Gericht rechts
+angeschnitten", Logo-Zone sagte „Ecke oben rechts frei"; das Modell hat sich für das
+schönere Bild entschieden). Deshalb steht jetzt hinter jeder Logo-Zone der Baustein
+`logo_vorrang`: die reservierte Ecke schlägt **jede** andere Platzierungsanweisung.
+Zusätzlich sind die Layout-Texte so geschärft, dass sie gar nicht erst in die Ecke
+zeigen — Headlines sind linksbündig statt zentriert, wo das Logo oben rechts sitzt.
 
 ## 5. Neue Agent-Felder
 
