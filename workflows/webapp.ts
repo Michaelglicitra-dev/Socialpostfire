@@ -661,28 +661,38 @@ const cfg = {
     ton: 'familiaer-italienisch, herzlich, ein bisschen verspielt, Du-Ansprache',
     brand_farben: { primaer: '#C8102E', sekundaer: '#2E7D32', akzent: '#F5E6C8' },
     bild_guideline: {
-      markenkern: 'BRAND CORE (always apply): Pizzarello - a MODERN, premium, editorial food-brand look, like a high-end campaign, NOT a cosy trattoria and NOT a menu card. Reduced, confident, almost a lifestyle-product feel. BACKGROUND: a calm single-colour or very subtly textured surface - brushed warm-grey stainless steel/metal, deep black, or anthracite; a studio-like setup, never a rustic wooden table and never cosy warmth props. NEGATIVE SPACE: deliberately a lot of empty room (usually the upper third) as a clear zone for the headline; text and food stay clearly separated, never overlapping; the composition breathes, never crowded; optionally one thin fine terracotta 1px accent rule as a graphic divider between the text zone and the image zone. TYPOGRAPHY: a clean geometric/humanist sans-serif (in the spirit of Poppins / Circular / General Sans) - rounded, friendly yet high-end; NO serif, NO heavy block lettering; letters in white or cream on the dark/neutral ground; regular to medium weight, light and elegant, quietly confident rather than loud. COLOUR: a reduced palette - neutral grey/black or brushed metal as the base plus ONE warm accent (terracotta / rust red) used only as a thin line or a tiny detail; the pizza/food itself is the only real colour in the frame, everything else stays muted and calm; no tricolore red-green-white cliche. FOOD PHOTOGRAPHY: precise and close to the product, shot slightly from above (about 60-75 degrees) or straight top-down (90 degrees); visible craft - one or two hands holding or serving the pizza (never a face), high-quality ingredients clearly readable and deliberately styled (single mortadella rosettes, burrata drops, pistachio); light soft but contrasty enough to bring out texture (crust, cheese pull), never flat diffuse light and never hard flash. GRAPHIC ELEMENTS: use extras VERY sparingly - a small fine circular badge ONLY when a concrete date, period or location is actually part of the content, otherwise none; never invent a brand logo, wordmark or emblem (a real logo is added afterwards).',
-      grading: 'BRAND GRADE (apply as a gentle modern look, but keep the existing dish, composition and setting): move it towards a clean editorial premium campaign feel - a neutral grey/anthracite or brushed-metal mood, soft but contrasty light that keeps texture crisp, muted surroundings so the food is the only real colour; no cosy warm candlelight, no orange cast, photorealistic.',
-      module: {
-        produkt: 'CONTENT Product/Menu (clean studio look): the pizza on a neutral brushed-metal or warm-grey surface, shot slightly from above, one or two hands holding/presenting it (craft, no face); a calm headline in the upper area plus one ingredient line separated by dots (e.g. "Zutat - Zutat - Zutat"), with generous empty space between the text and the pizza.',
-        event: 'CONTENT Event (modern editorial ad): a dark, calm background with only a hinted atmosphere (softly blurred people far in the background, hands, glasses - never clear recognisable faces), the food still clearly staged; a clean light headline with plenty of negative space, inviting but premium, never a busy cosy scene.',
-        angebot: 'CONTENT Offer/Special (minimal look): a dark or neutral background, a clear headline hierarchy in the upper area (size = importance); keep the LOWER-RIGHT area calm and completely free for a real round price badge that is composited afterwards - do NOT draw any price, number or badge yourself; the product shown large but cropped at the left or bottom edge (a detail crop, not the whole pizza centred), optionally a few small side elements (antipasti or dessert miniatures) at the edge.',
-        saison: 'CONTENT Season (clean studio look): the seasonal ingredient staged prominently, fresh or raw, on a neutral brushed-metal or grey surface next to the finished dish, precise and close, with lots of negative space; modern editorial rather than a rustic harvest scene.',
-        bts: 'CONTENT Behind the scenes (clean documentary): an authentic craft moment - hands shaping dough or sliding a pizza into the stone oven - framed cleanly and modern against a dark/neutral studio-like background, honest and human, never a clear recognisable face, never a cluttered rustic kitchen.',
-        flyer: 'CONTENT Campaign/Ad (dark editorial vertical ad, NOT a printed flyer): an almost black or very dark background, a large food detail (a cut pizza or snack in close-up) along the lower or side edge, a headline in clean light sans-serif at the top, and a discreet CTA area (a rounded rectangle in the terracotta accent colour) with a short action line; it reads like a high-end social-ad campaign, calm and text-light.'
+      master: 'MASTER PROMPT (always apply): Create a high-end social media marketing image for an Italian pizzeria - modern, professional, made to stop the scroll. The dish is the hero and must read as the main subject within one second. Work with rich, appetising colour, strong contrast and clean, highly legible typography. The background is either a deep, colour-reduced dark ground (near-black, dark charcoal or one calm dark brand tone) or a real scene rendered softly out of focus - never a busy background that competes with the food. Shallow depth of field: the product stays tack-sharp while everything behind it falls away. Build the composition around the text from the start: a strong short headline, optionally one smaller subline and one small info or action line, each in its own calm zone with real breathing room, never crowded together. Ultra-realistic light, professional composition, photorealistic photography (no illustration, no 3D render, no AI-collage look), social-media ready.',
+      foto: 'FOOD PHOTOGRAPHY: real, ultra-realistic and genuinely appetising - visible craft and texture (blistered leopard-spotted crust, cheese pull, fresh herbs, glistening oil, clearly readable single ingredients). Stage the product large and close, either slightly from above (about 60-75 degrees) or straight top-down; a bold detail crop that runs off one edge is welcome and preferred over a small centred plate. Directional light with defined highlights and rich deep shadows so the texture pops - never flat diffuse light, never washed-out grey, never hard on-camera flash. Hands may hold, present or serve the dish to show craft, but never a recognisable face. The food carries warm saturated colour; everything around it stays calm and dark so the dish is the only real colour in the frame.',
+      typo: 'TYPOGRAPHY: a modern sans-serif system with a CLEAR SIZE HIERARCHY - the headline is by far the largest and strongest element, a subline is clearly smaller, an info or action line is smallest. Headlines in a strong contemporary sans-serif: a bold condensed grotesque (Barlow Condensed, Archivo Narrow, Oswald) for punchy promo and event looks, or a clean geometric Poppins Medium for calmer product looks. Sublines and info lines in Inter or General Sans, uppercase and letter-spaced where it fits. Letters in clean white or warm cream; at most one single word may take the terracotta accent colour. Text sits in its own calm zone, clearly separated from the hero product and never pasted across it, with no box, banner or drop shadow unless the layout explicitly asks for one. Perfect spelling, no serif, no script or handwritten type, no generic default or system font.',
+      logo_zone: 'LOGO ZONE (critical): never draw, paint or invent any logo, wordmark, brand name, emblem, signature or watermark anywhere in the image. Keep the TOP-RIGHT corner completely clean, calm and free of food, text and detail (slightly darker is ideal) - a real logo is composited into that corner afterwards.',
+      text_regel: 'TEXT RULE (critical): render ONLY the exact text lines listed above, spelled letter for letter, and no other words, letters or characters anywhere in the image. Never render a price, a percentage or a currency symbol, and never invent numbers, dates or extra captions - prices are composited afterwards as a real badge.',
+      text_safety: 'TEXT SAFE AREA (critical): every piece of text and every graphic element MUST sit completely inside the image within a safe margin of at least 10 percent from every edge, with EXTRA clearance at the TOP so the first headline line never touches or runs off the top edge; never let a letter, word or element touch, overlap or run off any image border; if a headline is long, wrap it onto two lines rather than shrinking it into the margin; no text may be cut off or cropped at any edge.',
+      negativ: 'AVOID: rustic wooden-table trattoria kitsch, checkered tablecloths, cosy candle props, loud oversaturated red-green-white tricolore cliche, generic stock-photo look, flat washed-out grey lighting and low contrast, muddy or orange colour cast, serif or script typefaces, text pasted over the hero product, a cluttered layout with many competing props, recognisable faces of real people, distorted hands or fingers, malformed or misspelled lettering, any invented brand logo, wordmark or emblem, any watermark, any extra badge, ribbon, sticker, seal or date stamp that was not explicitly requested, any price, percentage or currency symbol, and any text beyond the exact lines specified.',
+      grading: 'BRAND GRADE (apply as a look, but keep the existing dish, composition, people and setting exactly as they are): push the image towards a premium campaign feel - deepen the background towards dark charcoal or near-black, raise contrast and shape the light so crust, cheese and herb texture pop, warm and saturate the food itself while keeping the surroundings calm and desaturated, keep the product tack-sharp and let the background fall softly out of focus. Never flat, never washed-out grey, never an orange cast. Photorealistic.',
+      stile: {
+        promo: 'STYLE Promo Poster (food and product): a bold promotional poster. One large, appetising hero product dominates the frame, generously cropped at one edge; a deep near-black or strongly reduced background sits behind it, softly blurred. Punchy modern typography with a clear hierarchy: one strong short headline plus at most one subline. A small thin-outlined circle carrying a short seasonal or local line may sit in the calm negative space ONLY if such a line is actually given. A few small secondary product details (burrata balls, antipasti, a dessert) may sit small along a lower edge as supporting elements. Confident, high-contrast, immediately appetising.',
+        spotlight: 'STYLE Product Spotlight (offer, action, campaign): a professional campaign image built around one clear message and one call to action. A warm, atmospheric food scene fills the frame and falls softly out of focus behind the message. The headline sits large and light in the upper area over the calmest part of the scene. A discreet call-to-action element - a rounded rectangle or soft-edged block in the terracotta accent colour carrying one short action line and a small arrow - sits in the lower-left area. Clean, modern and slightly technical, warm and inviting rather than cold.',
+        event: 'STYLE Event Poster (event, festival, theme night): an atmospheric announcement with real depth. A genuine evening scene carries the image - warm street or terrace atmosphere, string lights, a sunset sky, softly blurred guests far in the background (never a recognisable face) - graded dark and rich so the text stays perfectly readable. A large bold condensed headline sits in the upper-middle third, with clearly smaller stacked text blocks underneath for the occasion and for the day and place. Dynamic and festive, but still clean and never overloaded with graphic clutter.'
       },
-      typo: 'TEXT STYLE: render in-image text in a MODERN sans-serif type system - main headlines in Poppins (Medium or Regular weight); a bold CONDENSED ad-style headline in Barlow Condensed or Archivo Narrow; any subline or body text in Inter or General Sans. Cream-white or white letters, clean and contemporary, NEVER a serif and NEVER a generic default/system font. Set the text in its own calm negative-space zone with a GENEROUS clear margin from every edge (never touching the top or side edges); clearly separated from the food, not pasted over it; optionally one thin fine terracotta rule as a divider; keep any subline to a single short line separated by dots; the lettering must look like part of one cohesive photograph, not a pasted-on graphic.',
-      negativ: 'AVOID: rustic wooden-table look, trattoria kitsch, cosy candle or warmth props, serif typefaces, heavy block-lettering headlines, overloaded composition, several props at once (wine, napkin, herbs together), loud oversaturated red-green-white tricolore cliche, hard camera flash, orange colour cast, generic stock-photo look, recognisable faces of real people, distorted hands or fingers, logo distortions, any invented brand logo/wordmark/emblem, any badge, ribbon, sticker, seal or date/time stamp that was not explicitly part of the request, any price, number, percentage or currency symbol rendered into the image (prices are added afterwards as a real badge), and any text beyond a headline plus at most one short subline per image.',
-      text_safety: 'TEXT SAFE AREA (critical): every piece of text, lettering, price, badge or ribbon MUST sit completely inside the image within a safe margin of at least 12 percent from every edge, with EXTRA clearance at the TOP so the first headline line never touches or runs off the top edge; never let any letter, word, badge or ribbon touch, overlap or run off any image border; if a headline is long, scale it DOWN and/or wrap it onto two lines so the whole headline fits fully within the frame with margin to spare; no text may be cut off or cropped at any edge.'
+      module: {
+        produkt: 'CONTENT Product: one signature dish staged large and close, hands presenting or holding it to show the craft (never a face), single ingredients clearly readable and deliberately styled, against a dark reduced ground.',
+        event: 'CONTENT Event: an atmospheric evening moment - warm light, hinted guests far out of focus, glasses and terrace mood - with the food still clearly staged in the foreground.',
+        angebot: 'CONTENT Offer: the product cropped large and tempting at the left or bottom edge, background dark and calm, and the LOWER-RIGHT area deliberately kept free of any detail for a real price badge composited afterwards.',
+        saison: 'CONTENT Season: the seasonal ingredient staged fresh and raw next to the finished dish, close and precise, with the colour of the season carried entirely by the food itself.',
+        bts: 'CONTENT Behind the scenes: an honest craft moment - hands shaping dough or sliding a pizza into the stone oven, flour dust and oven flames visible - warm directional light against a dark kitchen, never a recognisable face.',
+        flyer: 'CONTENT Campaign announcement: a poster-like, text-led image - a real atmospheric scene (an evening street party in front of the pizzeria, string lights, guests out of focus) carrying several stacked text blocks, rather than a single plated dish.'
+      }
     }
   },
   layouts: {
-    klassik: { name: 'Klassik', bild: 'Modern editorial look: place the headline in the calm upper-third negative-space zone in clean light sans-serif, cream-white, optionally with a thin 1px terracotta rule directly under it; keep the food in the lower two-thirds with clear empty space between text and food.' },
-    menue_karte: { name: 'Menue-Karte', bild: 'Clean product look: the headline sits top-centre or top-left in a light humanist sans-serif, with one ingredient subline separated by dots ("Zutat - Zutat - Zutat") just beneath it, lots of negative space, and the food fully visible below.' },
-    angebots_sticker: { name: 'Angebots-Sticker', bild: 'Minimal special look: a clear headline hierarchy in the upper area, plenty of calm negative space, and the LOWER-RIGHT area kept completely free for a real round price badge added afterwards; do NOT draw any price, number or badge yourself.' },
-    event_poster: { name: 'Event-Poster', bild: 'Dark editorial ad look: the headline in clean light sans-serif in the upper area with generous negative space, the food as a large detail along a lower or side edge, and a discreet rounded-rectangle CTA area in the terracotta accent colour near the bottom.' },
-    pur: { name: 'Pur', bild: 'No text at all in the image. Only the clean food photo. Absolutely no headline, no words, no badges and no captions inside the image.' },
-    zitat: { name: 'Zitat', bild: 'Editorial quote look: one short clean sans-serif line set in calm negative space, cream-white, no band and no box, clearly separated from the food.' }
+    klassik: { name: 'Klassik', stil: 'promo', font: 'geometrisch', bild: 'Headline centred in the calm upper third with generous space around it, an optional subline directly beneath it, and the hero dish filling the lower two thirds; text and food clearly separated, never overlapping.' },
+    promo_poster: { name: 'Promo-Poster', stil: 'promo', font: 'condensed', bild: 'Split poster: the hero product sits large on the right half or lower right and is cropped at the edge; ALL text is stacked and left-aligned on the left half - headline at the top, subline under it, the small info line lowest - over a deep near-black ground. Optional small supporting food details along the lower-left edge.' },
+    menue_karte: { name: 'Menue-Karte', stil: 'promo', font: 'geometrisch', bild: 'Clean product look: headline top-centre or top-left, one ingredient subline separated by dots directly beneath it, and the whole dish fully visible below with calm space all around it.' },
+    angebots_sticker: { name: 'Angebots-Sticker', stil: 'promo', font: 'condensed', bild: 'Offer look: a strong headline hierarchy in the upper area, the product cropped large at the left or bottom edge, and the LOWER-RIGHT quarter kept completely calm and empty for a real round price badge composited afterwards - draw no price and no badge yourself.' },
+    produkt_spotlight: { name: 'Produkt-Spotlight', stil: 'spotlight', font: 'geometrisch', bild: 'Spotlight: a large light headline across the upper area over the softly blurred scene, the hero product filling the middle and lower frame, and a discreet rounded call-to-action block in the terracotta accent colour in the lower-left area carrying one short action line.' },
+    event_poster: { name: 'Event-Poster', stil: 'event', font: 'condensed', bild: 'Event poster: a big bold condensed headline in the upper-middle third, one subline directly under it, and one small info line for the day and the place below that, all centred over the atmospheric evening scene; keep the lower third visually calmer.' },
+    pur: { name: 'Pur', stil: 'promo', font: 'geometrisch', bild: 'No text at all in the image. Only the clean, appetising food photograph. Absolutely no headline, no words, no badge and no caption.' },
+    zitat: { name: 'Zitat', stil: 'promo', font: 'geometrisch', bild: 'Editorial quote look: one short line of clean sans-serif text set in a calm dark area, cream white, no box and no banner, clearly separated from the food.' }
   },
   logo_onedrive_pfad: '/Pizzarello/assets/pizzarello_transparent.png',
   hashtags: {
@@ -836,7 +846,7 @@ const toolBildarchiv = tool({
 const postParser = outputParser({
   type: '@n8n/n8n-nodes-langchain.outputParserStructured',
   version: 1.3,
-  config: { name: 'Post-Schema', parameters: { schemaType: 'fromJson', jsonSchemaExample: '{ "needs_clarification": false, "clarification_question": "", "headline": "Frisch aus dem Ofen", "post_text": "Heute Abend duftet es bei uns nach Ofenpizza - komm vorbei und lass es dir schmecken!", "hashtags": ["#pizzarello", "#oberhausen"], "layout": "klassik", "bild_typ": "produkt", "bild_neu": false, "bild_headline": "FRISCH AUS DEM OFEN", "image_brief": "A single pizza on a brushed-metal surface, held by one hand, shot slightly from above", "preis_text": "", "archiv_foto_url": "" }' }, position: [700, 300] }
+  config: { name: 'Post-Schema', parameters: { schemaType: 'fromJson', jsonSchemaExample: '{ "needs_clarification": false, "clarification_question": "", "headline": "Frisch aus dem Ofen", "post_text": "Heute Abend duftet es bei uns nach Ofenpizza - komm vorbei und lass es dir schmecken!", "hashtags": ["#pizzarello", "#oberhausen"], "layout": "klassik", "bild_typ": "produkt", "bild_neu": false, "bild_headline": "FRISCH AUS DEM OFEN", "bild_subline": "Mortadella - Stracciatella - Pistazie", "bild_infozeile": "", "bild_cta": "", "image_brief": "A single pizza on a brushed-metal surface, held by one hand, shot slightly from above", "preis_text": "", "archiv_foto_url": "" }' }, position: [700, 300] }
 });
 
 const agent = node({
@@ -874,11 +884,22 @@ FELDER:
 - headline: kurze Ueberschrift.
 - post_text: 2-5 Saetze, warm, konkret, dezenter Call-to-Action, Emojis sparsam.
 - hashtags: 3-6 Tags (Basis-Tags werden ergaenzt).
-- layout: einer von klassik, menue_karte, angebots_sticker, event_poster, pur, zitat.
+- layout: genau einer von klassik, promo_poster, menue_karte, angebots_sticker, produkt_spotlight, event_poster, pur, zitat.
+  * klassik = Headline oben, Gericht unten (Allrounder).
+  * promo_poster = Werbeplakat: Text links gestapelt, Gericht gross rechts angeschnitten. Fuer neue Specials, Highlights, Produkt-Ankuendigungen.
+  * menue_karte = Gericht komplett sichtbar, Headline plus Zutatenzeile.
+  * angebots_sticker = Angebot mit Preis: unten rechts bleibt frei fuer den echten Preis-Badge.
+  * produkt_spotlight = Kampagnenbild mit Call-to-Action-Flaeche unten links (Aktion, Gutschein, Bestell-Aufruf).
+  * event_poster = stimmungsvolles Event-Plakat mit mehreren Textbloecken (Anlass, Tag, Ort).
+  * pur = ueberhaupt kein Text im Bild.
+  * zitat = eine kurze Zeile im Bild.
 - bild_typ: einer von produkt, event, angebot, saison, flyer, bts (passend zum Inhalt; fuer flyer layout event_poster).
 - bild_neu: true nur wenn ein KOMPLETT anderes Bild gewuenscht ist, sonst false.
-- bild_headline: sehr kurzer Bild-Text (max 40 Zeichen), ASCII ohne Umlaute. Bei layout "pur" leer.
-- image_brief: EIN englischer Satz zum Foto-Motiv (Gericht/Szene), im modernen Studio-Look.
+- bild_headline: sehr kurzer Bild-Text (max 40 Zeichen), ASCII ohne Umlaute (ae/oe/ue/ss). Bei layout "pur" leer lassen.
+- bild_subline: optionale zweite, kleinere Bildzeile (max 60 Zeichen, ASCII) - z.B. die Zutaten mit Trennpunkten ("Mortadella - Stracciatella - Pistazie") oder ein praezisierender Zusatz ("Infused Burrata"). Leer lassen, wenn eine zweite Zeile das Bild nur zustellen wuerde.
+- bild_infozeile: optionale winzige Info-Zeile (max 40 Zeichen, ASCII, GROSSBUCHSTABEN, KEINE Ziffern) - nur wenn Zeitraum oder Ort wirklich Teil des Inhalts sind, z.B. "SEPTEMBER SPECIAL" oder "NUR AM WOCHENENDE - OBERHAUSEN". Sonst leer.
+- bild_cta: optionale kurze Handlungsaufforderung im Bild (max 30 Zeichen, ASCII), z.B. "Jetzt bestellen" - NUR bei layout produkt_spotlight oder event_poster, sonst leer.
+- image_brief: EIN englischer Satz, der NUR das Foto-Motiv beschreibt (Gericht bzw. Szene, Blickwinkel, Haende/Handwerk) - kein Text, keine Typografie, kein Layout. Appetitlich, kontrastreich, dunkler reduzierter Hintergrund.
 - preis_text: NUR bei einem Angebot mit konkretem Preis den exakten Preis im deutschen Format wie "5,99 EUR" oder "5,99 Euro" (NIEMALS einen Preis erfinden - nur der vom Wirt genannte oder der Preis aus get_aktuelle_angebote/get_speisekarte). Sonst LEER. Dieser Preis wird spaeter als echter Badge aufs Bild gestempelt; im image_brief/bild_headline selbst KEINE Zahl/Preis nennen.
 - archiv_foto_url: url eines passenden Archiv-Fotos, sonst leer.`
       }
@@ -919,23 +940,36 @@ const post = {
   bild_typ: String(o.bild_typ || '').trim().toLowerCase(),
   bild_neu: (o.bild_neu === true || o.bild_neu === 'true'),
   bild_headline: String(o.bild_headline || ''),
+  bild_subline: String(o.bild_subline || ''),
+  bild_infozeile: String(o.bild_infozeile || ''),
+  bild_cta: String(o.bild_cta || ''),
   image_brief: String(o.image_brief || ''),
   preis_text: String(o.preis_text || '').trim(),
   archiv_foto_url: String(o.archiv_foto_url || '').trim()
 };
-// Preis-Badge normalisieren: EUR/Euro -> €, ohne Ziffer verwerfen, € ergaenzen
-let preis = post.preis_text.replace(/euro/ig, '€').replace(/EUR/g, '€').replace(/\\s+/g, ' ').trim();
+// Preis-Badge normalisieren: EUR/Euro -> Euro-Zeichen, ohne Ziffer verwerfen, Euro-Zeichen ergaenzen
+// EUR-Symbol per charCode, weil update_workflow Nicht-ASCII im jsCode zerstoert
+const EUR = String.fromCharCode(8364);
+let preis = post.preis_text.replace(/euro/ig, EUR).replace(/EUR/g, EUR).replace(/\\s+/g, ' ').trim();
 if (!/[0-9]/.test(preis)) preis = '';
-if (preis && preis.indexOf('€') === -1) preis = preis + ' €';
+if (preis && preis.indexOf(EUR) === -1) preis = preis + ' ' + EUR;
 post.preis_text = preis.slice(0, 16);
 if (post.archiv_foto_url.indexOf('http') !== 0) post.archiv_foto_url = '';
 if (!post.headline || !post.post_text) throw new Error('Agent-Ausgabe unvollstaendig');
-const erlaubte = ['klassik', 'menue_karte', 'angebots_sticker', 'event_poster', 'pur', 'zitat'];
+const erlaubte = ['klassik', 'promo_poster', 'menue_karte', 'angebots_sticker', 'produkt_spotlight', 'event_poster', 'pur', 'zitat'];
 if (erlaubte.indexOf(post.layout) === -1) post.layout = 'klassik';
 const bildTypen = ['produkt', 'event', 'angebot', 'saison', 'flyer', 'bts'];
 if (bildTypen.indexOf(post.bild_typ) === -1) post.bild_typ = '';
-if (post.layout === 'pur') post.bild_headline = '';
+if (post.layout === 'pur') { post.bild_headline = ''; post.bild_subline = ''; post.bild_infozeile = ''; post.bild_cta = ''; }
 else if (!post.bild_headline) post.bild_headline = post.headline.split(' ').slice(0, 5).join(' ');
+// Bild-Textzeilen: ASCII, gekappt, keine Ziffern in der Infozeile (Preise/Zahlen kommen als echter Badge)
+function bildText(v, max) { var t = String(v || ''); var out = ''; for (var i = 0; i < t.length; i++) { var c = t.charCodeAt(i); if (c >= 32 && c <= 126) out += t.charAt(i); } return out.replace(/ +/g, ' ').trim().slice(0, max); }
+post.bild_headline = bildText(post.bild_headline, 40);
+post.bild_subline = bildText(post.bild_subline, 60);
+post.bild_infozeile = bildText(post.bild_infozeile, 40);
+post.bild_cta = bildText(post.bild_cta, 30);
+if (/[0-9]/.test(post.bild_infozeile)) post.bild_infozeile = '';
+if (post.layout !== 'produkt_spotlight' && post.layout !== 'event_poster') post.bild_cta = '';
 const norm = post.hashtags.map(function(t){ t = String(t).trim().replace(/ /g, ''); if (!t) return ''; return t.charAt(0) === '#' ? t : '#' + t; }).filter(function(t){ return t.length > 1; });
 const setTags = cfg.hashtags[k.saeule] || [];
 post.hashtags = setTags.concat(norm.filter(function(t){ return setTags.indexOf(t) === -1; })).slice(0, 12);
@@ -995,19 +1029,49 @@ const genReq = node({
 const post = $('Post aufbereiten').first().json.post;
 const g = cfg.restaurant.bild_guideline || {};
 const f = cfg.restaurant.brand_farben || {};
-const lay = (cfg.layouts || {})[post.layout] || { bild: '' };
+const lay = (cfg.layouts || {})[post.layout] || { bild: '', stil: 'promo' };
+const stil = (g.stile || {})[lay.stil || 'promo'] || '';
+function pickModul(saeule, layout) {
+  if (layout === 'event_poster') return 'event';
+  if (saeule === 'saisonal') return 'saison';
+  if (saeule === 'angebote' || layout === 'angebots_sticker') return 'angebot';
+  if (saeule === 'community') return 'bts';
+  return 'produkt';
+}
+const modul = (g.module || {})[post.bild_typ] || (g.module || {})[pickModul('', post.layout)] || '';
 const headline = String(post.bild_headline || '').slice(0, 40);
-const modul = (g.module || {})[post.bild_typ] || (g.module || {}).produkt || '';
-const fontHint = (post.bild_typ === 'flyer') ? 'a bold CONDENSED modern sans-serif (Barlow Condensed or Archivo Narrow)' : 'a modern geometric sans-serif (Poppins, Medium or Regular weight)';
-let prompt = 'Square 1:1 image. ' + post.image_brief + ' ' + (g.markenkern || '') + ' ' + modul + ' ';
-prompt += 'TEXT PLACEMENT: ' + (lay.bild || '') + ' ';
-prompt += 'Do NOT draw, paint or invent ANY logo, wordmark, brand name, emblem, badge, ribbon, sticker, seal or date/time stamp anywhere in the image (a real logo is composited afterwards). Keep the TOP-RIGHT corner completely empty and clean, slightly darker. ';
-prompt += 'Do NOT render any price, number, percentage or currency symbol anywhere in the image - prices are added afterwards as a real badge. ';
-if (String(post.preis_text || '') !== '') { prompt += 'Keep the LOWER-RIGHT area calm and clean (no important detail there) for a round price badge added afterwards. '; }
-if (post.layout === 'pur' || !headline) { prompt += 'Render NO headline and no text anywhere in the image. '; }
-else { prompt += (g.typo || '') + ' Render the headline spelled EXACTLY, letter for letter, as: "' + headline + '". Perfect spelling is critical, no other words. Use ' + fontHint + ', in clean cream-white ' + (f.akzent || '#F5E6C8') + ', placed in its own calm upper negative-space zone with a GENEROUS clear margin so no letter touches the top or side edges (wrap onto two lines if long), optionally underlined by ONE thin fine terracotta rule (about #C0563C). Absolutely no serif and no default/system font. '; }
-prompt += (g.text_safety || '') + ' ' + (g.negativ || '');
-return [{ json: { openai_gen_body: { model: 'gpt-image-1', prompt: prompt, size: '1024x1024', quality: 'high', output_format: 'png', n: 1 } } }];` },
+const subline = String(post.bild_subline || '').slice(0, 60);
+const info = String(post.bild_infozeile || '').slice(0, 40);
+const cta = String(post.bild_cta || '').slice(0, 30);
+const akzent = f.akzent || '#F5E6C8';
+const teile = [];
+teile.push('Square 1:1 social media marketing image for an Italian restaurant.');
+teile.push('MOTIF: ' + String(post.image_brief || ''));
+teile.push(g.master);
+teile.push(stil);
+teile.push(modul);
+teile.push('LAYOUT: ' + (lay.bild || ''));
+teile.push(g.foto);
+if (post.layout === 'pur' || !headline) {
+  teile.push('Render NO text anywhere in the image: no headline, no subline, no caption, no lettering of any kind.');
+} else {
+  const schriften = { condensed: 'a bold CONDENSED modern sans-serif (Barlow Condensed, Archivo Narrow or Oswald)', geometrisch: 'a clean geometric sans-serif (Poppins Medium)' };
+  const fontHint = schriften[lay.font] || schriften.geometrisch;
+  teile.push(g.typo);
+  let t = 'TEXT TO RENDER - HEADLINE (by far the largest element, set in ' + fontHint + ', in clean cream-white ' + akzent + '), spelled EXACTLY, letter for letter: "' + headline + '".';
+  if (subline) { t += ' SUBLINE (clearly smaller, directly under the headline), spelled EXACTLY: "' + subline + '".'; }
+  if (info) { t += ' INFO LINE (smallest, uppercase and letter-spaced, set in the calm free space or inside a thin outlined circle), spelled EXACTLY: "' + info + '".'; }
+  if (cta) { t += ' ACTION LINE (small, inside a rounded rectangle in the terracotta accent colour about #C0563C in the lower-left area), spelled EXACTLY: "' + cta + '".'; }
+  t += ' Perfect spelling is critical.';
+  teile.push(t);
+}
+teile.push(g.logo_zone);
+teile.push(g.text_regel);
+if (String(post.preis_text || '') !== '') { teile.push('Keep the LOWER-RIGHT quarter calm and completely free of detail for a round price badge that is composited afterwards.'); }
+teile.push(g.text_safety);
+teile.push(g.negativ);
+const prompt = teile.map(function (s) { return String(s || '').trim(); }).filter(function (s) { return s !== ''; }).join(' ');
+return [{ json: { openai_gen_body: { model: 'gpt-image-1', prompt: prompt, size: '1024x1024', quality: 'high', output_format: 'png', n: 1 }, bild_prompt: prompt } }];` },
     position: [1500, -80]
   },
   output: [{ openai_gen_body: { model: 'gpt-image-1' } }]
@@ -1045,30 +1109,49 @@ try { const buf = await this.helpers.getBinaryDataBuffer(0, 'data'); b64 = buf.t
 if (!b64) throw new Error('Basisfoto konnte nicht gelesen werden');
 const g = cfg.restaurant.bild_guideline || {};
 const f = cfg.restaurant.brand_farben || {};
-const lay = (cfg.layouts || {})[post.layout] || { bild: '' };
+const lay = (cfg.layouts || {})[post.layout] || { bild: '', stil: 'promo' };
 const headline = String(post.bild_headline || '').slice(0, 40);
-let prompt;
+const subline = String(post.bild_subline || '').slice(0, 60);
+const info = String(post.bild_infozeile || '').slice(0, 40);
+const cta = String(post.bild_cta || '').slice(0, 30);
+const akzent = f.akzent || '#F5E6C8';
+const teile = [];
 if (isEditPrev) {
-  prompt = 'This is an ALREADY FINISHED square social media post image. Keep the ENTIRE image pixel-identical - exactly the same photo, composition, background, lighting, colours and any existing logo - and change ONLY what the user asks: "' + comment + '". ';
-  if (post.layout === 'pur' || !headline) { prompt += 'Do not add or change any text. '; }
-  else { prompt += 'If the change concerns the title/headline, replace the existing in-image headline so it reads EXACTLY: "' + headline + '" in the same font style, colour and position, within a generous safe margin and never touching any edge; otherwise keep all existing text unchanged. '; }
-  prompt += 'Do NOT add, invent, move or restyle any logo, wordmark, badge, ribbon, seal or date/time stamp, and do not re-grade or restyle the rest of the image. ' + (g.text_safety || '');
+  teile.push('This is an ALREADY FINISHED square social media post image. Keep the ENTIRE image pixel-identical - exactly the same photo, composition, background, lighting, colours and any existing logo - and change ONLY what the user asks: "' + comment + '".');
+  if (post.layout === 'pur' || !headline) { teile.push('Do not add or change any text.'); }
+  else { teile.push('If the change concerns the title, replace the existing in-image headline so it reads EXACTLY: "' + headline + '" in the same font style, colour and position, within a generous safe margin and never touching any edge; otherwise keep all existing text unchanged.'); }
+  teile.push('Do NOT add, invent, move or restyle any logo, wordmark, badge, ribbon, seal or date stamp, and do not re-grade or restyle the rest of the image.');
+  teile.push(g.text_safety);
 } else {
-  prompt = 'Create a finished square 1:1 social media post image for an Italian restaurant from the provided photo. Keep the dish, composition and setting exactly as they are, do not replace or invent food items or people. ';
-  prompt += (g.grading || '') + ' ';
-  prompt += 'IMPORTANT: Do NOT draw, paint or invent ANY logo, wordmark, brand name, emblem, badge, ribbon, sticker, seal or date/time stamp anywhere. Keep the TOP-RIGHT corner completely empty and clean (slightly darker) - a real logo is composited there afterwards. ';
-  prompt += 'Do NOT render any price, number, percentage or currency symbol anywhere - prices are added afterwards as a real badge. ';
-  if (String(post.preis_text || '') !== '') { prompt += 'Keep the LOWER-RIGHT area calm and clean for a round price badge added afterwards. '; }
-  prompt += 'TEXT PLACEMENT: ' + (lay.bild || '') + ' ';
-  if (post.layout === 'pur' || !headline) { prompt += 'Render NO headline and no other text anywhere. '; }
-  else { prompt += (g.typo || '') + ' Render the headline spelled EXACTLY as: "' + headline + '". Perfect spelling. Keep it clear of the top-right corner. Use a modern geometric sans-serif (Poppins, Medium or Regular weight), in clean cream-white ' + (f.akzent || '#F5E6C8') + ', placed in its own calm upper negative-space zone with a GENEROUS clear margin so no letter touches the top or side edges (wrap onto two lines if long), optionally underlined by ONE thin fine terracotta rule (about #C0563C). Absolutely no serif and no default/system font. '; }
-  prompt += (g.text_safety || '') + ' ' + (g.negativ || '') + ' No watermark, no border, tack-sharp, clean.';
+  teile.push('Create a finished square 1:1 social media post image for an Italian restaurant from the provided photo. Keep the dish, the composition, the setting and the people exactly as they are - do not replace or invent food items or people.');
+  teile.push(g.grading);
+  teile.push('LAYOUT: ' + (lay.bild || ''));
+  if (post.layout === 'pur' || !headline) {
+    teile.push('Render NO text anywhere in the image: no headline, no subline, no caption, no lettering of any kind.');
+  } else {
+    const kondens = (lay.stil === 'event' || post.bild_typ === 'flyer');
+    const fontHint = kondens ? 'a bold condensed modern sans-serif (Barlow Condensed or Archivo Narrow)' : 'a clean modern sans-serif (Poppins Medium, or a bold condensed grotesque where the style calls for punch)';
+    teile.push(g.typo);
+    let t = 'TEXT TO RENDER - HEADLINE (by far the largest element, set in ' + fontHint + ', in clean cream-white ' + akzent + '), spelled EXACTLY, letter for letter: "' + headline + '".';
+    if (subline) { t += ' SUBLINE (clearly smaller, directly under the headline), spelled EXACTLY: "' + subline + '".'; }
+    if (info) { t += ' INFO LINE (smallest, uppercase and letter-spaced, set in the calm free space or inside a thin outlined circle), spelled EXACTLY: "' + info + '".'; }
+    if (cta) { t += ' ACTION LINE (small, inside a rounded rectangle in the terracotta accent colour about #C0563C in the lower-left area), spelled EXACTLY: "' + cta + '".'; }
+    t += ' Perfect spelling is critical.';
+    teile.push(t);
+  }
+  teile.push(g.logo_zone);
+  teile.push(g.text_regel);
+  if (String(post.preis_text || '') !== '') { teile.push('Keep the LOWER-RIGHT quarter calm and completely free of detail for a round price badge that is composited afterwards.'); }
+  teile.push(g.text_safety);
+  teile.push(g.negativ);
+  teile.push('No watermark, no border, tack-sharp, high-resolution, clean, no film grain or noise.');
 }
+const prompt = teile.map(function (s) { return String(s || '').trim(); }).filter(function (s) { return s !== ''; }).join(' ');
 const mimePng = mime.indexOf('png') !== -1 ? 'image/png' : 'image/jpeg';
 const ext = mimePng === 'image/png' ? 'png' : 'jpg';
 const binary = {};
 binary.image0 = await this.helpers.prepareBinaryData(Buffer.from(b64, 'base64'), 'image0.' + ext, mimePng);
-return [{ json: { prompt: prompt }, binary: binary }];` },
+return [{ json: { prompt: prompt, bild_prompt: prompt }, binary: binary }];` },
     position: [1720, 160]
   },
   output: [{ prompt: 'x' }]

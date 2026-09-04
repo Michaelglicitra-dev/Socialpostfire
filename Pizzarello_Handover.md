@@ -14,7 +14,7 @@ Modulare, klonbare **Social-Media-Automatisierung für Restaurants**, aktuell in
 **Grundsatzentscheidungen (gesetzt, nicht neu diskutieren):**
 - Kommunikation mit dem Gastronomen: **komplett Deutsch**
 - Einzige KI: **OpenAI** — `gpt-5-mini` für Text, `gpt-image-1` für Bilder
-- Bild-Guideline **v2**: modern/editorial/premium, cleaner Studio-Look, viel Negativraum — *nicht* rustikale Trattoria-Optik
+- Bild-Guideline **v3**: Werbe-Look statt Studio-Look — tiefes Schwarz bzw. unscharfe Szene, harter Kontrast, Typo-Hierarchie, 8 Layouts in 3 Stil-Familien. Details und Test-Werkzeug: [`Bildprompt_v3.md`](./Bildprompt_v3.md)
 - Preis-Badge und Logo werden **real aufkomponiert** (n8n editImage), **nie** von der KI ins Bild gemalt — keine erfundenen Logos/Zahlen
 - Freigabe erfolgt **immer in der Web-App** (nicht in Telegram)
 
