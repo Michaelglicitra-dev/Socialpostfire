@@ -1,8 +1,13 @@
 # Bild-Guideline v3 — Masterprompt + Layout-Varianten
 
 > Stand: 04.09.2026 · Ersetzt die Bild-Guideline v2 (die den flachen, grauen
-> „Editorial-Studio"-Look erzeugt hat). Betrifft `workflows/hauptflow.ts` **und**
-> `workflows/webapp.ts` — beide tragen dieselbe Config und dieselben Prompt-Bauer.
+> „Editorial-Studio"-Look erzeugt hat).
+>
+> ⚠️ **Dieses Dokument beschreibt die Entwicklung von v3 gegen den Altstand**
+> (`workflows/hauptflow.ts` / `webapp.ts`, beide verworfen — siehe [`LEGACY.md`](./LEGACY.md)).
+> Die **produktive Fassung** liegt in [`bot/`](./bot/) und ist auf den Live-Workflow
+> `Pizzarello Bot` portiert: Hochformat 2:3 statt 1:1, Logo fest unten links,
+> Preis-Badge unten rechts. Inhaltlich identisch, Geometrie anders.
 
 ---
 
