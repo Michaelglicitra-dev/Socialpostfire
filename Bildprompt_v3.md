@@ -72,16 +72,33 @@ Abgeleitet aus den Referenzbildern:
 
 ## 4. Die acht Layouts
 
-| Layout | Stil | Schrift | Wofür |
-|---|---|---|---|
-| `klassik` | promo | geometrisch | Allrounder: Headline oben, Gericht unten |
-| `promo_poster` | promo | condensed | **neu** — Text links gestapelt, Gericht rechts angeschnitten |
-| `menue_karte` | promo | geometrisch | Gericht komplett sichtbar + Zutatenzeile |
-| `angebots_sticker` | promo | condensed | Angebot; unten rechts frei für den echten Preis-Badge |
-| `produkt_spotlight` | spotlight | geometrisch | **neu** — Aktion/Gutschein mit CTA-Fläche |
-| `event_poster` | event | condensed | Event/Strassenfest, mehrere Textblöcke |
-| `pur` | promo | – | gar kein Text im Bild |
-| `zitat` | promo | geometrisch | eine kurze Zeile |
+| Layout | Stil | Schrift | Logo-Ecke | Wofür |
+|---|---|---|---|---|
+| `klassik` | promo | geometrisch | oben rechts | Allrounder: Headline oben, Gericht unten |
+| `promo_poster` | promo | condensed | **unten links** | **neu** — Text links gestapelt, Gericht rechts angeschnitten |
+| `menue_karte` | promo | geometrisch | oben rechts | Gericht komplett sichtbar + Zutatenzeile |
+| `angebots_sticker` | promo | condensed | oben rechts | Angebot; unten rechts frei für den echten Preis-Badge |
+| `produkt_spotlight` | spotlight | geometrisch | oben rechts | **neu** — Aktion/Gutschein mit CTA-Fläche |
+| `event_poster` | event | condensed | oben rechts | Event/Strassenfest, mehrere Textblöcke |
+| `pur` | promo | – | oben rechts | gar kein Text im Bild |
+| `zitat` | promo | geometrisch | oben rechts | eine kurze Zeile |
+
+### Logo-Ecke pro Layout
+
+Das Logo wird nicht gemalt, sondern per `editImage` als echte Datei aufkomponiert.
+Bisher immer fest auf `(850, 30)` — also oben rechts. Beim `promo_poster` läuft die
+Pizza aber genau dort bis in die Ecke, das Logo landete auf der Kruste.
+
+Deshalb ist die Ecke jetzt **pro Layout** wählbar (`layouts[x].logo_ecke`), und beide
+Seiten ziehen an derselben Quelle:
+
+- der Prompt reserviert die Ecke (`logo_zone` mit Platzhalter `{ECKE}`)
+- `Logo-ID waehlen` rechnet daraus `logo_x`/`logo_y` aus, `Logo einfuegen` stempelt dorthin
+
+Verfügbare Ecken in `cfg.logo_positionen`: `oben_rechts` (850/30), `oben_links` (34/30),
+`unten_rechts` (850/840), `unten_links` (34/840) — Werte für 1024×1024 bei 155×155 Logo.
+
+> `unten_rechts` ist bei `angebots_sticker` tabu: dort sitzt der echte Preis-Badge.
 
 ## 5. Neue Agent-Felder
 

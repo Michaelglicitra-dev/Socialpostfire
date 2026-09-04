@@ -114,7 +114,7 @@ const cfg = {
       master: 'MASTER PROMPT (always apply): Create a high-end social media marketing image for an Italian pizzeria - modern, professional, made to stop the scroll. The dish is the hero and must read as the main subject within one second. Work with rich, appetising colour, strong contrast and clean, highly legible typography. The background is either a deep, colour-reduced dark ground (near-black, dark charcoal or one calm dark brand tone) or a real scene rendered softly out of focus - never a busy background that competes with the food. Shallow depth of field: the product stays tack-sharp while everything behind it falls away. Build the composition around the text from the start: a strong short headline, optionally one smaller subline and one small info or action line, each in its own calm zone with real breathing room, never crowded together. Ultra-realistic light, professional composition, photorealistic photography (no illustration, no 3D render, no AI-collage look), social-media ready.',
       foto: 'FOOD PHOTOGRAPHY: real, ultra-realistic and genuinely appetising - visible craft and texture (blistered leopard-spotted crust, cheese pull, fresh herbs, glistening oil, clearly readable single ingredients). Stage the product large and close, either slightly from above (about 60-75 degrees) or straight top-down; a bold detail crop that runs off one edge is welcome and preferred over a small centred plate. Directional light with defined highlights and rich deep shadows so the texture pops - never flat diffuse light, never washed-out grey, never hard on-camera flash. Hands may hold, present or serve the dish to show craft, but never a recognisable face. The food carries warm saturated colour; everything around it stays calm and dark so the dish is the only real colour in the frame.',
       typo: 'TYPOGRAPHY: a modern sans-serif system with a CLEAR SIZE HIERARCHY - the headline is by far the largest and strongest element, a subline is clearly smaller, an info or action line is smallest. Headlines in a strong contemporary sans-serif: a bold condensed grotesque (Barlow Condensed, Archivo Narrow, Oswald) for punchy promo and event looks, or a clean geometric Poppins Medium for calmer product looks. Sublines and info lines in Inter or General Sans, uppercase and letter-spaced where it fits. Letters in clean white or warm cream; at most one single word may take the terracotta accent colour. Text sits in its own calm zone, clearly separated from the hero product and never pasted across it, with no box, banner or drop shadow unless the layout explicitly asks for one. Perfect spelling, no serif, no script or handwritten type, no generic default or system font.',
-      logo_zone: 'LOGO ZONE (critical): never draw, paint or invent any logo, wordmark, brand name, emblem, signature or watermark anywhere in the image. Keep the TOP-RIGHT corner completely clean, calm and free of food, text and detail (slightly darker is ideal) - a real logo is composited into that corner afterwards.',
+      logo_zone: 'LOGO ZONE (critical): never draw, paint or invent any logo, wordmark, brand name, emblem, signature or watermark anywhere in the image. Keep the {ECKE} corner of the image completely clean, calm and free of food, text and detail - leave an empty area there of about one sixth of the image width, ideally slightly darker than its surroundings, because a real logo is composited into exactly that corner afterwards. Nothing may reach into it: no crust, no garnish, no letter.',
       text_regel: 'TEXT RULE (critical): render ONLY the exact text lines listed above, spelled letter for letter, and no other words, letters or characters anywhere in the image. Never render a price, a percentage or a currency symbol, and never invent numbers, dates or extra captions - prices are composited afterwards as a real badge.',
       text_safety: 'TEXT SAFE AREA (critical): every piece of text and every graphic element MUST sit completely inside the image within a safe margin of at least 10 percent from every edge, with EXTRA clearance at the TOP so the first headline line never touches or runs off the top edge; never let a letter, word or element touch, overlap or run off any image border; if a headline is long, wrap it onto two lines rather than shrinking it into the margin; no text may be cut off or cropped at any edge.',
       negativ: 'AVOID: rustic wooden-table trattoria kitsch, checkered tablecloths, cosy candle props, loud oversaturated red-green-white tricolore cliche, generic stock-photo look, flat washed-out grey lighting and low contrast, muddy or orange colour cast, serif or script typefaces, text pasted over the hero product, a cluttered layout with many competing props, recognisable faces of real people, distorted hands or fingers, malformed or misspelled lettering, any invented brand logo, wordmark or emblem, any watermark, any extra badge, ribbon, sticker, seal or date stamp that was not explicitly requested, any price, percentage or currency symbol, and any text beyond the exact lines specified.',
@@ -135,14 +135,22 @@ const cfg = {
     }
   },
   layouts: {
-    klassik: { name: 'Klassik', stil: 'promo', font: 'geometrisch', bild: 'Headline centred in the calm upper third with generous space around it, an optional subline directly beneath it, and the hero dish filling the lower two thirds; text and food clearly separated, never overlapping.' },
-    promo_poster: { name: 'Promo-Poster', stil: 'promo', font: 'condensed', bild: 'Split poster: the hero product sits large on the right half or lower right and is cropped at the edge; ALL text is stacked and left-aligned on the left half - headline at the top, subline under it, the small info line lowest - over a deep near-black ground. Optional small supporting food details along the lower-left edge.' },
-    menue_karte: { name: 'Menue-Karte', stil: 'promo', font: 'geometrisch', bild: 'Clean product look: headline top-centre or top-left, one ingredient subline separated by dots directly beneath it, and the whole dish fully visible below with calm space all around it.' },
-    angebots_sticker: { name: 'Angebots-Sticker', stil: 'promo', font: 'condensed', bild: 'Offer look: a strong headline hierarchy in the upper area, the product cropped large at the left or bottom edge, and the LOWER-RIGHT quarter kept completely calm and empty for a real round price badge composited afterwards - draw no price and no badge yourself.' },
-    produkt_spotlight: { name: 'Produkt-Spotlight', stil: 'spotlight', font: 'geometrisch', bild: 'Spotlight: a large light headline across the upper area over the softly blurred scene, the hero product filling the middle and lower frame, and a discreet rounded call-to-action block in the terracotta accent colour in the lower-left area carrying one short action line.' },
-    event_poster: { name: 'Event-Poster', stil: 'event', font: 'condensed', bild: 'Event poster: a big bold condensed headline in the upper-middle third, one subline directly under it, and one small info line for the day and the place below that, all centred over the atmospheric evening scene; keep the lower third visually calmer.' },
-    pur: { name: 'Pur', stil: 'promo', font: 'geometrisch', bild: 'No text at all in the image. Only the clean, appetising food photograph. Absolutely no headline, no words, no badge and no caption.' },
-    zitat: { name: 'Zitat', stil: 'promo', font: 'geometrisch', bild: 'Editorial quote look: one short line of clean sans-serif text set in a calm dark area, cream white, no box and no banner, clearly separated from the food.' }
+    klassik: { name: 'Klassik', logo_ecke: 'oben_rechts', stil: 'promo', font: 'geometrisch', bild: 'Headline centred in the calm upper third with generous space around it, an optional subline directly beneath it, and the hero dish filling the lower two thirds; text and food clearly separated, never overlapping.' },
+    promo_poster: { name: 'Promo-Poster', logo_ecke: 'unten_links', stil: 'promo', font: 'condensed', bild: 'Split poster: the hero product sits large on the right half and is cropped at the right edge; ALL text is stacked and left-aligned on the left half - headline at the top, subline under it, the small info line lowest - over a deep near-black ground. The text stack ends in the upper half, and the whole LOWER-LEFT corner stays completely empty and slightly darker for the logo. Optional small supporting food details (burrata balls, antipasti) sit along the BOTTOM-CENTRE edge below the hero product - never in the lower-left corner.' },
+    menue_karte: { name: 'Menue-Karte', logo_ecke: 'oben_rechts', stil: 'promo', font: 'geometrisch', bild: 'Clean product look: headline top-centre or top-left, one ingredient subline separated by dots directly beneath it, and the whole dish fully visible below with calm space all around it.' },
+    angebots_sticker: { name: 'Angebots-Sticker', logo_ecke: 'oben_rechts', stil: 'promo', font: 'condensed', bild: 'Offer look: a strong headline hierarchy in the upper area, the product cropped large at the left or bottom edge, and the LOWER-RIGHT quarter kept completely calm and empty for a real round price badge composited afterwards - draw no price and no badge yourself.' },
+    produkt_spotlight: { name: 'Produkt-Spotlight', logo_ecke: 'oben_rechts', stil: 'spotlight', font: 'geometrisch', bild: 'Spotlight: a large light headline across the upper area over the softly blurred scene, the hero product filling the middle and lower frame, and a discreet rounded call-to-action block in the terracotta accent colour in the lower-left area carrying one short action line.' },
+    event_poster: { name: 'Event-Poster', logo_ecke: 'oben_rechts', stil: 'event', font: 'condensed', bild: 'Event poster: a big bold condensed headline in the upper-middle third, one subline directly under it, and one small info line for the day and the place below that, all centred over the atmospheric evening scene; keep the lower third visually calmer.' },
+    pur: { name: 'Pur', logo_ecke: 'oben_rechts', stil: 'promo', font: 'geometrisch', bild: 'No text at all in the image. Only the clean, appetising food photograph. Absolutely no headline, no words, no badge and no caption.' },
+    zitat: { name: 'Zitat', logo_ecke: 'oben_rechts', stil: 'promo', font: 'geometrisch', bild: 'Editorial quote look: one short line of clean sans-serif text set in a calm dark area, cream white, no box and no banner, clearly separated from the food.' }
+  },
+  // Logo wird 155x155 auf 1024x1024 gestempelt. Pro Layout waehlbar, damit die
+  // reservierte Ecke im Prompt und die Stempel-Position immer zusammenpassen.
+  logo_positionen: {
+    oben_rechts: { x: 850, y: 30, text: 'TOP-RIGHT' },
+    oben_links: { x: 34, y: 30, text: 'TOP-LEFT' },
+    unten_rechts: { x: 850, y: 840, text: 'BOTTOM-RIGHT' },
+    unten_links: { x: 34, y: 840, text: 'BOTTOM-LEFT' }
   },
   logo_onedrive_pfad: '/Pizzarello/assets/pizzarello_transparent.png',
   saeulen_rotation: { '1': 'angebote', '2': 'saisonal', '3': 'community', '4': 'angebote', '5': 'saisonal', '6': 'community', '7': 'angebote' },
@@ -514,6 +522,7 @@ const subline = String(post.bild_subline || '').slice(0, 60);
 const info = String(post.bild_infozeile || '').slice(0, 40);
 const cta = String(post.bild_cta || '').slice(0, 30);
 const akzent = f.akzent || '#F5E6C8';
+const ecke = (cfg.logo_positionen || {})[lay.logo_ecke || 'oben_rechts'] || { x: 850, y: 30, text: 'TOP-RIGHT' };
 const teile = [];
 teile.push('Create a finished square 1:1 social media post image for an Italian restaurant from the provided photo. Keep the dish, the composition, the setting and the people exactly as they are - do not replace or invent food items or people.');
 teile.push(g.grading);
@@ -531,7 +540,7 @@ if (post.layout === 'pur' || !headline) {
   t += ' Perfect spelling is critical.';
   teile.push(t);
 }
-teile.push(g.logo_zone);
+teile.push(String(g.logo_zone || '').replace('{ECKE}', ecke.text || 'TOP-RIGHT'));
 teile.push(g.text_regel);
 if (String(post.preis_text || '') !== '') { teile.push('Keep the LOWER-RIGHT quarter calm and completely free of detail for a round price badge that is composited afterwards.'); }
 teile.push(g.text_safety);
@@ -613,6 +622,7 @@ const subline = String(post.bild_subline || '').slice(0, 60);
 const info = String(post.bild_infozeile || '').slice(0, 40);
 const cta = String(post.bild_cta || '').slice(0, 30);
 const akzent = f.akzent || '#F5E6C8';
+const ecke = (cfg.logo_positionen || {})[lay.logo_ecke || 'oben_rechts'] || { x: 850, y: 30, text: 'TOP-RIGHT' };
 const teile = [];
 teile.push('Square 1:1 social media marketing image for an Italian restaurant.');
 teile.push('MOTIF: ' + String(post.image_brief || ''));
@@ -634,7 +644,7 @@ if (post.layout === 'pur' || !headline) {
   t += ' Perfect spelling is critical.';
   teile.push(t);
 }
-teile.push(g.logo_zone);
+teile.push(String(g.logo_zone || '').replace('{ECKE}', ecke.text || 'TOP-RIGHT'));
 teile.push(g.text_regel);
 if (String(post.preis_text || '') !== '') { teile.push('Keep the LOWER-RIGHT quarter calm and completely free of detail for a round price badge that is composited afterwards.'); }
 teile.push(g.text_safety);
@@ -698,7 +708,10 @@ const items = $input.all().map(function(i){ return i.json; }).filter(function(f)
 if (items.length === 0) throw new Error('Logo nicht gefunden in OneDrive fuer "' + dateiname + '".');
 let best = items[0];
 for (const f of items) { const p = ((f.parentReference && f.parentReference.path) || '').toLowerCase(); if (ordner && p.indexOf(ordner) !== -1) { best = f; break; } }
-return [{ json: { logo_file_id: best.id, logo_name: best.name } }];` },
+const layout = String(($('Post aufbereiten').first().json.post || {}).layout || '');
+const eckeName = ((cfg.layouts || {})[layout] || {}).logo_ecke || 'oben_rechts';
+const ecke = (cfg.logo_positionen || {})[eckeName] || { x: 850, y: 30 };
+return [{ json: { logo_file_id: best.id, logo_name: best.name, logo_x: ecke.x, logo_y: ecke.y, logo_ecke: eckeName } }];` },
     position: [3160, 200]
   },
   output: [{ logo_file_id: 'file123', logo_name: 'pizzarello_transparent.png' }]
@@ -765,7 +778,7 @@ const logoComposite = node({
   version: 1,
   config: {
     name: 'Logo einfuegen',
-    parameters: { operation: 'composite', dataPropertyNameComposite: 'logo', positionX: 850, positionY: 30, options: { destinationKey: 'data', format: 'png', quality: 100 } },
+    parameters: { operation: 'composite', dataPropertyNameComposite: 'logo', positionX: expr("{{ $('Logo-ID waehlen').first().json.logo_x }}"), positionY: expr("{{ $('Logo-ID waehlen').first().json.logo_y }}"), options: { destinationKey: 'data', format: 'png', quality: 100 } },
     position: [4260, 200]
   },
   output: [{}]
