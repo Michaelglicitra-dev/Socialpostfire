@@ -10,19 +10,51 @@ bildrelevanten Nodes** plus einen JSON-Snapshot des Live-Workflows als Referenz.
 
 ```
 bot/
-  nodes/       <- Code zum Einspielen (pro n8n-Node eine Datei)
-  prompts/     <- gerenderte Beispiel-Prompts je Layout, zum Gegentesten
-  live/        <- JSON-Snapshot des Live-Workflows (Referenz, nicht zum Einspielen)
-  preview.mjs  <- rendert die Prompts aus nodes/, ohne n8n
+  nodes/                  <- Code zum Einspielen (pro n8n-Node eine Datei)
+  prompts/                <- gerenderte Beispiel-Prompts je Layout, zum Gegentesten
+  live/                   <- Snapshot des Live-Workflows + fertige Import-JSON
+  preview.mjs             <- rendert die Prompts aus nodes/, ohne n8n
+  build-workflow-json.mjs <- baut die Import-JSON aus Snapshot + nodes/
 ```
 
 ---
 
-## Einspielen in n8n
+## Weg A: fertige Workflow-JSON importieren
 
-`update_workflow` über MCP ersetzt **den kompletten Workflow** und würde die 83 Nodes
-gefährden, die mit Bildgenerierung nichts zu tun haben. Deshalb wird der Code **pro Node
-in der n8n-Oberfläche** eingefügt. Reihenfolge egal, aber alle sechs gehören zusammen —
+`bot/live/Pizzarello-Bot-v3.import.json` enthält den **kompletten Workflow mit allen 87
+Nodes**, v3 bereits eingebaut. In n8n über **Workflows → … → Import from File** einlesen.
+
+> ⚠️ **Nicht in den laufenden Workflow hineinkopieren.** Einfügen ins Canvas legt die 87
+> Nodes *zusätzlich* neben die vorhandenen — du hättest jeden Node doppelt. Importiere die
+> Datei als **neuen Workflow**.
+
+Nach dem Import in dieser Reihenfolge:
+
+1. **Credentials zuordnen.** Die n8n-API liefert Credentials nicht aus, der Snapshot
+   enthält also keine. Betroffen sind alle Telegram-, OpenAI-, imgbb- und HTTP-Nodes
+   (23 Stück). Das ist der Preis dieses Wegs.
+2. **Alten Bot deaktivieren**, bevor du den neuen aktivierst — zwei aktive Workflows am
+   selben Telegram-Bot verarbeiten jede Nachricht doppelt.
+3. Neuen Workflow aktivieren und mit einer Testnachricht prüfen.
+
+Die `webhookId` des Telegram-Triggers ist bewusst entfernt, damit n8n eine neue vergibt.
+`settings.errorWorkflow` zeigt weiterhin auf den `Pizzarello Fehler-Melder`.
+
+Die Datei wird erzeugt mit:
+
+```bash
+node bot/build-workflow-json.mjs
+```
+
+Das Skript patcht den Snapshot mit den Dateien aus `nodes/` und prüft dabei jede der 19
+Änderungen — schlägt eine fehl, bricht es ab, statt eine halb gepatchte Datei zu schreiben.
+
+---
+
+## Weg B: einzelne Nodes einspielen (empfohlen)
+
+Weniger bequem, aber **ohne Credential-Verlust und ohne zweiten Workflow**: du änderst den
+laufenden Bot direkt. Der Code wird **pro Node in der n8n-Oberfläche** eingefügt. Reihenfolge egal, aber alle sechs gehören zusammen —
 teilweises Einspielen bricht den Flow (z.B. neue Layout-Namen ohne passende Config).
 
 | Datei | n8n-Node | Wohin |

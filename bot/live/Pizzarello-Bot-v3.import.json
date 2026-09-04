@@ -1,0 +1,3394 @@
+{
+  "name": "Pizzarello Bot v3",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {
+          "download": true,
+          "imageSize": "large"
+        }
+      },
+      "id": "9ef6989a-4008-4833-80a9-1666e339da6b",
+      "name": "Telegram Eingang",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1504,
+        1056
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const b = $json || {};\nconst cb = b.callback_query || null;\nconst msg = cb ? (cb.message || {}) : (b.message || b.edited_message || {});\nconst chat = msg.chat || {};\nconst from = cb ? (cb.from || {}) : (msg.from || {});\nconst chat_id = String(chat.id || from.id || '');\nlet typ = 'unbekannt';\nlet text = '';\nlet callback_data = '';\nlet callback_query_id = '';\nlet photo_b64 = '';\nif (cb) {\n  typ = 'callback';\n  callback_data = String(cb.data || '');\n  callback_query_id = String(cb.id || '');\n} else if (msg.photo) {\n  typ = 'foto';\n  text = String(msg.caption || '').trim();\n  try { const buf = await this.helpers.getBinaryDataBuffer(0, 'data'); photo_b64 = buf.toString('base64'); } catch (e) { photo_b64 = ''; }\n} else if (msg.text) {\n  typ = 'text';\n  text = String(msg.text).trim();\n}\nreturn [{ json: { quelle: 'telegram', chat_id: chat_id, typ: typ, text: text, callback_data: callback_data, callback_query_id: callback_query_id, message_id: String(msg.message_id || ''), has_photo: photo_b64 !== '', photo_b64: photo_b64 } }];"
+      },
+      "id": "dfa4f095-1a95-45c9-aa71-a92c1e80596a",
+      "name": "Update normalisieren",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1280,
+        1056
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json || {};\nreturn [{ json: { quelle: j.quelle, chat_id: j.chat_id, typ: j.typ, text: j.text, callback_data: j.callback_data, callback_query_id: j.callback_query_id, message_id: j.message_id, has_photo: !!j.has_photo } }];"
+      },
+      "id": "cf17329a-1d87-4433-8d2c-72ac9e8e1d9b",
+      "name": "Eingang",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1056,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const inp = $input.first().json || {};\nconst cfg = {\n  restaurant: {\n    name: 'Pizzarello',\n    kueche: 'Pizzeria in Oberhausen - handgemachte, hauchduenn-knusprige Pizza zum Abholen und Bestellen',\n    standort: 'Friedrich-Karl-Strasse 19, 46045 Oberhausen',\n    telefon: '0208 / 888 802',\n    website: 'https://www.pizzarello.net',\n    oeffnungszeiten: 'Mo + Di Ruhetag (ausser Feiertage), Mi-Fr 17:00-22:00 Uhr, Sa-So 13:00-22:00 Uhr',\n    ton: 'familiaer-italienisch, herzlich, ein bisschen verspielt, Du-Ansprache',\n    brand_farben: { primaer: '#C8102E', sekundaer: '#2E7D32', akzent: '#F5E6C8', dunkel: '#1e1a17' },\n    bild_guideline: {\n      look: 'BRAND LOOK: a modern premium campaign picture made to stop the scroll - the dish is the hero and must read as the main subject within one second. Rich, appetising colour on the food, strong contrast, and a deep colour-reduced ground (near-black, dark charcoal or one calm dark tone) or a real scene rendered softly out of focus - never a busy background that competes with the food. Directional light with defined highlights and rich deep shadows keeps every texture crisp: blistered leopard-spotted crust, char, cheese pull, fresh herbs, glistening oil. Shallow depth of field, so the product stays tack-sharp while everything behind it falls away. Never flat, never washed-out grey, never low in contrast, never an orange cast. Photorealistic photography - no illustration, no 3D render, no collage look.',\n      motiv: 'SUBJECT STAGING: the dish sits on one calm dark ground - matte anthracite, deep black or dark brushed steel - and is staged large and close, slightly from above (60 to 75 degrees) or straight top-down. A bold detail crop that runs out of one edge is welcome and better than a small centred plate. Craft is visible: at most one or two hands or forearms hold, cut or serve it, never a recognisable face. The ingredients are readable and deliberately placed (single mortadella rosettes, burrata drops, pistachio). The food carries warm saturated colour while everything around it stays calm and dark.',\n      grading: 'KEEP THE PHOTO: keep the dish, the composition, the people and the setting exactly as they are - replace nothing, add no food and no person. Only re-grade the picture towards the brand look: deepen the ground towards dark charcoal or near-black, raise the contrast and shape the light so crust, cheese and herb texture pop, warm and saturate the food itself while the surroundings stay calm and desaturated, keep the dish tack-sharp and let the background fall softly out of focus. Never flat, never washed-out grey, never an orange cast. Fully photorealistic.',\n      module: {\n        produkt: 'MOTIF: the finished pizza staged large and close on the bare dark ground, held or presented by one pair of hands.',\n        event: 'MOTIF: a dark calm ground with the atmosphere only hinted far behind (soft blurred shapes, hands, glasses, warm lights), the food clearly staged in front of it.',\n        angebot: 'MOTIF: a detail crop of the product, large and tempting, running out of the left or bottom edge on a dark ground.',\n        saison: 'MOTIF: the seasonal ingredient staged fresh and raw next to the finished dish, close and precise, the colour of the season carried by the food itself.',\n        bts: 'MOTIF: an honest craft moment - hands shaping dough or sliding a pizza into the stone oven, flour dust and oven flames visible - warm directional light against a dark kitchen.',\n        flyer: 'MOTIF: a campaign announcement on an almost black ground - a real atmospheric scene or one large food detail running out of the lower or side edge, with wide calm space above it for the stacked text.'\n      },\n      stile: {\n        promo: 'STYLE Promo Poster: a bold promotional poster. One large appetising hero dish dominates the lower two thirds and is generously cropped at one edge, while a deep near-black ground carries the text above it. Punchy typography with a clear hierarchy: one strong short headline plus at most one subline. A small thin-outlined circle carrying a short seasonal or local line may sit in the calm empty space, but ONLY if such a line is actually given. Confident, high-contrast, immediately appetising.',\n        spotlight: 'STYLE Product Spotlight: a campaign picture built around one clear message and one call to action. A warm atmospheric food scene fills the frame and falls softly out of focus behind the message. The headline sits large and light in the upper area over the calmest part of the scene. A discreet rounded call-to-action block in the terracotta accent colour carries one short action line and sits in the calm middle area, clear of both bottom corners.',\n        event: 'STYLE Event Poster: an atmospheric announcement with real depth. A genuine evening scene carries the picture - warm street or terrace atmosphere, string lights, a sunset sky, softly blurred guests far in the background, never a recognisable face - graded dark and rich so the text stays perfectly readable. A large bold condensed headline sits in the upper third with clearly smaller stacked text blocks beneath it. Festive and dynamic, but clean and never cluttered.'\n      },\n      typo: 'TYPE: a modern sans-serif system with a CLEAR SIZE HIERARCHY - the headline is by far the largest and strongest element, a subline is clearly smaller, an info or action line is smallest. The lettering belongs to the photograph: evenly lit, part of the scene, never a pasted-on graphic, never inside a box or band. Letters in clean white or warm cream, and at most one single word may take the terracotta accent. A single thin terracotta rule may sit directly under the headline.',\n      stil: 'STYLE DISCIPLINE: the frame stays uncluttered and one clear subject leads it. People appear only as hands and forearms, or as soft blurred shapes far in the background. The colour stays muted apart from the food, which carries warm saturated colour. The picture is sharp and clean, with smooth surfaces and no film grain.',\n      stil_foto: 'STYLE DISCIPLINE: keep the colour muted apart from the food, which may carry warm saturated colour; keep the picture sharp, clean and free of film grain, and calm down whatever is already around the dish rather than adding anything to it.',\n      verbote: 'HARD RULES: draw no logo, wordmark, emblem or signature of any kind - the real Pizzarello logo is composited into the picture afterwards, so the picture you produce carries none. Render no price, no number, no percentage and no currency symbol, and no badge, sticker, seal, ribbon or date stamp. Render ONLY the text lines listed above and no other words anywhere. Every letter stays fully inside the frame with a margin of at least 12 percent from every edge; wrap a long headline onto two lines rather than letting it touch an edge. AVOID: rustic wooden-table trattoria kitsch, checkered tablecloths, cosy candle props, a loud red-green-white tricolore cliche, a generic stock-photo look, flat washed-out grey lighting and low contrast, a muddy or orange colour cast, serif or script typefaces, text pasted across the hero dish, a cluttered frame with many competing props, recognisable faces, distorted hands or fingers, and malformed or misspelled lettering.'\n    }\n  },\n  layouts: {\n    klassik: { name: 'Klassik', stil: 'promo', font: 'geometrisch', bild: 'HEADLINE ZONE: one calm line (two if needed) left-aligned in the upper third, cream-white, with an optional smaller subline directly under it; the dish keeps to the lower two thirds, so text and food never touch.' },\n    promo_poster: { name: 'Promo-Poster', stil: 'promo', font: 'condensed', bild: 'HEADLINE ZONE: the text stacks left-aligned in the upper third - headline first, the subline under it, the small info line lowest; the hero dish fills the lower two thirds and is cropped at the right or bottom edge, leaving both bottom corners calm and empty.' },\n    menue_karte: { name: 'Menue-Karte', stil: 'promo', font: 'geometrisch', bild: 'HEADLINE ZONE: top-left in the upper third, with one short ingredient line under it separated by dots (\"Zutat - Zutat - Zutat\"); the dish sits fully visible below it.' },\n    angebots_sticker: { name: 'Angebots-Sticker', stil: 'promo', font: 'condensed', bild: 'HEADLINE ZONE: the upper third, the headline being the largest element with at most one short line under it at half the size; the dish is a detail crop along the left or bottom edge, and the bottom-right corner stays completely empty for the real price badge.' },\n    produkt_spotlight: { name: 'Produkt-Spotlight', stil: 'spotlight', font: 'geometrisch', bild: 'HEADLINE ZONE: a large light headline in the upper third over the calmest part of the scene, wrapped onto two lines rather than run across the full width; the dish fills the middle of the frame and the action line sits in the calm area above the bottom corners.' },\n    event_poster: { name: 'Event-Poster', stil: 'event', font: 'condensed', bild: 'HEADLINE ZONE: the upper third, bold and condensed, with generous empty space around it, one subline directly under it and one small info line for the day and the place below that; nothing else competes with it.' },\n    pur: { name: 'Pur', stil: 'promo', font: 'geometrisch', bild: 'NO TEXT: the picture carries no headline, no words and no captions at all.' },\n    zitat: { name: 'Zitat', stil: 'promo', font: 'geometrisch', bild: 'HEADLINE ZONE: one short line in the upper third, set in calm empty space, cream-white, with no box and no band around it.' }\n  },\n  logo_url: 'https://i.ibb.co/23g2B67Z/Pizzarello-transp.png',\n  logo_layout: { box_breite: 420, box_hoehe: 200, rand: 64 },\n  // Bildformate. \"gen\" ist die Groesse, die gpt-image-1 nativ liefert (nur 1024x1024,\n  // 1024x1536 und 1536x1024 sind moeglich). \"vertikal\" markiert Formate, die nach der\n  // Freigabe noch auf 9:16 erweitert werden.\n  formate: {\n    quadrat: { gen: '1024x1024', breite: 1024, hoehe: 1024, vertikal: false,\n      hinweis: 'CANVAS: the picture is SQUARE (1:1). The text block keeps to the upper third and the dish fills the middle and lower area - there is less height than in a portrait picture, so keep the text to a headline and at most one short line under it.' },\n    hoch: { gen: '1024x1536', breite: 1024, hoehe: 1536, vertikal: false,\n      hinweis: 'CANVAS: the picture is TALL (2:3 portrait). There is generous height, so the text block sits comfortably in the upper third and the dish fills the lower two thirds.' },\n    story: { gen: '1024x1536', breite: 1024, hoehe: 1536, vertikal: true,\n      hinweis: 'CANVAS: the picture is TALL (2:3 portrait) and will later be placed on a 9:16 story canvas, so keep every important element - text, dish, both reserved corners - well inside the frame and away from the very top and bottom edges.' },\n    quer: { gen: '1536x1024', breite: 1536, hoehe: 1024, vertikal: false,\n      hinweis: 'CANVAS: the picture is WIDE (3:2 landscape). Set the text block in the left third and let the dish fill the right two thirds, cropped at the right edge.' }\n  },\n  // Eine Plattform je Post. Reihenfolge ueber die Woche, damit jedes Bild einzigartig\n  // bleibt und immer im passenden Format erzeugt wird.\n  plattformen: {\n    instagram: { key: 'instagram', name: 'Instagram', channelId: '6a805d6bb2d9d57743816131', aktiv: true, bild_format: 'quadrat', tags: 'max5' },\n    facebook: { key: 'facebook', name: 'Facebook', channelId: '', aktiv: false, bild_format: 'quadrat', tags: 'full' },\n    tiktok: { key: 'tiktok', name: 'TikTok', channelId: '', aktiv: false, bild_format: 'story', tags: 'full' }\n  },\n  plattform_rotation: { '1': 'instagram', '2': 'facebook', '3': 'tiktok', '4': 'instagram', '5': 'facebook', '6': 'tiktok', '7': 'instagram' },\n  saeulen_rotation: { '1': 'angebote', '2': 'saisonal', '3': 'community', '4': 'angebote', '5': 'saisonal', '6': 'community', '7': 'angebote' },\n  hashtags: {\n    angebote: ['#pizzarello', '#tagesangebot', '#pizzaderwoche', '#oberhausen', '#pizzaliebe', '#handmadepizza'],\n    saisonal: ['#pizzarello', '#saisonal', '#frischezutaten', '#regional', '#oberhausen', '#italienischekueche', '#handmadepizza'],\n    community: ['#pizzarello', '#stammgaeste', '#behindthescenes', '#oberhausen', '#supportlocal', '#lapizzaevita']\n  },\n  telegram_chat_id: '7582948490',\n  buffer: {\n    organizationId: '69f7afabd110cb66bf840334',\n    posting_zeit: '17:00',\n    pinterest_url: 'https://www.pizzarello.net'\n  }\n};\n\n// ---- Plattform des Tages aufloesen -------------------------------------------------\n// Ein Post geht an genau EINE Plattform. Der Wochentag entscheidet, welche. Ist die\n// vorgesehene Plattform nicht scharf geschaltet (kein channelId), wird die naechste\n// aktive genommen, damit der Tagespost nicht ins Leere laeuft.\nconst heute = $now.setZone('Europe/Berlin');\nfunction istAktiv(p) { return p && p.aktiv && p.channelId && String(p.channelId).indexOf('<') === -1; }\nconst alle = cfg.plattformen || {};\nconst reihenfolge = ['instagram', 'facebook', 'tiktok'];\nlet plattform = alle[(cfg.plattform_rotation || {})[String(heute.weekday)] || 'instagram'];\nif (!istAktiv(plattform)) {\n  const start = reihenfolge.indexOf(plattform ? plattform.key : 'instagram');\n  plattform = null;\n  for (let i = 1; i <= reihenfolge.length && !plattform; i++) {\n    const kand = alle[reihenfolge[(Math.max(start, 0) + i) % reihenfolge.length]];\n    if (istAktiv(kand)) plattform = kand;\n  }\n}\nconst format = (cfg.formate || {})[(plattform && plattform.bild_format) || 'quadrat'] || cfg.formate.quadrat;\n\ncfg.plattform = plattform || null;\ncfg.bild_format = format;\ncfg.bild_size = format.gen;\n// Die nachgelagerten Nodes erwarten weiterhin eine Kanal-Liste - sie enthaelt jetzt\n// genau die eine Plattform des Tages. \"format: vertical\" loest die vorhandene\n// 9:16-Ableitung nach der Freigabe aus.\ncfg.buffer.kanaele = plattform ? [{\n  key: plattform.key,\n  name: plattform.name,\n  channelId: plattform.channelId,\n  aktiv: true,\n  format: format.vertikal ? 'vertical' : 'master',\n  tags: plattform.tags\n}] : [];\n\nreturn [{ json: Object.assign({}, inp, cfg) }];"
+      },
+      "id": "f7039cba-0ef2-4128-9cb9-f0400e2d6d7d",
+      "name": "Restaurant-Konfiguration",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "8WhvJ2bY2B6wKyGY",
+          "cachedResultName": "pizzarello_sessions"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $json.chat_id }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "id": "ebaaa22e-2de0-4a06-b0a0-b7d0a9ff5cce",
+      "name": "Session laden",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -608,
+        1152
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "76dfacf8-3ff1-45a7-9d19-bc3718e65960",
+      "name": "Taeglich 09:30",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1504,
+        1248
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { quelle: 'schedule', chat_id: '7582948490', typ: 'schedule', text: '', callback_data: '', callback_query_id: '', message_id: '', has_photo: false, photo_b64: '' } }];"
+      },
+      "id": "9f4c338c-ab53-4ec5-bd9e-23a86aaa99ae",
+      "name": "Tagespost normalisieren",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1280,
+        1248
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const e = $('Eingang').first().json;\nconst cfg = $('Restaurant-Konfiguration').first().json;\nconst row = $input.first().json || {};\nconst hatZeile = !!(row && row.chat_id);\nconst state = hatZeile ? String(row.state || 'IDLE') : 'IDLE';\nconst erlaubt = String(cfg.telegram_chat_id);\nconst parts = String(e.callback_data || '').split(':');\nconst aktion = parts[0] || '';\nconst cb_post_id = parts.slice(1).join(':');\nconst gueltig = (state === 'DRAFT_OPEN') && cb_post_id !== '' && String(row.post_id || '') === cb_post_id;\nlet hinweis = 'Dieser Entwurf ist nicht mehr aktuell.';\nif (gueltig) {\n  if (aktion === 'ok') hinweis = 'Alles klar - ich plane den Post ein.';\n  else if (aktion === 'neu') hinweis = 'Ich baue dir eine andere Variante.';\n  else if (aktion === 'weg') hinweis = 'Verworfen.';\n  else hinweis = 'Unbekannte Aktion.';\n}\nlet route = 5;\nif (e.quelle === 'telegram' && String(e.chat_id) !== erlaubt) route = 5;\nelse if (e.typ === 'callback') route = 0;\nelse if (state === 'BUSY') route = (e.quelle === 'schedule') ? 5 : 1;\nelse if (e.typ === 'foto') route = 2;\nelse if (e.typ === 'text') route = 3;\nelse if (e.typ === 'schedule') route = 4;\nelse route = 5;\nreturn [{ json: {\n  route: route,\n  state: state,\n  aktion: aktion,\n  cb_post_id: cb_post_id,\n  gueltig: gueltig && (aktion === 'ok' || aktion === 'neu' || aktion === 'weg'),\n  callback_hinweis: hinweis.slice(0, 190),\n  sess_post_id: String(row.post_id || ''),\n  sess_draft_json: String(row.draft_json || ''),\n  sess_photo_url: String(row.photo_url || ''),\n  sess_last_message_id: String(row.last_message_id || '')\n} }];"
+      },
+      "id": "25bf42b9-4d4a-4e3d-9928-de0379e8eb0e",
+      "name": "Router",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "expression",
+        "numberOutputs": 6,
+        "output": "={{ $json.route }}",
+        "looseTypeValidation": true
+      },
+      "id": "601bdf68-d4a9-4c58-810b-39e4a014fad3",
+      "name": "Zweig waehlen",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        1088
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $('Eingang').first().json.callback_query_id }}",
+        "additionalFields": {
+          "text": "={{ $json.callback_hinweis }}"
+        }
+      },
+      "id": "7b8ab9ff-776f-46de-a7a5-ee0758940bea",
+      "name": "Callback bestaetigen",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Restaurant-Konfiguration').first().json.telegram_chat_id }}",
+        "text": "Bin noch am Bauen, einen Moment - ich melde mich gleich mit dem Ergebnis.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "8b3813cd-b3d3-474b-9819-bb564d475145",
+      "name": "Bin beschaeftigt",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image",
+              "value": "={{ $('Update normalisieren').first().json.photo_b64 }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "52675768-543e-4512-bd66-cba5af71d2ad",
+      "name": "Eingangsfoto hochladen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        512,
+        1056
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const e = $('Eingang').first().json;\nconst r = $('Router').first().json;\nconst txt = String(e.text || '').trim();\nlet d = {};\ntry { d = JSON.parse(r.sess_draft_json || '{}'); } catch (er) { d = {}; }\nlet modus = 'neu';\nlet agent_input = '';\nif (r.state === 'AWAITING_ANSWER') {\n  modus = 'antwort';\n  agent_input = 'Antwort des Wirts auf deine Rueckfrage: \"' + txt + '\". Beruecksichtige die urspruengliche Anfrage samt dieser Antwort und erstelle jetzt EINEN fertigen Social-Media-Post. Stelle nur dann noch eine weitere Rueckfrage, wenn es immer noch voellig unklar ist.';\n} else if (r.state === 'DRAFT_OPEN') {\n  modus = 'aenderung';\n  agent_input = 'AENDERUNGSWUNSCH des Wirts zum aktuellen Entwurf (Headline: \"' + String(d.headline || '') + '\"): \"' + txt + '\". Entscheide: Wenn der Wunsch ein ANDERES oder neues Motiv verlangt, setze bild_neu=true. Wenn nur Text oder Details geaendert werden sollen, setze bild_neu=false, damit das bisherige Bild als Basis bleibt und nur angepasst wird. Erstelle einen verbesserten Post, der den Wunsch strikt beachtet. Rufe get_learnings erneut auf und verletze keine gespeicherten Regeln.';\n} else {\n  modus = 'neu';\n  agent_input = 'Neue Eingabe vom Wirt: \"' + txt + '\". Es wurde KEIN eigenes Foto geschickt - waehle mit get_bildarchiv ein passendes Archiv-Foto als Bildgrundlage. Erstelle daraus EINEN fertigen Social-Media-Post.';\n}\nreturn [{ json: { chat_id: e.chat_id, modus: modus, typ: 'text', agent_input: agent_input, photo_url: (modus === 'neu' ? '' : r.sess_photo_url), prev_image_url: String(d.image_url || ''), saeule: String(d.saeule || 'angebote'), reason: (modus === 'aenderung' ? txt : '') } }];"
+      },
+      "id": "e718506b-660f-4366-9967-8c4ffa36f6ee",
+      "name": "Text-Auftrag",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        1248
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst heute = $now.setZone('Europe/Berlin');\nconst wtage = ['', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];\nconst saeule = cfg.saeulen_rotation[String(heute.weekday)] || 'angebote';\nconst agent_input = 'Taeglicher Auto-Post fuer die Saeule \"' + saeule + '\" am ' + wtage[heute.weekday] + '. Es wurde KEIN eigenes Foto geschickt - waehle mit get_bildarchiv ein passendes Archiv-Foto als Bildgrundlage. Nutze get_speisekarte und die Website-Infos fuer korrekte Fakten. Stelle NIEMALS eine Rueckfrage - entscheide eigenstaendig. Erstelle EINEN fertigen Social-Media-Post.';\nreturn [{ json: { chat_id: String(cfg.telegram_chat_id), modus: 'tagespost', typ: 'schedule', agent_input: agent_input, photo_url: '', prev_image_url: '', saeule: saeule, reason: '' } }];"
+      },
+      "id": "db117091-fb44-4ab2-822a-16d5ace06f30",
+      "name": "Tagespost-Auftrag",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        1440
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "85b2295e-3685-4849-bc42-69c2bc6abc2f",
+      "name": "Ignorieren",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        64,
+        1584
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Router').first().json.gueltig }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2dd9aa18-1dca-4e1f-b437-e3efa0b24bae",
+      "name": "Entwurf noch gueltig?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const e = $('Eingang').first().json;\nconst r = $('Router').first().json;\nlet url = '';\ntry { url = String(($json.data && $json.data.url) || ''); } catch (er) { url = ''; }\nif (!url) throw new Error('imgbb Upload des Eingangsfotos fehlgeschlagen: ' + JSON.stringify($json).slice(0, 300));\nconst brief = e.text || '(nur ein Foto, kein Text)';\nconst agent_input = 'Neue Eingabe vom Wirt mit EIGENEM FOTO: \"' + brief + '\". Das mitgeschickte Foto ist die Bildgrundlage - waehle KEIN Archiv-Foto und lass archiv_foto_url leer. Erstelle daraus EINEN fertigen Social-Media-Post.';\nreturn [{ json: { chat_id: e.chat_id, modus: 'neu', typ: 'foto', agent_input: agent_input, photo_url: url, prev_image_url: '', saeule: 'angebote', reason: '' } }];"
+      },
+      "id": "d51392b0-34d8-4892-b55a-35b11dbc6019",
+      "name": "Foto-Auftrag",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        1056
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json || {};\nreturn [{ json: { chat_id: String(j.chat_id || ''), modus: String(j.modus || 'neu'), typ: String(j.typ || 'text'), agent_input: String(j.agent_input || ''), photo_url: String(j.photo_url || ''), prev_image_url: String(j.prev_image_url || ''), saeule: String(j.saeule || 'angebote'), reason: String(j.reason || '') } }];"
+      },
+      "id": "4ca568d4-7f01-4538-901a-edce1f334e96",
+      "name": "Auftrag",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.modus }}",
+              "rightValue": "aenderung",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6a2985e3-9882-43c2-ad89-611e5f407798",
+      "name": "Aenderungswunsch?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        1296
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "expression",
+        "numberOutputs": 3,
+        "output": "={{ $('Router').first().json.aktion === 'ok' ? 0 : ($('Router').first().json.aktion === 'neu' ? 1 : 2) }}",
+        "looseTypeValidation": true
+      },
+      "id": "68b142e9-391b-4a16-aa4e-02721440e2b3",
+      "name": "Callback-Aktion",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        432
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "8a00d688-14e1-42e2-be26-b32ef8abce8e",
+      "name": "Toter Entwurf",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        512,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst r = $('Router').first().json;\nlet d = {};\ntry { d = JSON.parse(r.sess_draft_json || '{}'); } catch (e) { d = {}; }\nif (!d.image_url) throw new Error('Entwurf konnte nicht gelesen werden (draft_json leer)');\nconst kanaele = (cfg.buffer.kanaele || []).filter(function (k) { return k.aktiv && k.channelId && String(k.channelId).indexOf('<') === -1; });\nconst braucht_vertikal = kanaele.some(function (k) { return k.format === 'vertical'; });\nconst parts = String(cfg.buffer.posting_zeit || '17:00').split(':');\nlet due = $now.setZone('Europe/Berlin').set({ hour: Number(parts[0]), minute: Number(parts[1] || 0), second: 0, millisecond: 0 });\nif (due.diffNow('minutes').minutes < 15) due = due.plus({ days: 1 });\nreturn [{ json: {\n  post_id: String(d.post_id || r.sess_post_id || ''),\n  image_url: String(d.image_url),\n  headline: String(d.headline || ''),\n  post_text: String(d.post_text || ''),\n  hashtags: Array.isArray(d.hashtags) ? d.hashtags : [],\n  saeule: String(d.saeule || 'angebote'),\n  datum: String(d.datum || $now.setZone('Europe/Berlin').toISODate()),\n  preis_text: String(d.preis_text || ''),\n  kanaele: kanaele,\n  kanal_anzahl: kanaele.length,\n  braucht_vertikal: braucht_vertikal,\n  dueAt: due.toUTC().toISO({ suppressMilliseconds: true }),\n  zeit_text: due.toFormat('dd.MM. HH:mm')\n} }];"
+      },
+      "id": "0253187e-d76e-4610-a373-0f4e1915476f",
+      "name": "Freigabe vorbereiten",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $('Router').first().json;\nconst cfg = $('Restaurant-Konfiguration').first().json;\nlet d = {};\ntry { d = JSON.parse(r.sess_draft_json || '{}'); } catch (er) { d = {}; }\nconst agent_input = 'Der Wirt moechte eine ANDERE VARIANTE des aktuellen Entwurfs (bisherige Headline: \"' + String(d.headline || '') + '\"). Erstelle einen deutlich anderen Post zum selben Anlass: neue Headline, neuer Text, anderes Motiv. Setze bild_neu=true. Wiederhole die bisherige Headline nicht. Rufe get_learnings auf und verletze keine gespeicherten Regeln.';\nreturn [{ json: { chat_id: String(cfg.telegram_chat_id), modus: 'variante', typ: 'callback', agent_input: agent_input, photo_url: r.sess_photo_url, prev_image_url: String(d.image_url || ''), saeule: String(d.saeule || 'angebote'), reason: '' } }];"
+      },
+      "id": "0aa417ec-e4e8-4822-91ce-b6334947df56",
+      "name": "Variante-Auftrag",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $('Router').first().json;\nlet d = {};\ntry { d = JSON.parse(r.sess_draft_json || '{}'); } catch (e) { d = {}; }\nconst NL = String.fromCharCode(10);\nconst WEG = String.fromCodePoint(0x1F5D1);\nconst esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };\nconst text = '<b>' + WEG + ' Verworfen</b>' + NL + NL + '<i>' + esc(String(d.headline || '')) + '</i>' + NL + NL + 'Der Entwurf geht nicht raus. Schreib mir einfach, wenn du etwas Neues brauchst.';\nreturn [{ json: {\n  bestaetigung: text.slice(0, 4000),\n  datum: String(d.datum || $now.setZone('Europe/Berlin').toISODate()),\n  saeule: String(d.saeule || 'angebote'),\n  headline: String(d.headline || ''),\n  post_text: String(d.post_text || ''),\n  hashtags: Array.isArray(d.hashtags) ? d.hashtags.join(' ') : '',\n  image_url: String(d.image_url || ''),\n  status: 'VERWORFEN',\n  buffer_ids: 'per Button verworfen',\n  kanaele: 'keiner',\n  geplant_fuer: ''\n} }];"
+      },
+      "id": "93d58f91-44e7-4a30-904d-6b4dc2d2dd99",
+      "name": "Verwurf-Daten",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3952,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.kanal_anzahl }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f9cf23c1-d5f9-4f19-bef1-44ad3b5a1838",
+      "name": "Kanal aktiv?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "HAaLrktmGAA8IddT",
+          "cachedResultName": "pizzarello_post_log"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "datum": "={{ $json.datum }}",
+            "saeule": "={{ $json.saeule }}",
+            "headline": "={{ $json.headline }}",
+            "post_text": "={{ $json.post_text }}",
+            "hashtags": "={{ $json.hashtags }}",
+            "image_url": "={{ $json.image_url }}",
+            "status": "={{ $json.status }}",
+            "buffer_ids": "={{ $json.buffer_ids }}",
+            "kanaele": "={{ $json.kanaele }}",
+            "geplant_fuer": "={{ $json.geplant_fuer }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "datum",
+              "displayName": "datum",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "saeule",
+              "displayName": "saeule",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "headline",
+              "displayName": "headline",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "post_text",
+              "displayName": "post_text",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "hashtags",
+              "displayName": "hashtags",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "buffer_ids",
+              "displayName": "buffer_ids",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "kanaele",
+              "displayName": "kanaele",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "geplant_fuer",
+              "displayName": "geplant_fuer",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "fee10161-da06-4085-98ec-59805a352590",
+      "name": "Verwurf loggen",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        4176,
+        848
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Freigabe vorbereiten').first().json.braucht_vertikal }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4d558fa8-d05a-4e14-989b-1bf7e812e9d5",
+      "name": "Braucht Hochformat?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const f = $('Freigabe vorbereiten').first().json;\nconst NL = String.fromCharCode(10);\nconst WARN = String.fromCodePoint(0x26A0);\nconst esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };\nconst tags = Array.isArray(f.hashtags) ? f.hashtags.join(' ') : String(f.hashtags || '');\nconst body = '<b>' + esc(f.headline) + '</b>' + NL + NL + esc(f.post_text).slice(0, 2500) + NL + NL + esc(tags);\nconst text = '<b>' + WARN + ' Freigegeben - aber kein Kanal aktiv</b>' + NL + NL + body + NL + NL + 'Der Post konnte nirgends eingeplant werden, weil aktuell kein Social-Media-Kanal verbunden ist. Bitte die Buffer-Kanal-ID im Workflow eintragen.' + NL + NL + 'Bild: ' + esc(f.image_url);\nreturn [{ json: { text: text.slice(0, 4000) } }];"
+      },
+      "id": "17b66092-a525-4039-b3d9-c9cafa4b38e8",
+      "name": "Freigabe-Ergebnis-Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4176,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Freigabe vorbereiten').first().json.image_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "cf6f476d-fa75-4f09-9030-95e971d52bc3",
+      "name": "Master laden",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1408,
+        -128
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst f = $('Freigabe vorbereiten').first().json;\nlet vertikal_url = '';\ntry { vertikal_url = String(($('imgbb Hochformat').first().json.data || {}).url || ''); } catch (e) { vertikal_url = ''; }\nconst q = 'mutation($input: CreatePostInput!){ createPost(input:$input){ __typename ... on PostActionSuccess { post { id dueAt status } } ... on MutationError { message } } }';\nconst NL2 = String.fromCharCode(10) + String.fromCharCode(10);\nconst tagsFull = f.hashtags.join(' ');\nconst tagsMax5 = f.hashtags.slice(0, 5).join(' ');\nconst meta = {\n  facebook: { facebook: { type: 'post' } },\n  instagram: { instagram: { type: 'post', shouldShareToFeed: true } },\n  pinterest: { pinterest: { title: String(f.headline).slice(0, 100), url: cfg.buffer.pinterest_url } }\n};\nconst out = [];\nfor (const k of f.kanaele) {\n  const bild = (k.format === 'vertical') ? (vertikal_url || f.image_url) : f.image_url;\n  const tags = (k.tags === 'max5') ? tagsMax5 : tagsFull;\n  const input = { text: f.post_text + NL2 + tags, channelId: k.channelId, schedulingType: 'automatic', mode: 'customScheduled', dueAt: f.dueAt, assets: [{ image: { url: bild } }] };\n  if (meta[k.key]) input.metadata = meta[k.key];\n  out.push({ json: { kanal_key: k.key, kanal_name: k.name, bild_url: bild, graphql: { query: q, variables: { input: input } } } });\n}\nreturn out;"
+      },
+      "id": "0a986393-6806-474d-a714-58a5286ac9cd",
+      "name": "Buffer-Requests bauen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3504,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('Restaurant-Konfiguration').first().json.telegram_chat_id }}",
+        "messageId": "={{ $('Router').first().json.sess_last_message_id }}",
+        "text": "={{ $('Freigabe-Ergebnis-Text').first().json.text }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "1cb6c937-0693-4c1a-8bad-8d2a80b958f9",
+      "name": "Kein Kanal melden",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4400,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "multiStep",
+        "operations": {
+          "operations": [
+            {
+              "operation": "resize",
+              "width": 1080,
+              "height": 1920,
+              "resizeOption": "ignoreAspectRatio"
+            },
+            {
+              "operation": "blur",
+              "blur": 45,
+              "sigma": 22
+            }
+          ]
+        },
+        "options": {
+          "destinationKey": "bg",
+          "format": "png",
+          "quality": 90
+        }
+      },
+      "id": "2a200c35-cd23-456c-bf59-2bdd82d41f6a",
+      "name": "Hochformat Hintergrund",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.buffer.com",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.graphql) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "a90ac7f4-b37d-4b24-885f-ff8faa6b8cd5",
+      "name": "Buffer Post planen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3728,
+        -128
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "resize",
+        "width": 1080,
+        "height": 1620,
+        "resizeOption": "ignoreAspectRatio",
+        "options": {
+          "destinationKey": "fg",
+          "format": "png",
+          "quality": 100
+        }
+      },
+      "id": "0fa9cb6c-ba01-4fb0-96db-2df5a15b55df",
+      "name": "Hochformat Vordergrund",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "composite",
+        "dataPropertyName": "bg",
+        "dataPropertyNameComposite": "fg",
+        "positionY": 150,
+        "options": {
+          "destinationKey": "data",
+          "format": "png",
+          "quality": 100
+        }
+      },
+      "id": "f893cf3b-b6b9-4498-b63f-25fe7b878513",
+      "name": "Hochformat komponieren",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let b64 = null;\ntry { const buf = await this.helpers.getBinaryDataBuffer(0, 'data'); if (buf && buf.length > 0) b64 = buf.toString('base64'); } catch (e) {}\nif (!b64) throw new Error('Hochformat-Variante konnte nicht gelesen werden');\nreturn [{ json: { image_b64: b64 } }];"
+      },
+      "id": "2b34e0e9-ca5d-47b2-a8d7-b1d0b1544447",
+      "name": "Hochformat extrahieren",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2688,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image",
+              "value": "={{ $json.image_b64 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cd273edf-ca44-44ed-be08-e5e499b006fd",
+      "name": "imgbb Hochformat",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3280,
+        -128
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const f = $('Freigabe vorbereiten').first().json;\nconst reqs = $('Buffer-Requests bauen').all().map(function (i) { return i.json; });\nconst items = $input.all();\nconst NL = String.fromCharCode(10);\nconst OK = String.fromCodePoint(0x2705);\nconst FAIL = String.fromCodePoint(0x274C);\nconst esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };\nconst ids = [], zeilen = [], kanalNamen = [], urls = [];\nlet okCount = 0;\nitems.forEach(function (i, idx) {\n  const req = reqs[idx] || { kanal_name: 'unbekannt', kanal_key: 'unbekannt', bild_url: '' };\n  const cp = i.json && i.json.data && i.json.data.createPost;\n  if (cp && cp.post) {\n    okCount++;\n    ids.push(req.kanal_key + ':' + cp.post.id);\n    kanalNamen.push(req.kanal_name);\n    urls.push(req.kanal_key + '=' + req.bild_url);\n    let zeit = '';\n    try { zeit = DateTime.fromISO(String(cp.post.dueAt)).setZone('Europe/Berlin').toFormat('dd.MM. HH:mm'); } catch (e) { zeit = f.zeit_text; }\n    zeilen.push(OK + ' ' + req.kanal_name + ' - geplant fuer ' + zeit + ' Uhr');\n  } else {\n    let msg = 'unbekannter Fehler';\n    if (cp && cp.message) msg = String(cp.message);\n    else if (i.json && i.json.errors) msg = JSON.stringify(i.json.errors).slice(0, 120);\n    ids.push(req.kanal_key + ':ERROR ' + msg);\n    urls.push(req.kanal_key + '=' + req.bild_url);\n    zeilen.push(FAIL + ' ' + req.kanal_name + ' - ' + msg);\n  }\n});\nconst kopf = okCount > 0 ? '<b>' + OK + ' Freigegeben</b>' : '<b>' + FAIL + ' Uebergabe an Buffer fehlgeschlagen</b>';\nconst fuss = okCount > 0 ? 'Du musst nichts weiter tun.' : 'Bitte pruefe die Buffer-Verbindung.';\nconst tags = Array.isArray(f.hashtags) ? f.hashtags.join(' ') : String(f.hashtags || '');\nconst body = '<b>' + esc(f.headline) + '</b>' + NL + NL + esc(f.post_text).slice(0, 2500) + NL + NL + esc(tags);\nconst text = kopf + NL + NL + body + NL + NL + zeilen.map(esc).join(NL) + NL + NL + fuss;\nreturn [{ json: {\n  bestaetigung: text.slice(0, 4000),\n  datum: f.datum,\n  saeule: f.saeule,\n  headline: f.headline,\n  post_text: f.post_text,\n  hashtags: f.hashtags.join(' '),\n  image_url: f.image_url,\n  status: okCount > 0 ? 'GEPLANT' : 'FEHLER',\n  buffer_ids: ids.join(' | '),\n  kanaele: (kanalNamen.join(', ') || 'keiner') + (urls.length ? ' | ' + urls.join(' ') : ''),\n  geplant_fuer: f.zeit_text\n} }];"
+      },
+      "id": "363c5854-6590-4269-89fd-2a13fef61e8a",
+      "name": "Freigabe-Ergebnis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3952,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "8WhvJ2bY2B6wKyGY",
+          "cachedResultName": "pizzarello_sessions"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Eingang').first().json.chat_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $('Eingang').first().json.chat_id }}",
+            "state": "IDLE",
+            "post_id": "",
+            "draft_json": "",
+            "photo_url": "",
+            "updated": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "post_id",
+              "displayName": "post_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "draft_json",
+              "displayName": "draft_json",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "photo_url",
+              "displayName": "photo_url",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "last_message_id",
+              "displayName": "last_message_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "updated",
+              "displayName": "updated",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "b228a866-80ab-4236-898b-b7a6a0e28cb1",
+      "name": "Session zuruecksetzen",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        4624,
+        16
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "8WhvJ2bY2B6wKyGY",
+          "cachedResultName": "pizzarello_sessions"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $json.chat_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $json.chat_id }}",
+            "state": "BUSY",
+            "photo_url": "={{ $json.photo_url }}",
+            "updated": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "post_id",
+              "displayName": "post_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "draft_json",
+              "displayName": "draft_json",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "photo_url",
+              "displayName": "photo_url",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "last_message_id",
+              "displayName": "last_message_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "updated",
+              "displayName": "updated",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "ce04e9d1-1707-4170-8792-5b276f33dcbc",
+      "name": "Status BUSY setzen",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1184,
+        368
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $('Restaurant-Konfiguration').first().json.telegram_chat_id }}",
+        "action": "upload_photo"
+      },
+      "id": "6e933891-ea1c-40d0-b681-9d50eb0ad675",
+      "name": "Tippen anzeigen",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1408,
+        368
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('Restaurant-Konfiguration').first().json.telegram_chat_id }}",
+        "messageId": "={{ $('Router').first().json.sess_last_message_id }}",
+        "text": "={{ $('Verwurf-Daten').first().json.bestaetigung }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "eac10598-8288-4a67-8067-f2bfb3c6b0b5",
+      "name": "Verwurf bestaetigen",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4400,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const reason = String($('Text-Auftrag').first().json.reason || '');\nconst prompt = 'Ein Gastronom hat einen Social-Media-Post-Entwurf bemaengelt. Begruendung: \"' + reason + '\". Entscheide, ob daraus eine DAUERHAFTE, allgemein gueltige Regel fuer ALLE kuenftigen Posts wird, oder ob es nur eine EINMALIGE Korrektur fuer genau diesen einen Post ist (z.B. ein konkreter Titel, ein konkreter Preis oder ein bestimmtes Motiv fuer diesen Anlass). Einmalige Titel-, Text- oder Preiswuensche und Bezuege auf \"diesen Post\" sind NICHT dauerhaft. Formuliere eine dauerhafte Regel nur, wenn sie sinnvoll auf jeden kuenftigen Post anwendbar ist. Antworte NUR mit JSON: {\"dauerhaft\": true oder false, \"kind\": \"bild|text|stil|allgemein\", \"regel\": \"eine knappe verallgemeinerte Regel in Du-Form, die immer gilt; leer wenn nicht dauerhaft\"}.';\nreturn [{ json: { openai_body: { model: 'gpt-5-mini', messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' } } } }];"
+      },
+      "id": "25cbe87a-601a-4d55-8be1-9e3cd1274880",
+      "name": "Bewertungs-Anfrage",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        1184
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "86de8e12-a0a6-4812-a47f-13b853ca2996",
+      "name": "Kein Learning",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        1392
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.openai_body) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "9e951890-1480-4456-a667-e5247de69cbe",
+      "name": "Learning bewerten",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1408,
+        1184
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const a = $('Text-Auftrag').first().json;\nlet dauerhaft = false, kind = 'allgemein', regel = '';\ntry {\n  const content = $json.choices[0].message.content;\n  const p = JSON.parse(content);\n  dauerhaft = p.dauerhaft === true;\n  kind = String(p.kind || 'allgemein');\n  regel = String(p.regel || '').trim();\n} catch (e) { dauerhaft = false; }\nif (!regel) dauerhaft = false;\nreturn [{ json: { dauerhaft: dauerhaft, kind: kind, regel: regel, reason: String(a.reason || ''), saeule: String(a.saeule || 'angebote') } }];"
+      },
+      "id": "3f0b4da3-fc56-4a0e-a6f9-c811ce6c87d1",
+      "name": "Learning parsen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        1184
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.dauerhaft }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "78218529-6966-4714-9c70-7bc0bd8d2b18",
+      "name": "Dauerhaft?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1856,
+        1184
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "DfXfRBdmdGA5AwFs",
+          "cachedResultName": "pizzarello_learnings"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "saeule": "={{ $json.saeule }}",
+            "kind": "={{ $json.kind }}",
+            "reason": "={{ $json.reason }}",
+            "learning": "={{ $json.regel }}",
+            "aktiv": "={{ true }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "saeule",
+              "displayName": "saeule",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "kind",
+              "displayName": "kind",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "learning",
+              "displayName": "learning",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "aktiv",
+              "displayName": "aktiv",
+              "type": "boolean",
+              "required": false,
+              "display": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "c733e7d6-6953-42a6-8029-c6b038187b59",
+      "name": "Learning speichern",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2080,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "HAaLrktmGAA8IddT",
+          "cachedResultName": "pizzarello_post_log"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "datum": "={{ $json.datum }}",
+            "saeule": "={{ $json.saeule }}",
+            "headline": "={{ $json.headline }}",
+            "post_text": "={{ $json.post_text }}",
+            "hashtags": "={{ $json.hashtags }}",
+            "image_url": "={{ $json.image_url }}",
+            "status": "={{ $json.status }}",
+            "buffer_ids": "={{ $json.buffer_ids }}",
+            "kanaele": "={{ $json.kanaele }}",
+            "geplant_fuer": "={{ $json.geplant_fuer }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "datum",
+              "displayName": "datum",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "saeule",
+              "displayName": "saeule",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "headline",
+              "displayName": "headline",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "post_text",
+              "displayName": "post_text",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "hashtags",
+              "displayName": "hashtags",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "buffer_ids",
+              "displayName": "buffer_ids",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "kanaele",
+              "displayName": "kanaele",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "geplant_fuer",
+              "displayName": "geplant_fuer",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "2a064ed4-8c26-42e1-b4f5-78d4b08e10af",
+      "name": "Log schreiben",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        4176,
+        -128
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('Restaurant-Konfiguration').first().json.telegram_chat_id }}",
+        "messageId": "={{ $('Router').first().json.sess_last_message_id }}",
+        "text": "={{ $('Freigabe-Ergebnis').first().json.bestaetigung }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "5a7c80cc-d179-4ffd-a07d-ed5a98f0065d",
+      "name": "Freigabe bestaetigen",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4400,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Restaurant-Konfiguration').first().json.restaurant.website }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "ec48e4d3-2ba6-48f3-ab40-572634be31db",
+      "name": "Website laden",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1632,
+        368
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://feiertage-api.de/api/?nur_land=NW&jahr=' + $now.setZone('Europe/Berlin').year }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "c9ad0a48-9d68-46e5-8976-06a4db55d02a",
+      "name": "Feiertage laden",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1856,
+        368
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const a = $('Auftrag').first().json;\nconst heute = $now.setZone('Europe/Berlin');\nconst wtage = ['', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];\nlet website_text = '';\ntry {\n  const w = $('Website laden').first();\n  let html = '';\n  if (w && w.json) { if (typeof w.json.data === 'string') html = w.json.data; else if (typeof w.json.body === 'string') html = w.json.body; }\n  const reScript = new RegExp('<script[^]*?</script>', 'gi');\n  const reStyle = new RegExp('<style[^]*?</style>', 'gi');\n  const reTag = new RegExp('<[^>]+>', 'g');\n  const reEnt = new RegExp('&[a-z#0-9]+;', 'gi');\n  const reWs = new RegExp('[ ' + String.fromCharCode(10) + String.fromCharCode(13) + String.fromCharCode(9) + ']+', 'g');\n  website_text = String(html).replace(reScript, ' ').replace(reStyle, ' ').replace(reTag, ' ').replace(reEnt, ' ').replace(reWs, ' ').trim();\n  if (website_text.length > 2500) website_text = website_text.slice(0, 2000) + ' [...] ' + website_text.slice(-500);\n} catch (e) { website_text = ''; }\nconst monat = heute.month;\nlet saison = 'Winter';\nif (monat >= 3 && monat <= 5) saison = 'Fruehling';\nelse if (monat >= 6 && monat <= 8) saison = 'Sommer';\nelse if (monat >= 9 && monat <= 11) saison = 'Herbst';\nlet feiertage_text = '';\ntry {\n  const fj = $('Feiertage laden').first().json || {};\n  const heuteISO = heute.toISODate();\n  const bis = heute.plus({ days: 21 }).toISODate();\n  const kommende = [];\n  for (const fn in fj) { const d = fj[fn] && fj[fn].datum; if (d && d >= heuteISO && d <= bis) kommende.push(fn + ' (' + d + ')'); }\n  if (kommende.length) feiertage_text = kommende.join(', ');\n} catch (e) { feiertage_text = ''; }\nlet agent_input = a.agent_input;\nagent_input += ' | HEUTE: ' + wtage[heute.weekday] + ', ' + heute.toISODate() + '. SAISON: ' + saison + '.';\nif (feiertage_text) agent_input += ' NAECHSTE FEIERTAGE (NRW): ' + feiertage_text + '. Beziehe passende Feiertage oder die Saison dezent ein, wenn es zum Thema passt.';\nif (website_text) agent_input += ' | AKTUELLE WEBSITE-INFOS: ' + website_text;\nreturn [{ json: { agent_input: agent_input, session_key: String(a.chat_id), saeule: a.saeule, datum: heute.toISODate(), modus: a.modus } }];"
+      },
+      "id": "a0677458-0e90-4f96-9e05-12298c12d9b5",
+      "name": "Kontext",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.agent_input }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Du bist der Social-Media-Creator fuer die Pizzeria Pizzarello in Oberhausen. Du chattest direkt mit dem Wirt in Telegram und erstellst EINEN fertigen Instagram/Facebook/TikTok-Post pro Anfrage.\n\nWERKZEUGE (rufe jedes NUR EINMAL und nur bei Bedarf auf, eine leere Antwort ist normal):\n- get_learnings: dauerhafte Stil-Praeferenzen des Wirts aus frueherem Feedback. IMMER zuerst aufrufen und sinngemaess beruecksichtigen. ABER: uebernimm NIEMALS einen Titel, Satz oder ein Bild-Motiv woertlich aus einem Learning - Learnings sind Leitplanken, keine fertigen Vorlagen.\n- get_aktuelle_angebote: aktuelle Angebote/Preise. Nur diese verwenden, nichts erfinden.\n- get_speisekarte: echte Gerichte, Zutaten und Preise fuer korrekte Fakten.\n- get_bildarchiv: vorhandene Restaurant-Fotos (url, kategorie, beschreibung).\n\nBILDGRUNDLAGE:\n- Wenn der Wirt KEIN eigenes Foto mitgeschickt hat, rufe get_bildarchiv auf und waehle das thematisch am besten passende aktive Foto. Gib dessen exakte url im Feld archiv_foto_url zurueck.\n- Findest du wirklich kein passendes Archiv-Foto (oder das Archiv ist leer), lass archiv_foto_url leer - dann wird ein Bild neu erzeugt.\n- Wenn ein eigenes Foto mitgeschickt wurde, lass archiv_foto_url leer.\n- Waehle nicht immer dasselbe Archiv-Foto - variiere die Motive.\n- Bei bild_typ \"flyer\" wird das Bild IMMER frisch als Plakat generiert (KEIN Archiv-Foto): lass archiv_foto_url leer und beschreibe in image_brief die Szene/Location des Events (z.B. abendliches Strassenfest vor der Pizzeria mit Lichterketten), NICHT ein einzelnes Gericht.\n\nRUECKFRAGEN (nur bei direktem Wirt-Input):\n- Wenn die Eingabe des Wirts wirklich unklar, widerspruechlich oder unvollstaendig ist (z.B. unklar welches Gericht, welches Angebot, welcher Anlass, welcher Preis oder welches Datum gemeint ist) und du ohne diese Info keinen guten Post erstellen kannst, dann stelle GENAU EINE kurze, konkrete Rueckfrage auf Deutsch: setze needs_clarification=true, schreibe die Frage in clarification_question und lass alle anderen Post-Felder leer.\n- Die Rueckfrage wird dem Wirt als normale Chat-Nachricht geschickt; seine Antwort kommt als naechste Nachricht zurueck. Formuliere sie also wie im Gespraech, kurz und freundlich.\n- Frage NUR, wenn es wirklich noetig ist. Bei kleinen Unklarheiten triff selbst eine sinnvolle, markengerechte Annahme statt zu fragen.\n- Bei taeglichen Auto-Posts (kein direkter Wirt-Input) stellst du NIEMALS eine Rueckfrage - entscheide eigenstaendig und setze needs_clarification=false.\n- Sobald alles klar ist (auch nach Erhalt einer Antwort auf deine Rueckfrage), setze needs_clarification=false und liefere den fertigen Post.\n- Bei einem AENDERUNGSWUNSCH oder einer ANDEREN VARIANTE zu einem bereits gezeigten Entwurf fragst du NICHT nach, sondern lieferst direkt den ueberarbeiteten Post.\n\nWenn du KEINE Rueckfrage stellst, MUSST du sofort deinen fertigen Post als finale Antwort im vorgegebenen JSON-Schema liefern. Rufe kein Tool ein zweites Mal auf und drehe keine weiteren Runden.\n\nMARKE & TON:\n- familiaer-italienisch, herzlich, ein bisschen verspielt, Du-Ansprache.\n- VARIIERE die Eroeffnung jedes Posts stark. Beginne NIE mit \"Mamma mia\". Italienische Ausrufe nur selten, sparsam und nie als erste Worte.\n- Erfinde fuer JEDEN Post eine NEUE, eigenstaendige Headline. Wiederhole nie denselben Titel wie in einem frueheren Post oder aus einem Learning. Gerade bei der Saeule \"community\": variiere Thema und Titel stark und nutze nicht immer \"Nachbarschaft\".\n- Kein Clickbait, keine erfundenen Fakten.\n\nFELDER:\n- needs_clarification: true NUR wenn du eine Rueckfrage brauchst, sonst false.\n- clarification_question: deine EINE Rueckfrage auf Deutsch, sonst leer.\n- headline: kurze, knackige Ueberschrift.\n- post_text: 2 bis 5 Saetze, warm und konkret, mit dezentem Call-to-Action. Emojis sparsam.\n- hashtags: 3 bis 6 relevante Tags (Basis-Tags werden automatisch ergaenzt).\n- layout: genau einer von klassik, promo_poster, menue_karte, angebots_sticker, produkt_spotlight, event_poster, pur, zitat.\n  * klassik = Headline oben, Gericht unten (Allrounder).\n  * promo_poster = Werbeplakat: Text oben gestapelt, Gericht gross im unteren Bildteil angeschnitten. Fuer neue Specials, Highlights, Produkt-Ankuendigungen.\n  * menue_karte = Gericht komplett sichtbar, Headline plus Zutatenzeile.\n  * angebots_sticker = Angebot mit Preis: unten rechts bleibt frei fuer den echten Preis-Badge.\n  * produkt_spotlight = Kampagnenbild mit Handlungsaufruf (Aktion, Gutschein, Bestell-Aufruf).\n  * event_poster = stimmungsvolles Event-Plakat mit mehreren Textbloecken (Anlass, Tag, Ort).\n  * pur = ueberhaupt kein Text im Bild.\n  * zitat = eine kurze Zeile im Bild.\n- bild_typ: Art des Motivs, genau einer von: produkt (einzelnes Gericht), event (Ambiente/Gaeste-Stimmung), angebot (Rabatt/Preis im Fokus), saison (saisonale Zutaten), flyer (grossflaechige Event-Ankuendigung wie Strassenfest/Themenabend/Public Viewing - plakativ und textbetont), bts (Behind-the-Scenes: Teig, Ofen, Handwerk). Waehle den Typ passend zum Post-Inhalt. Fuer flyer passt layout \"event_poster\".\n- bild_neu: true NUR wenn ein KOMPLETT ANDERES/neues Bild gewuenscht ist. false, wenn das bisherige Bild beibehalten und nur angepasst werden soll. Bei einem ERSTEN Entwurf immer false.\n- bild_headline: sehr kurzer Bild-Text (max 40 Zeichen), ASCII ohne Umlaute (ae/oe/ue/ss). Bei layout \"pur\" leer lassen.\n- bild_subline: optionale zweite, kleinere Bildzeile (max 60 Zeichen, ASCII) - z.B. die Zutaten mit Trennpunkten (\"Mortadella - Stracciatella - Pistazie\") oder ein praezisierender Zusatz (\"Infused Burrata\"). Leer lassen, wenn eine zweite Zeile das Bild nur zustellen wuerde.\n- bild_infozeile: optionale winzige Info-Zeile (max 40 Zeichen, ASCII, KEINE Ziffern) - nur wenn Zeitraum oder Ort wirklich Teil des Inhalts sind, z.B. \"SEPTEMBER SPECIAL\" oder \"NUR AM WOCHENENDE\". Sonst leer.\n- bild_cta: optionale kurze Handlungsaufforderung im Bild (max 30 Zeichen, ASCII), z.B. \"Jetzt bestellen\" - NUR bei layout produkt_spotlight oder event_poster, sonst leer.\n- image_brief: EIN englischer Satz, der NUR das Foto-Motiv beschreibt (Gericht bzw. Szene, Blickwinkel, Haende/Handwerk) - kein Text, keine Typografie, kein Layout. Appetitlich, kontrastreich, dunkler reduzierter Hintergrund.\n- preis_text: NUR bei einem Angebot mit konkretem Preis den exakten Preis im deutschen Format wie \"5,99 EUR\" oder \"5,99 Euro\" (NIEMALS einen Preis erfinden - nur der vom Wirt genannte oder der Preis aus get_aktuelle_angebote/get_speisekarte). Sonst LEER. Dieser Preis wird spaeter als echter Badge aufs Bild gestempelt; im image_brief/bild_headline selbst KEINE Zahl/Preis nennen.\n- archiv_foto_url: url eines passenden Archiv-Fotos aus get_bildarchiv, sonst leer.",
+          "maxIterations": 12
+        }
+      },
+      "id": "474f65ef-88a0-476a-ba17-e039772508f7",
+      "name": "Post-Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2624,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "17dacda1-c46a-490f-a13c-a9a6b0e68614",
+      "name": "OpenAI gpt-5-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2304,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.session_key }}",
+        "contextWindowLength": 14
+      },
+      "id": "8704e692-66c5-4c6b-9d98-1fe0f1da1c0b",
+      "name": "Gespraechs-Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2432,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Liefert die gespeicherten Lern-Regeln aus abgelehnten Posts. IMMER zuerst aufrufen und jede aktive Regel strikt befolgen.",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "DfXfRBdmdGA5AwFs",
+          "cachedResultName": "pizzarello_learnings"
+        },
+        "returnAll": true
+      },
+      "id": "3a2de67b-b392-487e-9144-bdf1307cfbe3",
+      "name": "get_learnings",
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1.1,
+      "position": [
+        2560,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Liefert die hinterlegten Angebote (typ, titel, beschreibung, preis, gueltig_von, gueltig_bis, aktiv). Nur aktive und aktuell gueltige Angebote verwenden, keine Preise erfinden.",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "dVJNivQbpA7YUwAm",
+          "cachedResultName": "pizzarello_angebote"
+        },
+        "returnAll": true
+      },
+      "id": "bbaa512c-5106-4c86-9028-268fee5236f4",
+      "name": "get_aktuelle_angebote",
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1.1,
+      "position": [
+        2688,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Liefert die komplette Speisekarte des Restaurants (kategorie, name, beschreibung, preis, aktiv). Nutze sie fuer korrekte Gericht-Namen, Zutaten und Preise. Keine Gerichte oder Preise erfinden.",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "8LOssi3MEAxKEXMd",
+          "cachedResultName": "pizzarello_speisekarte"
+        },
+        "returnAll": true
+      },
+      "id": "b048cfe4-cbee-4ebe-8dd3-1b1024e3272b",
+      "name": "get_speisekarte",
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1.1,
+      "position": [
+        2816,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Liefert das Foto-Archiv des Restaurants (url, kategorie, beschreibung, aktiv). Wenn KEIN eigenes Foto mitgeschickt wurde, waehle hier das thematisch am besten passende aktive Foto und gib dessen url im Feld archiv_foto_url zurueck.",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "x7QjV9d9CI0ZgrBz",
+          "cachedResultName": "pizzarello_fotos"
+        },
+        "returnAll": true
+      },
+      "id": "2ae2c855-4aaa-4646-b28e-f0dc6a423cfe",
+      "name": "get_bildarchiv",
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1.1,
+      "position": [
+        2944,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{ \"needs_clarification\": false, \"clarification_question\": \"\", \"headline\": \"Frisch aus dem Ofen\", \"post_text\": \"Heute Abend duftet es bei uns nach Ofenpizza - komm vorbei und lass es dir schmecken!\", \"hashtags\": [\"#pizzarello\", \"#oberhausen\"], \"layout\": \"klassik\", \"bild_typ\": \"produkt\", \"bild_neu\": false, \"bild_headline\": \"FRISCH AUS DEM OFEN\", \"bild_subline\": \"Mortadella - Stracciatella - Pistazie\", \"bild_infozeile\": \"\", \"bild_cta\": \"\", \"image_brief\": \"A single pizza on a dark steel surface, held by one hand, shot slightly from above\", \"preis_text\": \"\", \"archiv_foto_url\": \"\" }"
+      },
+      "id": "944fac11-9670-4217-b5cb-5d1b5d4fb1e4",
+      "name": "Post-Schema",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3072,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.output ? $json.output.needs_clarification === true : false }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "14df4207-de42-432b-b7cd-fdd6600d576d",
+      "name": "Rueckfrage noetig?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3280,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Restaurant-Konfiguration').first().json.telegram_chat_id }}",
+        "text": "={{ $('Post-Agent').first().json.output.clarification_question }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "be35b5d6-c1ae-4f08-b095-5aa9bbcf741d",
+      "name": "Rueckfrage senden",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3504,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst k = $('Kontext').first().json;\nconst o = ($('Post-Agent').first().json.output) || {};\nconst post = {\n  headline: String(o.headline || '').trim(),\n  post_text: String(o.post_text || '').trim(),\n  hashtags: Array.isArray(o.hashtags) ? o.hashtags : [],\n  layout: o.layout,\n  bild_typ: String(o.bild_typ || '').trim().toLowerCase(),\n  bild_neu: (o.bild_neu === true || o.bild_neu === 'true'),\n  bild_headline: String(o.bild_headline || ''),\n  bild_subline: String(o.bild_subline || ''),\n  bild_infozeile: String(o.bild_infozeile || ''),\n  bild_cta: String(o.bild_cta || ''),\n  image_brief: String(o.image_brief || ''),\n  preis_text: String(o.preis_text || '').trim(),\n  archiv_foto_url: String(o.archiv_foto_url || '').trim()\n};\nconst EURO = String.fromCharCode(0x20ac);\nlet preis = post.preis_text.replace(/euro/ig, EURO).replace(/EUR/g, EURO).replace(/  +/g, ' ').trim();\nif (!/[0-9]/.test(preis)) preis = '';\nif (preis && preis.indexOf(EURO) === -1) preis = preis + ' ' + EURO;\npost.preis_text = preis.slice(0, 16);\nif (post.archiv_foto_url.indexOf('http') !== 0) post.archiv_foto_url = '';\nif (!post.headline || !post.post_text) throw new Error('Agent-Ausgabe unvollstaendig: ' + JSON.stringify(o).slice(0, 300));\nconst erlaubte = ['klassik', 'promo_poster', 'menue_karte', 'angebots_sticker', 'produkt_spotlight', 'event_poster', 'pur', 'zitat'];\nif (erlaubte.indexOf(post.layout) === -1) post.layout = 'klassik';\nconst bildTypen = ['produkt', 'event', 'angebot', 'saison', 'flyer', 'bts'];\nif (bildTypen.indexOf(post.bild_typ) === -1) post.bild_typ = '';\nif (post.layout === 'pur') { post.bild_headline = ''; post.bild_subline = ''; post.bild_infozeile = ''; post.bild_cta = ''; }\nelse if (!post.bild_headline) post.bild_headline = post.headline.split(' ').slice(0, 5).join(' ');\n// Bild-Textzeilen haerten: nur druckbares ASCII, gekappt, keine Ziffern in der Infozeile\nfunction bildText(v, max) { var s = String(v || ''); var out = ''; for (var i = 0; i < s.length; i++) { var c = s.charCodeAt(i); if (c >= 32 && c <= 126) out += s.charAt(i); } return out.replace(/ +/g, ' ').trim().slice(0, max); }\npost.bild_headline = bildText(post.bild_headline, 40);\npost.bild_subline = bildText(post.bild_subline, 60);\npost.bild_infozeile = bildText(post.bild_infozeile, 40).toUpperCase();\npost.bild_cta = bildText(post.bild_cta, 30);\nif (/[0-9]/.test(post.bild_infozeile)) post.bild_infozeile = '';\nif (post.layout !== 'produkt_spotlight' && post.layout !== 'event_poster') post.bild_cta = '';\nconst norm = post.hashtags.map(function (t) { t = String(t).trim().replace(/ /g, ''); if (!t) return ''; return t.charAt(0) === '#' ? t : '#' + t; }).filter(function (t) { return t.length > 1; });\nconst setTags = cfg.hashtags[k.saeule] || cfg.hashtags.angebote;\npost.hashtags = setTags.concat(norm.filter(function (t) { return setTags.indexOf(t) === -1; })).slice(0, 12);\nif (!post.image_brief) post.image_brief = 'Appetizing signature dish from ' + cfg.restaurant.name;\nreturn [{ json: { post: post } }];"
+      },
+      "id": "a6b74d09-5298-44f0-b5da-142814861898",
+      "name": "Post aufbereiten",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3504,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "8WhvJ2bY2B6wKyGY",
+          "cachedResultName": "pizzarello_sessions"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Auftrag').first().json.chat_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $('Auftrag').first().json.chat_id }}",
+            "state": "AWAITING_ANSWER",
+            "updated": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "post_id",
+              "displayName": "post_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "draft_json",
+              "displayName": "draft_json",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "photo_url",
+              "displayName": "photo_url",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "last_message_id",
+              "displayName": "last_message_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "updated",
+              "displayName": "updated",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "335bfd6e-5d6d-43da-b46b-e03b08c7fe27",
+      "name": "Session AWAITING_ANSWER",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3728,
+        352
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const a = $('Auftrag').first().json;\nconst post = $('Post aufbereiten').first().json.post || {};\nlet base_url = '';\nlet anpassung = false;\nif (post.bild_typ === 'flyer') base_url = '';\nelse if (a.modus === 'aenderung' && !post.bild_neu && a.prev_image_url) { base_url = a.prev_image_url; anpassung = true; }\nelse if (a.photo_url) base_url = a.photo_url;\nelse if (post.archiv_foto_url) base_url = post.archiv_foto_url;\nconst mode = base_url ? 'edit_url' : 'generate';\nreturn [{ json: { mode: mode, base_url: base_url, hat_basisfoto: mode === 'edit_url', anpassung: anpassung, logo_drin: anpassung } }];"
+      },
+      "id": "88f53a2a-7ebc-4ce3-b7b8-b84653bab246",
+      "name": "Bild-Modus",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3728,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Restaurant-Konfiguration').first().json.logo_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "logo"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "1c8d3330-4622-4ad7-9355-279a945234f8",
+      "name": "Logo laden",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3952,
+        544
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Bild-Modus').first().json.hat_basisfoto }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ff317cf5-8f40-450e-acd2-4310ff7bf5a8",
+      "name": "Mit Basisfoto?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4176,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Bild-Modus').first().json.base_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "basis"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "120c6582-5671-4812-a40d-347b7d21de04",
+      "name": "Basisfoto laden",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4400,
+        480
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst post = $('Post aufbereiten').first().json.post;\nconst k = $('Kontext').first().json;\nconst g = cfg.restaurant.bild_guideline || {};\nconst f = cfg.restaurant.brand_farben || {};\nconst lay = (cfg.layouts || {})[post.layout] || { bild: '', stil: 'promo', font: 'geometrisch' };\nconst stil = (g.stile || {})[lay.stil || 'promo'] || '';\nconst headline = String(post.bild_headline || '').slice(0, 40);\nconst subline = String(post.bild_subline || '').slice(0, 60);\nconst info = String(post.bild_infozeile || '').slice(0, 40);\nconst cta = String(post.bild_cta || '').slice(0, 30);\nconst hatPreis = String(post.preis_text || '') !== '';\nconst akzent = f.akzent || '#F5E6C8';\nfunction pickModul(saeule, layout) {\n  if (layout === 'event_poster') return 'event';\n  if (saeule === 'saisonal') return 'saison';\n  if (saeule === 'angebote' || layout === 'angebots_sticker') return 'angebot';\n  if (saeule === 'community') return 'bts';\n  return 'produkt';\n}\nconst modulKey = (g.module || {})[post.bild_typ] ? post.bild_typ : pickModul(k.saeule, post.layout);\nconst modul = (g.module || {})[modulKey] || '';\nconst szene = (modulKey === 'flyer' || modulKey === 'event');\nconst p = [];\n\nconst fmt = cfg.bild_format || { hinweis: '' };\np.push('Create a new social media image for an Italian pizzeria.');\np.push(fmt.hinweis || '');\nconst brief = String(post.image_brief || '').trim();\np.push('SUBJECT: ' + (brief && '.!?'.indexOf(brief.slice(-1)) === -1 ? brief + '.' : brief));\np.push(modul || '');\np.push(g.look || '');\np.push(stil || '');\nif (!szene) p.push(g.motiv || '');\np.push('ZONES (every element has its own area and they never overlap): the BOTTOM-LEFT corner stays empty and calm - the real Pizzarello logo is composited there afterwards; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays empty and calm as well, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the text block keeps to the upper area as the canvas note above describes; the subject sits between them and reaches into neither bottom corner. A reserved corner beats any other placement: move, shorten or re-crop whatever would otherwise reach into it.');\nif (post.layout === 'pur' || !headline) {\n  p.push('NO TEXT: the picture carries no headline, no words and no captions at all.');\n} else {\n  p.push(lay.bild || '');\n  const schriften = { condensed: 'a bold condensed sans-serif in the spirit of Barlow Condensed', geometrisch: 'a modern geometric sans-serif in the spirit of Poppins, medium or regular weight' };\n  const fontHint = schriften[lay.font] || schriften.geometrisch;\n  let t = 'TEXT: render the HEADLINE spelled exactly, letter for letter: \"' + headline + '\" - by far the largest element, set in ' + fontHint + ', in cream-white ' + akzent + '.';\n  if (subline) { t += ' Under it, clearly smaller, the SUBLINE spelled exactly: \"' + subline + '\".'; }\n  if (info) { t += ' Smallest of all, uppercase and letter-spaced, the INFO LINE spelled exactly: \"' + info + '\" - set in the calm empty space or inside a thin outlined circle.'; }\n  if (cta) { t += ' An ACTION LINE spelled exactly: \"' + cta + '\" - small, inside a rounded rectangle in the terracotta accent colour about #C0563C, in the calm middle area and clear of both bottom corners.'; }\n  t += ' The wording is German, perfect spelling is critical, and these are the only words in the picture.';\n  p.push(t);\n  p.push(g.typo || '');\n}\np.push(g.stil || '');\np.push(g.verbote || '');\n\nconst prompt = p.filter(function (s) { return String(s || '').length > 0; }).join(' ');\nconst size = String(cfg.bild_size || '1024x1536');\nreturn [{ json: { openai_gen_body: { model: 'gpt-image-1', prompt: prompt, size: size, quality: 'high', output_format: 'png', n: 1 }, size: size, prompt_len: prompt.length } }];"
+      },
+      "id": "0f3ede15-216b-434a-bf1c-fdbb4e8198f1",
+      "name": "Bild-Request bauen (Neu)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4624,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Node: \"Bild-Request bauen (Foto)\"  (n8n-nodes-base.code, typeVersion 2)\n// KOMPLETTER Ersatz fuer den bisherigen Code des Nodes.\n// Bild-Guideline v3: Textzeilen (Subline/Infozeile/CTA), Schrift je Layout,\n// Vorrang der reservierten Ecken. Der Multipart-Block unten ist unveraendert.\n\nconst cfg = $('Restaurant-Konfiguration').first().json;\nconst post = $('Post aufbereiten').first().json.post;\nconst a = $('Auftrag').first().json;\nconst bm = $('Bild-Modus').first().json;\nconst g = cfg.restaurant.bild_guideline || {};\nconst f = cfg.restaurant.brand_farben || {};\nconst lay = (cfg.layouts || {})[post.layout] || { bild: '', stil: 'promo', font: 'geometrisch' };\nconst headline = String(post.bild_headline || '').slice(0, 40);\nconst subline = String(post.bild_subline || '').slice(0, 60);\nconst info = String(post.bild_infozeile || '').slice(0, 40);\nconst cta = String(post.bild_cta || '').slice(0, 30);\nconst hatPreis = String(post.preis_text || '') !== '';\nconst anpassung = !!bm.anpassung;\nconst akzent = f.akzent || '#F5E6C8';\nconst schriften = { condensed: 'a bold condensed sans-serif in the spirit of Barlow Condensed', geometrisch: 'a modern geometric sans-serif in the spirit of Poppins, medium or regular weight' };\nconst fontHint = schriften[lay.font] || schriften.geometrisch;\nconst p = [];\n\nif (anpassung) {\n  p.push('Image 1 is the current, already finished post. Keep it as it is: the same photo, composition, dish, people, colours, light, lettering and the Pizzarello logo that is already part of it.');\n  p.push('Apply only this one change, requested by the restaurant owner in German: \"' + String(a.reason || 'kleine Verbesserung') + '\". Change nothing else.');\n  p.push('Image 1 already carries the Pizzarello logo in its bottom-left corner: leave it exactly where and as large as it is, and draw no further logo anywhere.');\n  if (post.layout === 'pur' || !headline) {\n    p.push('The picture carries no headline: leave it free of lettering.');\n  } else {\n    let th = 'The headline must read exactly, letter for letter: \"' + headline + '\" - keep its existing position, font and size.';\n    if (subline) { th += ' The smaller subline under it must read exactly: \"' + subline + '\".'; }\n    if (info) { th += ' The smallest info line must read exactly: \"' + info + '\".'; }\n    if (cta) { th += ' The action line must read exactly: \"' + cta + '\".'; }\n    th += ' Keep every other piece of lettering unchanged.';\n    p.push(th);\n  }\n  p.push(hatPreis ? 'Image 1 already carries a round price badge in the bottom-right corner: leave it exactly where it is and exactly as large as it is, do not move, resize or re-draw it, and invent no further price, number or currency symbol.' : 'Add no price, no number and no currency symbol.');\n  p.push('Every letter stays fully inside the frame with a margin of at least 12 percent from every edge.');\n} else {\n  const fmt = cfg.bild_format || { hinweis: '' };\n  p.push('Image 1 is a photo from the restaurant. Turn it into a finished social media post for an Italian pizzeria.');\n  p.push(fmt.hinweis || '');\n  p.push(g.grading || '');\n  p.push(g.look || '');\n  const brief = String(post.image_brief || '').trim();\n  if (brief) {\n    p.push('SUBJECT (this is what image 1 already shows - do not re-invent it and add nothing to it): ' + ('.!?'.indexOf(brief.slice(-1)) === -1 ? brief + '.' : brief));\n  }\n  p.push('If image 1 has no calm empty area in the upper third, extend its ground upwards to open one up instead of cropping into the dish.');\n  p.push('ZONES (every element has its own area and they never overlap): the BOTTOM-LEFT corner stays empty and calm - the real Pizzarello logo is composited there afterwards; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays empty and calm as well, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the text block keeps to the upper area as the canvas note above describes; the dish sits between them and reaches into neither bottom corner. A reserved corner beats any other placement: if the photo already fills one, gently extend and darken its ground there rather than cropping into the dish.');\n  if (post.layout === 'pur' || !headline) {\n    p.push('NO TEXT: the picture carries no headline, no words and no captions at all.');\n  } else {\n    p.push('TEXT PLACEMENT - take only the text placement from the following and ignore anything in it that would re-crop or re-stage the photo, because image 1 stays as it is: ' + (lay.bild || ''));\n    let t = 'TEXT: render the HEADLINE spelled exactly, letter for letter: \"' + headline + '\" - by far the largest element, set in ' + fontHint + ', in cream-white ' + akzent + '.';\n    if (subline) { t += ' Under it, clearly smaller, the SUBLINE spelled exactly: \"' + subline + '\".'; }\n    if (info) { t += ' Smallest of all, uppercase and letter-spaced, the INFO LINE spelled exactly: \"' + info + '\".'; }\n    if (cta) { t += ' An ACTION LINE spelled exactly: \"' + cta + '\" - small, inside a rounded rectangle in the terracotta accent colour about #C0563C, in the calm middle area and clear of both bottom corners.'; }\n    t += ' The wording is German, perfect spelling is critical, and these are the only words in the picture.';\n    p.push(t);\n    p.push(g.typo || '');\n  }\n  p.push(g.stil_foto || g.stil || '');\n  p.push(g.verbote || '');\n}\n\nconst prompt = p.filter(function (s) { return String(s || '').length > 0; }).join(' ');\n\n// ---- Basisfoto fuer das Multipart-Feld image[] ----\n// Das Feld image[] muss mit einem Dateinamen samt gueltiger Endung und dem passenden\n// Content-Type hochgeladen werden. Fehlt beides (z. B. weil \"Basisfoto laden\" keinen\n// Dateinamen aus der URL ableiten konnte), lehnt OpenAI die Datei mit\n// \"Invalid image file or mode for image 1\" ab. Darum hier die Datei selbst pruefen\n// und Dateiname/MIME-Typ explizit setzen.\nconst inBin = $input.first().binary || {};\nconst basis = inBin.basis;\nif (!basis) throw new Error('Basisfoto-Binary fehlt');\n\nconst buf = await this.helpers.getBinaryDataBuffer(0, 'basis');\nif (!buf || buf.length < 32) throw new Error('Das Basisfoto ist leer (' + (buf ? buf.length : 0) + ' Byte) - Node \"Basisfoto normalisieren\" pruefen.');\nconst asc = function (von, bis) { return buf.slice(von, bis).toString('latin1'); };\nlet endung = '';\nlet mime = '';\nif (buf[0] === 0x89 && asc(1, 4) === 'PNG') { endung = 'png'; mime = 'image/png'; }\nelse if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) { endung = 'jpg'; mime = 'image/jpeg'; }\nelse if (asc(0, 4) === 'RIFF' && asc(8, 12) === 'WEBP') { endung = 'webp'; mime = 'image/webp'; }\nelse throw new Error('Das Basisfoto ist nach der Normalisierung kein PNG/JPEG/WEBP - Node \"Basisfoto normalisieren\" pruefen. Quelle: ' + String(bm.base_url || 'unbekannt'));\nif (buf.length > 45 * 1024 * 1024) throw new Error('Das Basisfoto ist mit ' + Math.round(buf.length / 1048576) + ' MB zu gross (Grenze der Bild-KI: 50 MB).');\n\nconst binary = {\n  image0: Object.assign({}, basis, {\n    fileName: 'basisfoto.' + endung,\n    fileExtension: endung,\n    mimeType: mime\n  })\n};\nreturn [{ json: { prompt: prompt, size: String(cfg.bild_size || '1024x1536'), prompt_len: prompt.length, basis_mime: mime, basis_bytes: buf.length }, binary: binary }];"
+      },
+      "id": "fba6044b-7b7c-4c12-a507-880672895644",
+      "name": "Bild-Request bauen (Foto)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4624,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/edits",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gpt-image-1"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $json.prompt }}"
+            },
+            {
+              "name": "size",
+              "value": "={{ $json.size }}"
+            },
+            {
+              "name": "quality",
+              "value": "high"
+            },
+            {
+              "name": "input_fidelity",
+              "value": "high"
+            },
+            {
+              "name": "n",
+              "value": "1"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "image[]",
+              "inputDataFieldName": "image0"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 240000
+        }
+      },
+      "id": "a1146cf8-7777-4ed4-b0ab-f4893b4636ef",
+      "name": "GPT Bild (Foto)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4848,
+        560
+      ],
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Node: \"Bild extrahieren\"  (n8n-nodes-base.code, typeVersion 2)\n// KOMPLETTER Ersatz fuer den bisherigen Code des Nodes.\n//\n// Warum: Der Node hat jeden Fehler der Bild-KI in denselben Satz gepackt\n// (\"Die Bild-KI hat keinen Bilddatensatz geliefert\") und die eigentliche Ursache\n// als rohes JSON angehaengt. Der Fehler vom 03.09.2026 war in Wahrheit ein\n// abgelehntes Basisfoto (\"Invalid image file or mode for image 1\") - das war aus\n// der Meldung nicht zu erkennen. Jetzt wird der Fehlertyp erkannt und im Klartext\n// gemeldet, inklusive der Bildquelle, die das Problem ausgeloest hat.\n\nconst j = $json || {};\n\nif (j.error || (!j.data && j.message)) {\n  const roh = JSON.stringify(j).slice(0, 400);\n  const err = j.error || {};\n  const msg = String(err.description || err.message || j.message || '');\n  const t = (msg + ' ' + roh).toLowerCase();\n\n  let quelle = '';\n  try { quelle = String(($('Bild-Modus').first().json || {}).base_url || ''); } catch (e) { quelle = ''; }\n\n  if (t.indexOf('moderation') !== -1 || t.indexOf('content_policy') !== -1 || t.indexOf('safety') !== -1 || t.indexOf('rejected') !== -1) {\n    throw new Error('Die Bild-KI hat das Motiv abgelehnt (Moderation) - bitte das Motiv anders beschreiben. Details: ' + roh);\n  }\n  if (t.indexOf('invalid image file') !== -1 || t.indexOf('image file or mode') !== -1 || t.indexOf('invalid_image') !== -1 || t.indexOf('unsupported image') !== -1) {\n    throw new Error('Die Bild-KI konnte das Basisfoto nicht lesen (erlaubt sind nur PNG, JPEG und WEBP bis 50 MB). Basisfoto: ' + (quelle || 'unbekannt') + ' | Details: ' + roh);\n  }\n  if (t.indexOf('rate limit') !== -1 || t.indexOf('rate_limit') !== -1 || t.indexOf('429') !== -1) {\n    throw new Error('Die Bild-KI ist gerade ueberlastet (Rate-Limit) - in ein paar Minuten nochmal versuchen. Details: ' + roh);\n  }\n  if (t.indexOf('timeout') !== -1 || t.indexOf('etimedout') !== -1) {\n    throw new Error('Die Bild-KI hat zu lange gebraucht (Timeout) - bitte nochmal versuchen. Details: ' + roh);\n  }\n  throw new Error('Die Bild-KI hat keinen Bilddatensatz geliefert. Details: ' + roh);\n}\n\nconst b64 = j.data && j.data[0] && j.data[0].b64_json;\nif (!b64) throw new Error('OpenAI Bild fehlt: ' + JSON.stringify(j).slice(0, 300));\nconst binary = {};\nbinary.data = await this.helpers.prepareBinaryData(Buffer.from(b64, 'base64'), 'post.png', 'image/png');\nreturn [{ json: { image_b64_len: b64.length }, binary: binary }];"
+      },
+      "id": "132e2b9b-2159-4750-86f8-60339588e646",
+      "name": "Bild extrahieren",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5072,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst lay = cfg.logo_layout || {};\nconst boxB = Number(lay.box_breite || 420);\nconst boxH = Number(lay.box_hoehe || 200);\nconst rand = Number(lay.rand || 64);\nconst masse = String(cfg.bild_size || '1024x1536').split('x');\nconst bildB = Number(masse[0] || 1024);\nconst bildH = Number(masse[1] || 1536);\nconst logoBin = $('Logo laden').first().binary || {};\nconst inBin = $input.first().binary || {};\nif (!inBin.data) throw new Error('Kein Basisbild fuer das Logo-Overlay');\nif (!logoBin.logo) throw new Error('Logo-Binary fehlt fuer das Overlay');\nconst binary = { data: inBin.data, logo: logoBin.logo };\n// Der Preis-Badge sass bisher auf festen Y-Werten, die nur zu 1024x1536 passten.\n// Seit die Leinwand je Plattform variiert, kommen die Werte von hier - als Abstand\n// von der Unterkante, damit der Badge immer unten rechts sitzt.\nreturn [{ json: {\n  logo_box_breite: boxB,\n  logo_box_hoehe: boxH,\n  logo_x: rand,\n  logo_y: bildH - rand - boxH,\n  bild_breite: bildB,\n  bild_hoehe: bildH,\n  badge_x: bildB - 172,\n  badge_mitte_y: bildH - 172,\n  badge_aussen_y: bildH - 320,\n  badge_innen_y: bildH - 308,\n  badge_nur_x: bildB - 198,\n  badge_nur_y: bildH - 209,\n  badge_preis_y: bildH - 116\n}, binary: binary }];"
+      },
+      "id": "32cb95e1-3c54-4ab4-b218-5b0b05a2759d",
+      "name": "Logo buendeln",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5296,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Post aufbereiten').first().json.post.preis_text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b66c06bb-220e-425c-abef-ca22c02271ab",
+      "name": "Preis-Badge?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5968,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "multiStep",
+        "operations": {
+          "operations": [
+            {
+              "operation": "draw",
+              "primitive": "circle",
+              "color": "#C8102E",
+              "startPositionX": "={{ $('Logo buendeln').first().json.badge_x }}",
+              "startPositionY": "={{ $('Logo buendeln').first().json.badge_mitte_y }}",
+              "endPositionX": "={{ $('Logo buendeln').first().json.badge_x }}",
+              "endPositionY": "={{ $('Logo buendeln').first().json.badge_aussen_y }}"
+            },
+            {
+              "operation": "draw",
+              "primitive": "circle",
+              "color": "#F5E6C8",
+              "startPositionX": "={{ $('Logo buendeln').first().json.badge_x }}",
+              "startPositionY": "={{ $('Logo buendeln').first().json.badge_mitte_y }}",
+              "endPositionX": "={{ $('Logo buendeln').first().json.badge_x }}",
+              "endPositionY": "={{ $('Logo buendeln').first().json.badge_innen_y }}"
+            },
+            {
+              "operation": "text",
+              "text": "nur",
+              "fontSize": 34,
+              "fontColor": "#3a322a",
+              "positionX": "={{ $('Logo buendeln').first().json.badge_nur_x }}",
+              "positionY": "={{ $('Logo buendeln').first().json.badge_nur_y }}"
+            },
+            {
+              "operation": "text",
+              "text": "={{ $('Post aufbereiten').first().json.post.preis_text }}",
+              "fontSize": 60,
+              "fontColor": "#C8102E",
+              "positionX": "={{ (function(){ var t = String($('Post aufbereiten').first().json.post.preis_text || ''); var e = String.fromCharCode(0x20ac); var w = 0; for (var i = 0; i < t.length; i++) { var c = t.charAt(i); if (c === ',' || c === '.' || c === ' ') w += 17; else if (c >= '0' && c <= '9') w += 33; else if (c === e) w += 33; else w += 36; } return Math.round($('Logo buendeln').first().json.badge_x - w / 2); })() }}",
+              "positionY": "={{ $('Logo buendeln').first().json.badge_preis_y }}"
+            }
+          ]
+        },
+        "options": {
+          "destinationKey": "data",
+          "format": "png",
+          "quality": 100
+        }
+      },
+      "id": "95c85bc8-d406-4b7b-b5e3-90d4c29f47e0",
+      "name": "Preis-Badge stempeln",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        6192,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let b64 = null;\ntry { const buf = await this.helpers.getBinaryDataBuffer(0, 'data'); if (buf && buf.length > 0) b64 = buf.toString('base64'); } catch (e) {}\nif (!b64) throw new Error('Finales Bild konnte nicht gelesen werden');\nreturn [{ json: { image_b64: b64 } }];"
+      },
+      "id": "eaf5a630-a37f-4435-af2d-42636e5eb302",
+      "name": "Finalbild extrahieren",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6416,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image",
+              "value": "={{ $json.image_b64 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3feea41c-a478-45c7-b18c-4d56b170f9b4",
+      "name": "imgbb hochladen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6640,
+        560
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Restaurant-Konfiguration').first().json;\nconst p = $('Post aufbereiten').first().json.post;\nconst k = $('Kontext').first().json;\nconst a = $('Auftrag').first().json;\nconst url = $json.data && $json.data.url;\nif (!url) throw new Error('imgbb lieferte keine URL: ' + JSON.stringify($json).slice(0, 300));\nconst NL = String.fromCharCode(10);\nconst OK = String.fromCodePoint(0x2705);\nconst NEU = String.fromCodePoint(0x1F504);\nconst WEG = String.fromCodePoint(0x1F5D1);\nconst esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };\nconst emoji = { angebote: String.fromCodePoint(0x1F355), saisonal: String.fromCodePoint(0x1F33F), community: String.fromCodePoint(0x2764) };\nconst post_id = String(Date.now()) + '-' + Math.random().toString(36).slice(2, 8);\nconst aktive = (cfg.buffer.kanaele || []).filter(function (kk) { return kk.aktiv && kk.channelId && String(kk.channelId).indexOf('<') === -1; });\nconst kanalNamen = aktive.map(function (kk) { return kk.name; }).join(', ');\nconst caption = ('<b>' + (emoji[k.saeule] || '') + ' ' + esc(p.headline) + '</b>').slice(0, 1000);\nlet text = '<b>' + esc(p.headline) + '</b>' + NL + NL + esc(p.post_text) + NL + NL + esc(p.hashtags.join(' ')) + NL + NL;\ntext += 'Geplant fuer heute ' + cfg.buffer.posting_zeit + ' Uhr auf: ' + esc(kanalNamen || 'kein aktiver Kanal') + NL;\ntext += 'Saeule: ' + esc(k.saeule) + ' | Layout: ' + esc(p.layout) + NL + NL;\ntext += 'Was soll ich damit machen? Du kannst auch einfach schreiben, was anders werden soll.';\nconst draft = { post_id: post_id, image_url: url, headline: p.headline, post_text: p.post_text, hashtags: p.hashtags, layout: p.layout, bild_typ: p.bild_typ, preis_text: p.preis_text, saeule: k.saeule, datum: k.datum, photo_url: a.photo_url || '' };\nreturn [{ json: {\n  post_id: post_id,\n  image_url: url,\n  caption: caption,\n  entscheidungs_text: text.slice(0, 4000),\n  draft_json: JSON.stringify(draft),\n  btn_ok: OK + ' Freigeben',\n  btn_neu: NEU + ' Andere Variante',\n  btn_weg: WEG + ' Verwerfen',\n  cb_ok: 'ok:' + post_id,\n  cb_neu: 'neu:' + post_id,\n  cb_weg: 'weg:' + post_id\n} }];"
+      },
+      "id": "e7af3d6d-1069-4dfd-a6af-7b3b1306d04b",
+      "name": "Entwurf-Daten bauen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6864,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('Restaurant-Konfiguration').first().json.telegram_chat_id }}",
+        "file": "={{ $json.image_url }}",
+        "additionalFields": {
+          "caption": "={{ $json.caption }}",
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "9cbd9584-b09d-44c9-a434-83251154fa5b",
+      "name": "Entwurf-Foto senden",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        7088,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Restaurant-Konfiguration').first().json.telegram_chat_id }}",
+        "text": "={{ $('Entwurf-Daten bauen').first().json.entscheidungs_text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Entwurf-Daten bauen').first().json.btn_ok }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $('Entwurf-Daten bauen').first().json.cb_ok }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Entwurf-Daten bauen').first().json.btn_neu }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $('Entwurf-Daten bauen').first().json.cb_neu }}"
+                    }
+                  },
+                  {
+                    "text": "={{ $('Entwurf-Daten bauen').first().json.btn_weg }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $('Entwurf-Daten bauen').first().json.cb_weg }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "9effd6a2-1ac1-4a5c-aa43-6c8cbb5b22dd",
+      "name": "Entscheidung senden",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        7312,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "8WhvJ2bY2B6wKyGY",
+          "cachedResultName": "pizzarello_sessions"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Auftrag').first().json.chat_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $('Auftrag').first().json.chat_id }}",
+            "state": "DRAFT_OPEN",
+            "post_id": "={{ $('Entwurf-Daten bauen').first().json.post_id }}",
+            "draft_json": "={{ $('Entwurf-Daten bauen').first().json.draft_json }}",
+            "photo_url": "={{ $('Auftrag').first().json.photo_url }}",
+            "last_message_id": "={{ $json.result.message_id }}",
+            "updated": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "post_id",
+              "displayName": "post_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "draft_json",
+              "displayName": "draft_json",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "photo_url",
+              "displayName": "photo_url",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "last_message_id",
+              "displayName": "last_message_id",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            },
+            {
+              "id": "updated",
+              "displayName": "updated",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "694734b2-b51b-40a7-afe1-767e86c75280",
+      "name": "Session DRAFT_OPEN",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        7536,
+        560
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.openai_gen_body) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 240000
+        }
+      },
+      "id": "439e655e-b772-45f4-9556-989b2a19c027",
+      "name": "GPT Bild (Neu)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4848,
+        752
+      ],
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "resize",
+        "dataPropertyName": "logo",
+        "width": "={{ $json.logo_box_breite }}",
+        "height": "={{ $json.logo_box_hoehe }}",
+        "options": {
+          "destinationKey": "logo",
+          "format": "png",
+          "quality": 100
+        }
+      },
+      "id": "dd0266d1-708b-4355-b16a-6f3952f2374d",
+      "name": "Logo skalieren",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        5520,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "composite",
+        "dataPropertyNameComposite": "logo",
+        "positionX": "={{ $('Logo buendeln').first().json.logo_x }}",
+        "positionY": "={{ $('Logo buendeln').first().json.logo_y }}",
+        "options": {
+          "destinationKey": "data",
+          "format": "png",
+          "quality": 100
+        }
+      },
+      "id": "fa42a58e-34c5-4f16-9b19-1d7fa19fa0b6",
+      "name": "Logo einfuegen",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        5744,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Node: \"Basisfoto pruefen\"  (n8n-nodes-base.code, typeVersion 2, Run Once for All Items)\n// Platz im Flow: NEU, direkt hinter \"Basisfoto laden\", vor \"Basisfoto normalisieren\".\n//\n// Warum: /v1/images/edits akzeptiert nur PNG, JPEG und WEBP. Kam hier etwas anderes\n// an (HTML-Fehler- oder Vorschauseite statt Bild, HEIC vom iPhone, leere Antwort),\n// hat OpenAI mit \"Invalid image file or mode for image 1\" geantwortet - und der Flow\n// ist erst viel spaeter im Node \"Bild extrahieren\" mit der irrefuehrenden Meldung\n// \"Die Bild-KI hat keinen Bilddatensatz geliefert\" abgebrochen.\n\nconst bm = $('Bild-Modus').first().json || {};\nconst quelle = String(bm.base_url || 'unbekannt');\nconst inBin = $input.first().binary || {};\nif (!inBin.basis) throw new Error('Basisfoto-Binary fehlt (Node \"Basisfoto laden\" hat nichts geliefert). Quelle: ' + quelle);\n\nlet buf = null;\ntry { buf = await this.helpers.getBinaryDataBuffer(0, 'basis'); } catch (e) { buf = null; }\nif (!buf || buf.length < 32) throw new Error('Das Basisfoto ist leer oder unlesbar (' + (buf ? buf.length : 0) + ' Byte). Quelle: ' + quelle);\n\nconst b = buf;\nconst asc = function (von, bis) { return buf.slice(von, bis).toString('latin1'); };\nlet typ = '';\nif (b[0] === 0x89 && asc(1, 4) === 'PNG') typ = 'png';\nelse if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) typ = 'jpeg';\nelse if (asc(0, 4) === 'RIFF' && asc(8, 12) === 'WEBP') typ = 'webp';\nelse if (asc(0, 4) === 'GIF8') typ = 'gif';\nelse if (asc(0, 2) === 'BM') typ = 'bmp';\nelse if (b[0] === 0x49 && b[1] === 0x49 && b[2] === 0x2a && b[3] === 0x00) typ = 'tiff';\nelse if (b[0] === 0x4d && b[1] === 0x4d && b[2] === 0x00 && b[3] === 0x2a) typ = 'tiff';\nelse if (asc(4, 8) === 'ftyp') typ = 'heic';\n\nif (typ === '') {\n  const probe = asc(0, 80).replace(/[^ -~]/g, '.');\n  throw new Error('Der Bild-Link liefert kein Bild, sondern etwas anderes (vermutlich eine Fehler- oder Vorschauseite). Bitte im Bildarchiv den direkten Bild-Link hinterlegen. Quelle: ' + quelle + ' | Dateianfang: ' + probe);\n}\nif (typ === 'heic') {\n  throw new Error('Das Basisfoto ist ein HEIC/AVIF-Bild (iPhone-Format) - das kann die Bild-KI nicht lesen. Bitte das Foto als JPG oder PNG neu ins Archiv laden. Quelle: ' + quelle);\n}\nif (buf.length > 45 * 1024 * 1024) {\n  throw new Error('Das Basisfoto ist mit ' + Math.round(buf.length / 1048576) + ' MB zu gross (Grenze der Bild-KI: 50 MB). Quelle: ' + quelle);\n}\n\nreturn [{ json: { basis_typ: typ, basis_bytes: buf.length, basis_quelle: quelle }, binary: inBin }];"
+      },
+      "id": "4489dd3b-04b3-4f7e-a437-5332b8ecac52",
+      "name": "Basisfoto pruefen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4400,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "resize",
+        "dataPropertyName": "basis",
+        "width": 1536,
+        "height": 1536,
+        "resizeOption": "onlyIfLarger",
+        "options": {
+          "destinationKey": "basis",
+          "format": "png",
+          "quality": 100
+        }
+      },
+      "id": "be5558eb-2d6f-4081-8841-52c444d2bd35",
+      "name": "Basisfoto normalisieren",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        4576,
+        304
+      ]
+    }
+  ],
+  "connections": {
+    "Telegram Eingang": {
+      "main": [
+        [
+          {
+            "node": "Update normalisieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update normalisieren": {
+      "main": [
+        [
+          {
+            "node": "Eingang",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Eingang": {
+      "main": [
+        [
+          {
+            "node": "Restaurant-Konfiguration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restaurant-Konfiguration": {
+      "main": [
+        [
+          {
+            "node": "Session laden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session laden": {
+      "main": [
+        [
+          {
+            "node": "Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Taeglich 09:30": {
+      "main": [
+        [
+          {
+            "node": "Tagespost normalisieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tagespost normalisieren": {
+      "main": [
+        [
+          {
+            "node": "Eingang",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router": {
+      "main": [
+        [
+          {
+            "node": "Zweig waehlen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zweig waehlen": {
+      "main": [
+        [
+          {
+            "node": "Callback bestaetigen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Bin beschaeftigt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Eingangsfoto hochladen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Text-Auftrag",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tagespost-Auftrag",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ignorieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback bestaetigen": {
+      "main": [
+        [
+          {
+            "node": "Entwurf noch gueltig?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Eingangsfoto hochladen": {
+      "main": [
+        [
+          {
+            "node": "Foto-Auftrag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text-Auftrag": {
+      "main": [
+        [
+          {
+            "node": "Auftrag",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Aenderungswunsch?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tagespost-Auftrag": {
+      "main": [
+        [
+          {
+            "node": "Auftrag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entwurf noch gueltig?": {
+      "main": [
+        [
+          {
+            "node": "Callback-Aktion",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Toter Entwurf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Foto-Auftrag": {
+      "main": [
+        [
+          {
+            "node": "Auftrag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auftrag": {
+      "main": [
+        [
+          {
+            "node": "Status BUSY setzen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aenderungswunsch?": {
+      "main": [
+        [
+          {
+            "node": "Bewertungs-Anfrage",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Kein Learning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback-Aktion": {
+      "main": [
+        [
+          {
+            "node": "Freigabe vorbereiten",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Variante-Auftrag",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Verwurf-Daten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Freigabe vorbereiten": {
+      "main": [
+        [
+          {
+            "node": "Kanal aktiv?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Variante-Auftrag": {
+      "main": [
+        [
+          {
+            "node": "Auftrag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verwurf-Daten": {
+      "main": [
+        [
+          {
+            "node": "Verwurf loggen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kanal aktiv?": {
+      "main": [
+        [
+          {
+            "node": "Braucht Hochformat?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Freigabe-Ergebnis-Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verwurf loggen": {
+      "main": [
+        [
+          {
+            "node": "Verwurf bestaetigen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Braucht Hochformat?": {
+      "main": [
+        [
+          {
+            "node": "Master laden",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Buffer-Requests bauen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Freigabe-Ergebnis-Text": {
+      "main": [
+        [
+          {
+            "node": "Kein Kanal melden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master laden": {
+      "main": [
+        [
+          {
+            "node": "Hochformat Hintergrund",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buffer-Requests bauen": {
+      "main": [
+        [
+          {
+            "node": "Buffer Post planen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kein Kanal melden": {
+      "main": [
+        [
+          {
+            "node": "Session zuruecksetzen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hochformat Hintergrund": {
+      "main": [
+        [
+          {
+            "node": "Hochformat Vordergrund",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buffer Post planen": {
+      "main": [
+        [
+          {
+            "node": "Freigabe-Ergebnis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hochformat Vordergrund": {
+      "main": [
+        [
+          {
+            "node": "Hochformat komponieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hochformat komponieren": {
+      "main": [
+        [
+          {
+            "node": "Hochformat extrahieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hochformat extrahieren": {
+      "main": [
+        [
+          {
+            "node": "imgbb Hochformat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "imgbb Hochformat": {
+      "main": [
+        [
+          {
+            "node": "Buffer-Requests bauen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Freigabe-Ergebnis": {
+      "main": [
+        [
+          {
+            "node": "Log schreiben",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status BUSY setzen": {
+      "main": [
+        [
+          {
+            "node": "Tippen anzeigen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tippen anzeigen": {
+      "main": [
+        [
+          {
+            "node": "Website laden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verwurf bestaetigen": {
+      "main": [
+        [
+          {
+            "node": "Session zuruecksetzen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bewertungs-Anfrage": {
+      "main": [
+        [
+          {
+            "node": "Learning bewerten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Learning bewerten": {
+      "main": [
+        [
+          {
+            "node": "Learning parsen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Learning parsen": {
+      "main": [
+        [
+          {
+            "node": "Dauerhaft?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dauerhaft?": {
+      "main": [
+        [
+          {
+            "node": "Learning speichern",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Kein Learning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log schreiben": {
+      "main": [
+        [
+          {
+            "node": "Freigabe bestaetigen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Freigabe bestaetigen": {
+      "main": [
+        [
+          {
+            "node": "Session zuruecksetzen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Website laden": {
+      "main": [
+        [
+          {
+            "node": "Feiertage laden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Feiertage laden": {
+      "main": [
+        [
+          {
+            "node": "Kontext",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kontext": {
+      "main": [
+        [
+          {
+            "node": "Post-Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post-Agent": {
+      "main": [
+        [
+          {
+            "node": "Rueckfrage noetig?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI gpt-5-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Post-Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gespraechs-Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Post-Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_learnings": {
+      "ai_tool": [
+        [
+          {
+            "node": "Post-Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_aktuelle_angebote": {
+      "ai_tool": [
+        [
+          {
+            "node": "Post-Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_speisekarte": {
+      "ai_tool": [
+        [
+          {
+            "node": "Post-Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_bildarchiv": {
+      "ai_tool": [
+        [
+          {
+            "node": "Post-Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post-Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Post-Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rueckfrage noetig?": {
+      "main": [
+        [
+          {
+            "node": "Rueckfrage senden",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post aufbereiten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rueckfrage senden": {
+      "main": [
+        [
+          {
+            "node": "Session AWAITING_ANSWER",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post aufbereiten": {
+      "main": [
+        [
+          {
+            "node": "Bild-Modus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bild-Modus": {
+      "main": [
+        [
+          {
+            "node": "Logo laden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logo laden": {
+      "main": [
+        [
+          {
+            "node": "Mit Basisfoto?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mit Basisfoto?": {
+      "main": [
+        [
+          {
+            "node": "Basisfoto laden",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Bild-Request bauen (Neu)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basisfoto laden": {
+      "main": [
+        [
+          {
+            "node": "Basisfoto pruefen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bild-Request bauen (Neu)": {
+      "main": [
+        [
+          {
+            "node": "GPT Bild (Neu)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bild-Request bauen (Foto)": {
+      "main": [
+        [
+          {
+            "node": "GPT Bild (Foto)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT Bild (Foto)": {
+      "main": [
+        [
+          {
+            "node": "Bild extrahieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bild extrahieren": {
+      "main": [
+        [
+          {
+            "node": "Logo buendeln",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logo buendeln": {
+      "main": [
+        [
+          {
+            "node": "Logo skalieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preis-Badge?": {
+      "main": [
+        [
+          {
+            "node": "Preis-Badge stempeln",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Finalbild extrahieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preis-Badge stempeln": {
+      "main": [
+        [
+          {
+            "node": "Finalbild extrahieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalbild extrahieren": {
+      "main": [
+        [
+          {
+            "node": "imgbb hochladen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "imgbb hochladen": {
+      "main": [
+        [
+          {
+            "node": "Entwurf-Daten bauen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entwurf-Daten bauen": {
+      "main": [
+        [
+          {
+            "node": "Entwurf-Foto senden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entwurf-Foto senden": {
+      "main": [
+        [
+          {
+            "node": "Entscheidung senden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entscheidung senden": {
+      "main": [
+        [
+          {
+            "node": "Session DRAFT_OPEN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT Bild (Neu)": {
+      "main": [
+        [
+          {
+            "node": "Bild extrahieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logo skalieren": {
+      "main": [
+        [
+          {
+            "node": "Logo einfuegen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logo einfuegen": {
+      "main": [
+        [
+          {
+            "node": "Preis-Badge?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basisfoto pruefen": {
+      "main": [
+        [
+          {
+            "node": "Basisfoto normalisieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basisfoto normalisieren": {
+      "main": [
+        [
+          {
+            "node": "Bild-Request bauen (Foto)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "QcBt5fGwEQ4Y3JcB",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {}
+}
