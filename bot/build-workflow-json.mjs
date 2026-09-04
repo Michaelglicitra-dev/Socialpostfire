@@ -38,6 +38,7 @@ setzeCode('Post aufbereiten', 'Post-aufbereiten.js');
 setzeCode('Bild-Request bauen (Neu)', 'Bild-Request-bauen-Neu.js');
 setzeCode('Bild-Request bauen (Foto)', 'Bild-Request-bauen-Foto.js');
 setzeCode('Logo buendeln', 'Logo-buendeln.js');
+setzeCode('Router', 'Router.js');
 
 const schema = nodeVon('Post-Schema');
 schema.parameters.jsonSchemaExample = lies('bot/nodes/Post-Schema.jsonSchemaExample.txt').trim();
@@ -93,7 +94,7 @@ const raus = {
   pinData: {}
 };
 
-if (angewendet !== 19) throw new Error(`Nur ${angewendet} von 19 Aenderungen angewendet`);
+if (angewendet !== 20) throw new Error(`Nur ${angewendet} von 20 Aenderungen angewendet`);
 if (raus.nodes.length !== wf.nodes.length) throw new Error('Node-Anzahl veraendert');
 
 const ziel = 'bot/live/Pizzarello-Bot-v3.import.json';

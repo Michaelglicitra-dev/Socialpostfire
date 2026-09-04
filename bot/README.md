@@ -28,9 +28,15 @@ Nodes**, v3 bereits eingebaut. In n8n über **Workflows → … → Import from 
 > Nodes *zusätzlich* neben die vorhandenen — du hättest jeden Node doppelt. Importiere die
 > Datei als **neuen Workflow**.
 
+> ⚠️ **n8n importiert die Workflow-Einstellungen nicht mit.** Die Datei enthält
+> `errorWorkflow` und `availableInMCP`, der Import verwirft beides. Ohne Error-Workflow
+> bleibt nach einem Fehler der Session-Status auf `BUSY` stehen und der Bot antwortet nur
+> noch „Ich bin beschäftigt". **Beides nach dem Import von Hand setzen.**
+
 Nach dem Import in dieser Reihenfolge:
 
-1. **Credentials zuordnen.** Die n8n-API liefert Credentials nicht aus, der Snapshot
+0. **Workflow-Einstellungen setzen** (Drei-Punkte-Menü → Settings):
+   *Error Workflow* = `Pizzarello Fehler-Melder`, und MCP-Zugriff aktivieren. Die n8n-API liefert Credentials nicht aus, der Snapshot
    enthält also keine. Betroffen sind alle Telegram-, OpenAI-, imgbb- und HTTP-Nodes
    (23 Stück). Das ist der Preis dieses Wegs.
 2. **Alten Bot deaktivieren**, bevor du den neuen aktivierst — zwei aktive Workflows am
@@ -62,6 +68,7 @@ teilweises Einspielen bricht den Flow (z.B. neue Layout-Namen ohne passende Conf
 | `nodes/Restaurant-Konfiguration.js` | `Restaurant-Konfiguration` | Feld **JavaScript** komplett ersetzen |
 | `nodes/Post-aufbereiten.js` | `Post aufbereiten` | Feld **JavaScript** komplett ersetzen |
 | `nodes/Logo-buendeln.js` | `Logo buendeln` | Feld **JavaScript** komplett ersetzen |
+| `nodes/Router.js` | `Router` | Feld **JavaScript** komplett ersetzen |
 | `nodes/Bild-Request-bauen-Neu.js` | `Bild-Request bauen (Neu)` | Feld **JavaScript** komplett ersetzen |
 | `nodes/Bild-Request-bauen-Foto.js` | `Bild-Request bauen (Foto)` | Feld **JavaScript** komplett ersetzen |
 | `nodes/Post-Schema.jsonSchemaExample.txt` | `Post-Schema` | Feld **JSON Example** komplett ersetzen |
@@ -149,6 +156,12 @@ höchstens eine kurze Zeile.
 **Alles Nachgelagerte bleibt unverändert.** Die Config setzt `bild_size` und
 `buffer.kanaele` auf die Plattform des Tages; `Freigabe vorbereiten`, `Buffer-Requests
 bauen`, `Log schreiben` und die 9:16-Ableitung arbeiten damit unverändert weiter.
+
+**BUSY-Notbremse im Router.** Solange ein Lauf arbeitet, steht die Session auf `BUSY` und
+neue Nachrichten bekommen „Ich bin beschäftigt". Bricht ein Lauf ab, ohne dass der
+Error-Workflow greift, blieb der Bot bisher **dauerhaft** in diesem Zustand — nur ein
+Eingriff in die Data Table half. Jetzt gilt ein `BUSY`, das älter als zehn Minuten ist, als
+abgelaufen und wird wie `IDLE` behandelt. Ein Bildlauf braucht selten mehr als zwei Minuten.
 
 **Vorrang der reservierten Ecken.** Layout-Beschreibung und freie Ecke können sich
 widersprechen — genau daran ist die erste Testrunde gescheitert (Layout sagte „Gericht
