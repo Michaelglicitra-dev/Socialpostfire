@@ -5,7 +5,9 @@
 //   node bot/preview.mjs                    -> alle Layouts, Neu-Generierung
 //   node bot/preview.mjs promo_poster       -> nur ein Layout
 //   node bot/preview.mjs --foto             -> Foto-Pfad (Node "Bild-Request bauen (Foto)")
-//   node bot/preview.mjs --out bot/prompts/ -> zusaetzlich als .txt ablegen
+//   node bot/preview.mjs --tag 2              -> Wochentag setzen (1=Mo .. 7=So),
+//                                                bestimmt ueber die Rotation die Plattform
+//   node bot/preview.mjs --out bot/prompts/   -> zusaetzlich als .txt ablegen
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -14,7 +16,13 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const lies = (n) => readFileSync(join(root, 'bot', 'nodes', n), 'utf8');
 
-async function runNode(code, items, input = {}, binary = null) {
+// Minimaler $now-Ersatz: die Config braucht nur setZone() und weekday.
+function machNow(weekday) {
+  const o = { weekday, setZone: () => o };
+  return o;
+}
+
+async function runNode(code, items, input = {}, binary = null, weekday = 1) {
   const $ = (name) => {
     if (!(name in items)) throw new Error(`Testdaten fuer Node "${name}" fehlen`);
     return { first: () => ({ json: items[name] }) };
@@ -28,12 +36,16 @@ async function runNode(code, items, input = {}, binary = null) {
         '9c6300010000050001' + '0d0a2db4' + '00000000049454e44ae426082', 'hex')
     }
   };
-  const fn = new Function('$', '$input', `return (async () => {\n${code}\n})();`);
-  const out = await fn.call(ctx, $, $input);
+  const fn = new Function('$', '$input', '$now', `return (async () => {\n${code}\n})();`);
+  const out = await fn.call(ctx, $, $input, machNow(weekday));
   return out[0].json;
 }
 
-const cfg = await runNode(lies('Restaurant-Konfiguration.js'), {}, {});
+const argv = process.argv.slice(2);
+const tagIdx = argv.indexOf('--tag');
+const weekday = tagIdx === -1 ? 1 : Number(argv[tagIdx + 1]);
+const cfg = await runNode(lies('Restaurant-Konfiguration.js'), {}, {}, null, weekday);
+const wtage = ['', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 
 const faelle = {
   klassik: { saeule: 'angebote', bild_typ: 'produkt', preis: '', headline: 'Frisch aus dem Ofen',
@@ -60,7 +72,7 @@ const faelle = {
     brief: 'Floured hands stretching a dough ball on a dark counter, warm directional light, oven flames blurred behind' }
 };
 
-const args = process.argv.slice(2);
+const args = argv.filter((a, i) => a !== '--tag' && argv[i - 1] !== '--tag');
 const foto = args.includes('--foto');
 const outIdx = args.indexOf('--out');
 const outDir = outIdx === -1 ? null : args[outIdx + 1];
@@ -82,10 +94,11 @@ for (const layout of layouts) {
     'Auftrag': { reason: '' },
     'Bild-Modus': { anpassung: false, base_url: 'https://example.invalid/foto.png' }
   };
-  const res = await runNode(code, items, {}, foto ? { basis: { mimeType: 'image/png', fileName: 'basis.png' } } : null);
+  const res = await runNode(code, items, {}, foto ? { basis: { mimeType: 'image/png', fileName: 'basis.png' } } : null, weekday);
   const prompt = res.openai_gen_body ? res.openai_gen_body.prompt : res.prompt;
   const l = cfg.layouts[layout] || {};
-  console.log(`\n${'='.repeat(78)}\n${layout}  (${l.name}, Stil: ${l.stil}, Schrift: ${l.font})  -  ${foto ? 'Foto-Pfad' : 'Neu-Generierung'}  -  ${prompt.length} Zeichen  -  ${res.size}\n${'='.repeat(78)}\n${prompt}`);
+  const pf = cfg.plattform ? `${cfg.plattform.name} (${cfg.bild_format.gen}${cfg.bild_format.vertikal ? ' -> 9:16' : ''})` : 'kein aktiver Kanal';
+  console.log(`\n${'='.repeat(78)}\n${layout}  (${l.name}, Stil: ${l.stil}, Schrift: ${l.font})  -  ${foto ? 'Foto-Pfad' : 'Neu-Generierung'}\n${wtage[weekday]} -> ${pf}  -  ${prompt.length} Zeichen\n${'='.repeat(78)}\n${prompt}`);
   if (outDir) {
     const file = join(root, outDir, `${layout}${foto ? '_foto' : ''}.txt`);
     writeFileSync(file, prompt + '\n', 'utf8');

@@ -38,7 +38,9 @@ if (anpassung) {
   p.push(hatPreis ? 'Image 1 already carries a round price badge in the bottom-right corner: leave it exactly where it is and exactly as large as it is, do not move, resize or re-draw it, and invent no further price, number or currency symbol.' : 'Add no price, no number and no currency symbol.');
   p.push('Every letter stays fully inside the frame with a margin of at least 12 percent from every edge.');
 } else {
-  p.push('Image 1 is a photo from the restaurant. Turn it into a finished vertical 2:3 social media post for an Italian pizzeria.');
+  const fmt = cfg.bild_format || { hinweis: '' };
+  p.push('Image 1 is a photo from the restaurant. Turn it into a finished social media post for an Italian pizzeria.');
+  p.push(fmt.hinweis || '');
   p.push(g.grading || '');
   p.push(g.look || '');
   const brief = String(post.image_brief || '').trim();
@@ -46,7 +48,7 @@ if (anpassung) {
     p.push('SUBJECT (this is what image 1 already shows - do not re-invent it and add nothing to it): ' + ('.!?'.indexOf(brief.slice(-1)) === -1 ? brief + '.' : brief));
   }
   p.push('If image 1 has no calm empty area in the upper third, extend its ground upwards to open one up instead of cropping into the dish.');
-  p.push('ZONES (every element has its own area and they never overlap): the BOTTOM-LEFT corner stays empty and calm - the real Pizzarello logo is composited there afterwards; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays empty and calm as well, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the text keeps to the upper third; the dish sits between them and reaches into neither bottom corner. A reserved corner beats any other placement: if the photo already fills one, gently extend and darken its ground there rather than cropping into the dish.');
+  p.push('ZONES (every element has its own area and they never overlap): the BOTTOM-LEFT corner stays empty and calm - the real Pizzarello logo is composited there afterwards; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays empty and calm as well, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the text block keeps to the upper area as the canvas note above describes; the dish sits between them and reaches into neither bottom corner. A reserved corner beats any other placement: if the photo already fills one, gently extend and darken its ground there rather than cropping into the dish.');
   if (post.layout === 'pur' || !headline) {
     p.push('NO TEXT: the picture carries no headline, no words and no captions at all.');
   } else {

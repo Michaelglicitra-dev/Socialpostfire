@@ -43,8 +43,28 @@ const cfg = {
     zitat: { name: 'Zitat', stil: 'promo', font: 'geometrisch', bild: 'HEADLINE ZONE: one short line in the upper third, set in calm empty space, cream-white, with no box and no band around it.' }
   },
   logo_url: 'https://i.ibb.co/23g2B67Z/Pizzarello-transp.png',
-  bild_size: '1024x1536',
   logo_layout: { box_breite: 420, box_hoehe: 200, rand: 64 },
+  // Bildformate. "gen" ist die Groesse, die gpt-image-1 nativ liefert (nur 1024x1024,
+  // 1024x1536 und 1536x1024 sind moeglich). "vertikal" markiert Formate, die nach der
+  // Freigabe noch auf 9:16 erweitert werden.
+  formate: {
+    quadrat: { gen: '1024x1024', breite: 1024, hoehe: 1024, vertikal: false,
+      hinweis: 'CANVAS: the picture is SQUARE (1:1). The text block keeps to the upper third and the dish fills the middle and lower area - there is less height than in a portrait picture, so keep the text to a headline and at most one short line under it.' },
+    hoch: { gen: '1024x1536', breite: 1024, hoehe: 1536, vertikal: false,
+      hinweis: 'CANVAS: the picture is TALL (2:3 portrait). There is generous height, so the text block sits comfortably in the upper third and the dish fills the lower two thirds.' },
+    story: { gen: '1024x1536', breite: 1024, hoehe: 1536, vertikal: true,
+      hinweis: 'CANVAS: the picture is TALL (2:3 portrait) and will later be placed on a 9:16 story canvas, so keep every important element - text, dish, both reserved corners - well inside the frame and away from the very top and bottom edges.' },
+    quer: { gen: '1536x1024', breite: 1536, hoehe: 1024, vertikal: false,
+      hinweis: 'CANVAS: the picture is WIDE (3:2 landscape). Set the text block in the left third and let the dish fill the right two thirds, cropped at the right edge.' }
+  },
+  // Eine Plattform je Post. Reihenfolge ueber die Woche, damit jedes Bild einzigartig
+  // bleibt und immer im passenden Format erzeugt wird.
+  plattformen: {
+    instagram: { key: 'instagram', name: 'Instagram', channelId: '6a805d6bb2d9d57743816131', aktiv: true, bild_format: 'quadrat', tags: 'max5' },
+    facebook: { key: 'facebook', name: 'Facebook', channelId: '', aktiv: false, bild_format: 'quadrat', tags: 'full' },
+    tiktok: { key: 'tiktok', name: 'TikTok', channelId: '', aktiv: false, bild_format: 'story', tags: 'full' }
+  },
+  plattform_rotation: { '1': 'instagram', '2': 'facebook', '3': 'tiktok', '4': 'instagram', '5': 'facebook', '6': 'tiktok', '7': 'instagram' },
   saeulen_rotation: { '1': 'angebote', '2': 'saisonal', '3': 'community', '4': 'angebote', '5': 'saisonal', '6': 'community', '7': 'angebote' },
   hashtags: {
     angebote: ['#pizzarello', '#tagesangebot', '#pizzaderwoche', '#oberhausen', '#pizzaliebe', '#handmadepizza'],
@@ -55,12 +75,42 @@ const cfg = {
   buffer: {
     organizationId: '69f7afabd110cb66bf840334',
     posting_zeit: '17:00',
-    kanaele: [
-      { key: 'instagram', name: 'Instagram', channelId: '6a805d6bb2d9d57743816131', aktiv: true, format: 'master', tags: 'max5' },
-      { key: 'facebook', name: 'Facebook', channelId: '', aktiv: false, format: 'master', tags: 'full' },
-      { key: 'tiktok', name: 'TikTok', channelId: '', aktiv: false, format: 'vertical', tags: 'full' }
-    ],
     pinterest_url: 'https://www.pizzarello.net'
   }
 };
+
+// ---- Plattform des Tages aufloesen -------------------------------------------------
+// Ein Post geht an genau EINE Plattform. Der Wochentag entscheidet, welche. Ist die
+// vorgesehene Plattform nicht scharf geschaltet (kein channelId), wird die naechste
+// aktive genommen, damit der Tagespost nicht ins Leere laeuft.
+const heute = $now.setZone('Europe/Berlin');
+function istAktiv(p) { return p && p.aktiv && p.channelId && String(p.channelId).indexOf('<') === -1; }
+const alle = cfg.plattformen || {};
+const reihenfolge = ['instagram', 'facebook', 'tiktok'];
+let plattform = alle[(cfg.plattform_rotation || {})[String(heute.weekday)] || 'instagram'];
+if (!istAktiv(plattform)) {
+  const start = reihenfolge.indexOf(plattform ? plattform.key : 'instagram');
+  plattform = null;
+  for (let i = 1; i <= reihenfolge.length && !plattform; i++) {
+    const kand = alle[reihenfolge[(Math.max(start, 0) + i) % reihenfolge.length]];
+    if (istAktiv(kand)) plattform = kand;
+  }
+}
+const format = (cfg.formate || {})[(plattform && plattform.bild_format) || 'quadrat'] || cfg.formate.quadrat;
+
+cfg.plattform = plattform || null;
+cfg.bild_format = format;
+cfg.bild_size = format.gen;
+// Die nachgelagerten Nodes erwarten weiterhin eine Kanal-Liste - sie enthaelt jetzt
+// genau die eine Plattform des Tages. "format: vertical" loest die vorhandene
+// 9:16-Ableitung nach der Freigabe aus.
+cfg.buffer.kanaele = plattform ? [{
+  key: plattform.key,
+  name: plattform.name,
+  channelId: plattform.channelId,
+  aktiv: true,
+  format: format.vertikal ? 'vertical' : 'master',
+  tags: plattform.tags
+}] : [];
+
 return [{ json: Object.assign({}, inp, cfg) }];

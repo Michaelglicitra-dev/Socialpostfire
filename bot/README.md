@@ -29,10 +29,28 @@ teilweises Einspielen bricht den Flow (z.B. neue Layout-Namen ohne passende Conf
 |---|---|---|
 | `nodes/Restaurant-Konfiguration.js` | `Restaurant-Konfiguration` | Feld **JavaScript** komplett ersetzen |
 | `nodes/Post-aufbereiten.js` | `Post aufbereiten` | Feld **JavaScript** komplett ersetzen |
+| `nodes/Logo-buendeln.js` | `Logo buendeln` | Feld **JavaScript** komplett ersetzen |
 | `nodes/Bild-Request-bauen-Neu.js` | `Bild-Request bauen (Neu)` | Feld **JavaScript** komplett ersetzen |
 | `nodes/Bild-Request-bauen-Foto.js` | `Bild-Request bauen (Foto)` | Feld **JavaScript** komplett ersetzen |
 | `nodes/Post-Schema.jsonSchemaExample.txt` | `Post-Schema` | Feld **JSON Example** komplett ersetzen |
 | `nodes/Post-Agent.systemMessage.txt` | `Post-Agent` | Options → **System Message** komplett ersetzen |
+
+Dazu kommen **sechs Zahlenfelder** im Node `Preis-Badge stempeln`. Sie waren fest auf die
+Leinwand 1024×1536 verdrahtet; seit das Format je Plattform wechselt, müssen sie relativ
+zur Bildhöhe rechnen. Jeweils die Zahl durch den Ausdruck ersetzen:
+
+| Operation | Feld | alt | neu |
+|---|---|---|---|
+| 1. Kreis (rot) | Start Position Y | `1364` | `={{ $('Logo buendeln').first().json.badge_mitte_y }}` |
+| 1. Kreis (rot) | End Position Y | `1216` | `={{ $('Logo buendeln').first().json.badge_aussen_y }}` |
+| 2. Kreis (creme) | Start Position Y | `1364` | `={{ $('Logo buendeln').first().json.badge_mitte_y }}` |
+| 2. Kreis (creme) | End Position Y | `1228` | `={{ $('Logo buendeln').first().json.badge_innen_y }}` |
+| Text „nur" | Position Y | `1327` | `={{ $('Logo buendeln').first().json.badge_nur_y }}` |
+| Text Preis | Position Y | `1420` | `={{ $('Logo buendeln').first().json.badge_preis_y }}` |
+
+> Bei 1024×1536 liefern die Ausdrücke exakt die bisherigen Zahlen — auf Hochformat-Tagen
+> ändert sich also nichts. Ohne diese Änderung landet der Preis-Badge an quadratischen
+> Tagen außerhalb der Leinwand.
 
 Danach speichern und den Workflow neu publishen. **Credentials bleiben erhalten** — sie
 gehen nur bei `update_workflow` über MCP verloren, nicht beim Bearbeiten einzelner Nodes.
@@ -73,6 +91,33 @@ werden verworfen, CTA außerhalb der zwei Layouts wird geleert, bei `pur` fallen
 | `pur` | promo | – | kein Text im Bild |
 | `zitat` | promo | geometrisch | eine kurze Zeile |
 
+**Eine Plattform je Post, im passenden Format.** Ein Bild geht an genau einen Kanal, die
+Kanäle rotieren über die Woche. Damit braucht kein Bild je zugeschnitten oder mit Balken
+gestreckt zu werden — es entsteht direkt in der richtigen Größe.
+
+| Wochentag | Plattform | Generierung | Nachbearbeitung |
+|---|---|---|---|
+| Mo, Do, So | Instagram | 1024×1024 (1:1) | keine |
+| Di, Fr | Facebook | 1024×1024 (1:1) | keine |
+| Mi, Sa | TikTok | 1024×1536 (2:3) | vorhandene 9:16-Ableitung nach Freigabe |
+
+`gpt-image-1` kann nativ nur 1:1, 2:3 und 3:2 — deshalb ist 9:16 der einzige Fall, der
+noch nachbearbeitet wird. Die Rotation steht in `plattform_rotation`, die Formatzuordnung
+in `plattformen[x].bild_format`, die Leinwände in `formate`.
+
+**Nicht scharf geschaltete Plattformen werden übersprungen.** Facebook und TikTok haben
+noch keine `channelId`; solange das so ist, fällt die Rotation auf die nächste aktive
+Plattform zurück und alles geht an Instagram. Sobald du eine Kanal-ID einträgst und
+`aktiv: true` setzt, greift die Rotation für diesen Tag automatisch.
+
+Der Prompt bekommt je Format einen **Leinwand-Hinweis** (`formate[x].hinweis`), damit die
+Textzone zum Seitenverhältnis passt — im Quadrat ist weniger Höhe, also Headline plus
+höchstens eine kurze Zeile.
+
+**Alles Nachgelagerte bleibt unverändert.** Die Config setzt `bild_size` und
+`buffer.kanaele` auf die Plattform des Tages; `Freigabe vorbereiten`, `Buffer-Requests
+bauen`, `Log schreiben` und die 9:16-Ableitung arbeiten damit unverändert weiter.
+
 **Vorrang der reservierten Ecken.** Layout-Beschreibung und freie Ecke können sich
 widersprechen — genau daran ist die erste Testrunde gescheitert (Layout sagte „Gericht
 angeschnitten", Zonen-Regel sagte „Ecke frei"; das Modell hat sich für das schönere Bild
@@ -90,6 +135,7 @@ beides wird weiterhin real aufkomponiert, nie von der Bild-KI gemalt.
 node bot/preview.mjs                     # alle 8 Layouts, Neu-Generierung
 node bot/preview.mjs promo_poster        # nur eines
 node bot/preview.mjs --foto              # Foto-Pfad
+node bot/preview.mjs --tag 3             # Wochentag setzen (1=Mo..7=So) -> Plattform
 node bot/preview.mjs --out bot/prompts/  # als .txt ablegen
 ```
 

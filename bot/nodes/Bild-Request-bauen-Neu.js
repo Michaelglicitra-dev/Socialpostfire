@@ -23,14 +23,16 @@ const modul = (g.module || {})[modulKey] || '';
 const szene = (modulKey === 'flyer' || modulKey === 'event');
 const p = [];
 
-p.push('Create a new vertical 2:3 social media image for an Italian pizzeria.');
+const fmt = cfg.bild_format || { hinweis: '' };
+p.push('Create a new social media image for an Italian pizzeria.');
+p.push(fmt.hinweis || '');
 const brief = String(post.image_brief || '').trim();
 p.push('SUBJECT: ' + (brief && '.!?'.indexOf(brief.slice(-1)) === -1 ? brief + '.' : brief));
 p.push(modul || '');
 p.push(g.look || '');
 p.push(stil || '');
 if (!szene) p.push(g.motiv || '');
-p.push('ZONES (every element has its own area and they never overlap): the BOTTOM-LEFT corner stays empty and calm - the real Pizzarello logo is composited there afterwards; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays empty and calm as well, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the text keeps to the upper third; the subject sits between them and reaches into neither bottom corner. A reserved corner beats any other placement: move, shorten or re-crop whatever would otherwise reach into it.');
+p.push('ZONES (every element has its own area and they never overlap): the BOTTOM-LEFT corner stays empty and calm - the real Pizzarello logo is composited there afterwards; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays empty and calm as well, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the text block keeps to the upper area as the canvas note above describes; the subject sits between them and reaches into neither bottom corner. A reserved corner beats any other placement: move, shorten or re-crop whatever would otherwise reach into it.');
 if (post.layout === 'pur' || !headline) {
   p.push('NO TEXT: the picture carries no headline, no words and no captions at all.');
 } else {
