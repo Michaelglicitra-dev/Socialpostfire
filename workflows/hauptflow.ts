@@ -527,7 +527,7 @@ const ecke = (cfg.logo_positionen || {})[lay.logo_ecke || 'oben_rechts'] || { x:
 const teile = [];
 teile.push('Create a finished square 1:1 social media post image for an Italian restaurant from the provided photo. Keep the dish, the composition, the setting and the people exactly as they are - do not replace or invent food items or people.');
 teile.push(g.grading);
-teile.push('LAYOUT: ' + (lay.bild || ''));
+teile.push('TEXT PLACEMENT - take ONLY the text-placement guidance from the following layout description and ignore everything in it that would re-crop, re-stage or re-compose the picture, because the photo stays exactly as it is: ' + (lay.bild || ''));
 if (post.layout === 'pur' || !headline) {
   teile.push('Render NO text anywhere in the image: no headline, no subline, no caption, no lettering of any kind.');
 } else {
@@ -543,6 +543,7 @@ if (post.layout === 'pur' || !headline) {
 }
 teile.push(String(g.logo_zone || '').replace('{ECKE}', ecke.text || 'TOP-RIGHT'));
 teile.push(g.logo_vorrang);
+teile.push('If the photo already fills the reserved logo corner, gently extend and darken the background in that corner or shift the crop slightly so it becomes a calm empty area - but never delete, replace or distort the dish itself.');
 teile.push(g.text_regel);
 if (String(post.preis_text || '') !== '') { teile.push('Keep the LOWER-RIGHT quarter calm and completely free of detail for a round price badge that is composited afterwards.'); }
 teile.push(g.text_safety);

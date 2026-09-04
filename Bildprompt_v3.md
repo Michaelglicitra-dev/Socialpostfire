@@ -139,8 +139,9 @@ node tools/bildprompt_preview.mjs promo_poster     # nur eines
 node tools/bildprompt_preview.mjs --out prompts/   # zusätzlich als .txt ablegen
 ```
 
-Das Werkzeug **extrahiert den echten jsCode** der Nodes `Restaurant-Konfiguration`
-und `Gen-Request` aus `workflows/hauptflow.ts` und führt ihn aus. Was es ausgibt,
+Das Werkzeug **extrahiert den echten jsCode** aus `workflows/hauptflow.ts` und führt
+ihn aus — ohne `--foto` den Node `Gen-Request` (Neu-Generierung), mit `--foto` den
+Node `Kombi-Request` (eigenes Foto als Grundlage). Was es ausgibt,
 ist Zeichen für Zeichen der Prompt, den n8n später an `gpt-image-1` schickt — es
 gibt keine zweite Prompt-Kopie, die auseinanderlaufen könnte.
 
@@ -152,6 +153,39 @@ gibt keine zweite Prompt-Kopie, die auseinanderlaufen könnte.
 
 Die Prompts liegen aktuell bei ~4.900–6.400 Zeichen (Limit von `gpt-image-1`:
 32.000), es ist also Luft für weitere Bausteine.
+
+---
+
+## 6a. Der Foto-Pfad
+
+Schickt der Wirt ein eigenes Foto mit — oder wählt der Agent ein Archiv-Foto — läuft
+das Bild **nicht** über `images/generations`, sondern über `images/edits` (Node
+`Kombi-Request`). Der Prompt ist bewusst anders gebaut:
+
+| | Neu-Generierung | Foto-Pfad |
+|---|---|---|
+| Motiv | `image_brief` beschreibt die Szene | das Foto **ist** die Szene |
+| `master` / `stile` / `module` / `foto` | ja | **nein** — würden das Foto umbauen |
+| `grading` | nein | ja — nur Look: dunkler, kontrastreicher, gesättigtes Gericht |
+| Layout | volle Komposition | **nur der Textplatzierungs-Teil** |
+| Typo, Textzeilen, Logo-Ecke, Negativliste | ja | ja |
+
+Zwei Konflikte mussten dafür entschärft werden:
+
+1. **Layout gegen Foto.** Ein Layout wie `promo_poster` schreibt „Gericht rechts
+   angeschnitten" vor — das Foto zeigt aber vielleicht eine zentrierte Pizza. Der
+   Prompt sagt jetzt ausdrücklich, dass aus der Layout-Beschreibung **nur** die
+   Textplatzierung zu übernehmen ist und alles ignoriert wird, was die Bildkomposition
+   ändern würde.
+2. **Logo-Ecke im Foto.** Ein reales Foto füllt die reservierte Ecke oft schon. Der
+   Foto-Pfad erlaubt dem Modell deshalb explizit, dort den Hintergrund sanft zu
+   verlängern und abzudunkeln oder den Ausschnitt leicht zu verschieben — aber nie
+   das Gericht selbst zu verändern.
+
+> Erwartungshaltung: Der Foto-Pfad ist naturgemäß weniger kontrollierbar als die
+> Neu-Generierung. Ist das Gericht auf dem Foto mittig und randlos, kann keine Ecke
+> wirklich frei werden. Für solche Fotos ist `klassik` oder `pur` die sicherere Wahl
+> als `promo_poster`.
 
 ---
 

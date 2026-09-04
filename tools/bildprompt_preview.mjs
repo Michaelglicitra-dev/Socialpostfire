@@ -9,6 +9,8 @@
 //   node tools/bildprompt_preview.mjs              -> alle Layouts in die Konsole
 //   node tools/bildprompt_preview.mjs promo_poster -> nur ein Layout
 //   node tools/bildprompt_preview.mjs --out prompts/  -> zusaetzlich als .txt
+//   node tools/bildprompt_preview.mjs --foto        -> Foto-Pfad statt Neu-Generierung
+//                                                      (Node "Kombi-Request", images/edits)
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -31,14 +33,21 @@ function nodeCode(name) {
 }
 
 /** Fuehrt einen n8n-Code-Node aus; `items` stellt $('NodeName').first().json bereit. */
-async function runNode(code, items, input = {}) {
+async function runNode(code, items, input = {}, binary = null) {
   const $ = (name) => {
     if (!(name in items)) throw new Error(`Testdaten fuer Node "${name}" fehlen`);
     return { first: () => ({ json: items[name] }) };
   };
-  const $input = { first: () => ({ json: input, binary: null }) };
+  const $input = { first: () => ({ json: input, binary }) };
+  // Stellt die n8n-Binaerhelfer nach, damit auch der Foto-Pfad durchlaeuft.
+  const ctx = {
+    helpers: {
+      getBinaryDataBuffer: async () => Buffer.from('testfoto'),
+      prepareBinaryData: async () => ({ mimeType: 'image/jpeg' })
+    }
+  };
   const fn = new Function('$', '$input', `return (async () => {\n${code}\n})();`);
-  const out = await fn($, $input);
+  const out = await fn.call(ctx, $, $input);
   return out[0].json;
 }
 
@@ -102,11 +111,14 @@ const faelle = {
   }
 };
 
-const genCode = nodeCode('Gen-Request');
 const args = process.argv.slice(2);
+const fotoModus = args.includes('--foto');
 const outIdx = args.indexOf('--out');
 const outDir = outIdx === -1 ? null : args[outIdx + 1];
-const nurLayout = args.filter((a) => a !== '--out' && a !== outDir)[0];
+const nurLayout = args.filter((a) => a !== '--out' && a !== outDir && a !== '--foto')[0];
+
+// Neu-Generierung laeuft ueber "Gen-Request", ein mitgeschicktes Foto ueber "Kombi-Request".
+const code = nodeCode(fotoModus ? 'Kombi-Request' : 'Gen-Request');
 
 const layouts = Object.keys(faelle).filter((l) => !nurLayout || l === nurLayout);
 if (!layouts.length) {
@@ -117,17 +129,18 @@ if (outDir) mkdirSync(join(root, outDir), { recursive: true });
 
 for (const layout of layouts) {
   const { saeule, post } = faelle[layout];
-  const res = await runNode(genCode, {
+  const res = await runNode(code, {
     'Restaurant-Konfiguration': cfg,
     'Post aufbereiten': { post },
     'Kontext': { saeule }
-  });
+  }, {}, fotoModus ? { data: { mimeType: 'image/jpeg', data: 'x' } } : null);
   const prompt = res.bild_prompt;
   const name = cfg.layouts[layout] ? cfg.layouts[layout].name : layout;
   const stil = cfg.layouts[layout] ? cfg.layouts[layout].stil : '?';
-  console.log(`\n${'='.repeat(78)}\n${layout}  (${name}, Stil: ${stil})  -  ${prompt.length} Zeichen\n${'='.repeat(78)}\n${prompt}`);
+  const pfad = fotoModus ? 'Foto-Pfad (images/edits)' : 'Neu-Generierung (images/generations)';
+  console.log(`\n${'='.repeat(78)}\n${layout}  (${name}, Stil: ${stil})  -  ${pfad}  -  ${prompt.length} Zeichen\n${'='.repeat(78)}\n${prompt}`);
   if (outDir) {
-    const file = join(root, outDir, `${layout}.txt`);
+    const file = join(root, outDir, `${layout}${fotoModus ? '_foto' : ''}.txt`);
     writeFileSync(file, prompt + '\n', 'utf8');
     console.error(`  -> ${file}`);
   }
