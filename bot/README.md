@@ -157,6 +157,19 @@ höchstens eine kurze Zeile.
 `buffer.kanaele` auf die Plattform des Tages; `Freigabe vorbereiten`, `Buffer-Requests
 bauen`, `Log schreiben` und die 9:16-Ableitung arbeiten damit unverändert weiter.
 
+**Änderungswünsche haben Vorrang.** Der Anpassungs-Pfad sagte gleichzeitig „behalte Foto,
+Komposition, Gericht und Personen" *und* „setze diese Änderung um". Betraf der Wunsch genau
+das Gericht („zeig statt einer Pizza tanzende Paare"), gewann die Behalten-Klausel — der
+Text wurde übernommen, das Motiv nicht. Jetzt steht ausdrücklich im Prompt, dass der
+Änderungswunsch jede andere Anweisung schlägt, dass „statt X zeig Y" das alte Motiv
+**ersetzt** statt es zu ergänzen, und dass ein Wunsch mehrere Teile haben darf.
+
+**`bild_neu` hängt jetzt am Motiv.** Bisher galt „true nur wenn ein KOMPLETT anderes Bild
+gewünscht ist" — zu eng, deshalb landeten Motivwünsche im Anpassungs-Pfad, der sie gar nicht
+umsetzen kann. Neue Regel: betrifft der Wunsch **was zu sehen ist** (anderes Gericht, andere
+Szene, andere Personen) → `true`, es wird neu generiert. Betrifft er nur die **Darstellung**
+(Text, Farben, Ausschnitt, Layout) → `false`, das Bild wird angepasst.
+
 **BUSY-Notbremse im Router.** Solange ein Lauf arbeitet, steht die Session auf `BUSY` und
 neue Nachrichten bekommen „Ich bin beschäftigt". Bricht ein Lauf ab, ohne dass der
 Error-Workflow greift, blieb der Bot bisher **dauerhaft** in diesem Zustand — nur ein

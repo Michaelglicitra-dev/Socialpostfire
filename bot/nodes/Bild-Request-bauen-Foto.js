@@ -22,8 +22,10 @@ const fontHint = schriften[lay.font] || schriften.geometrisch;
 const p = [];
 
 if (anpassung) {
-  p.push('Image 1 is the current, already finished post. Keep it as it is: the same photo, composition, dish, people, colours, light, lettering and the Pizzarello logo that is already part of it.');
-  p.push('Apply only this one change, requested by the restaurant owner in German: "' + String(a.reason || 'kleine Verbesserung') + '". Change nothing else.');
+  p.push('Image 1 is the current, already finished post.');
+  p.push('The restaurant owner asked for this change, in German: "' + String(a.reason || 'kleine Verbesserung') + '". It may contain several parts - carry out ALL of them.');
+  p.push('THE CHANGE REQUEST WINS over every other instruction in this prompt: whatever it asks for must actually be different in the new picture, even when that means replacing the dish, the scene or the people in the foreground. Do not merely add the requested element behind or beside what is already there - if the request says to show something INSTEAD of something else, the old subject is gone.');
+  p.push('Everything the request does NOT mention stays exactly as it is: the same framing, the same background, the same colours, the same light, the same lettering and the Pizzarello logo that is already part of image 1.');
   p.push('Image 1 already carries the Pizzarello logo in its bottom-left corner: leave it exactly where and as large as it is, and draw no further logo anywhere.');
   if (post.layout === 'pur' || !headline) {
     p.push('The picture carries no headline: leave it free of lettering.');
@@ -32,7 +34,7 @@ if (anpassung) {
     if (subline) { th += ' The smaller subline under it must read exactly: "' + subline + '".'; }
     if (info) { th += ' The smallest info line must read exactly: "' + info + '".'; }
     if (cta) { th += ' The action line must read exactly: "' + cta + '".'; }
-    th += ' Keep every other piece of lettering unchanged.';
+    th += ' Keep every other piece of lettering unchanged, unless the change request above asks otherwise.';
     p.push(th);
   }
   p.push(hatPreis ? 'Image 1 already carries a round price badge in the bottom-right corner: leave it exactly where it is and exactly as large as it is, do not move, resize or re-draw it, and invent no further price, number or currency symbol.' : 'Add no price, no number and no currency symbol.');

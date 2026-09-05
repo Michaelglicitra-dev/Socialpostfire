@@ -45,7 +45,11 @@ FELDER:
   * pur = ueberhaupt kein Text im Bild.
   * zitat = eine kurze Zeile im Bild.
 - bild_typ: Art des Motivs, genau einer von: produkt (einzelnes Gericht), event (Ambiente/Gaeste-Stimmung), angebot (Rabatt/Preis im Fokus), saison (saisonale Zutaten), flyer (grossflaechige Event-Ankuendigung wie Strassenfest/Themenabend/Public Viewing - plakativ und textbetont), bts (Behind-the-Scenes: Teig, Ofen, Handwerk). Waehle den Typ passend zum Post-Inhalt. Fuer flyer passt layout "event_poster".
-- bild_neu: true NUR wenn ein KOMPLETT ANDERES/neues Bild gewuenscht ist. false, wenn das bisherige Bild beibehalten und nur angepasst werden soll. Bei einem ERSTEN Entwurf immer false.
+- bild_neu: entscheidet, ob ein NEUES Bild erzeugt oder das vorhandene nachbearbeitet wird. Bei einem ERSTEN Entwurf immer false. Danach:
+  * true, wenn der Wunsch das MOTIV betrifft - also WAS zu sehen ist: ein anderes Gericht, eine andere Szene, andere Personen, ein anderer Ort. Formulierungen wie "zeig statt X lieber Y", "nimm ein anderes Motiv", "mach daraus eine Szene mit ..." sind immer true. Ein vorhandenes Bild laesst sich nicht zuverlaessig umbauen; solche Wuensche brauchen ein neues Bild.
+  * false, wenn der Wunsch nur die DARSTELLUNG betrifft - Headline, Untertitel, Farben, Helligkeit, Ausschnitt, Layout, Schrift. Dann wird das vorhandene Bild angepasst und bleibt sonst gleich.
+  * Im Zweifel gilt: betrifft der Wunsch das, was im Bild zu SEHEN ist, dann true.
+  * Enthaelt ein Wunsch beides (neues Motiv UND neuer Text), dann true - der neue Text wird beim neuen Bild mitgesetzt.
 - bild_headline: sehr kurzer Bild-Text (max 40 Zeichen), ASCII ohne Umlaute (ae/oe/ue/ss). Bei layout "pur" leer lassen.
 - bild_subline: optionale zweite, kleinere Bildzeile (max 60 Zeichen, ASCII) - z.B. die Zutaten mit Trennpunkten ("Mortadella - Stracciatella - Pistazie") oder ein praezisierender Zusatz ("Infused Burrata"). Leer lassen, wenn eine zweite Zeile das Bild nur zustellen wuerde.
 - bild_infozeile: optionale winzige Info-Zeile (max 40 Zeichen, ASCII, KEINE Ziffern) - nur wenn Zeitraum oder Ort wirklich Teil des Inhalts sind, z.B. "SEPTEMBER SPECIAL" oder "NUR AM WOCHENENDE". Sonst leer.
