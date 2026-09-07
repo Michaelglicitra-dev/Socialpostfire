@@ -50,7 +50,24 @@ if (anpassung) {
     p.push('SUBJECT (this is what image 1 already shows - do not re-invent it and add nothing to it): ' + ('.!?'.indexOf(brief.slice(-1)) === -1 ? brief + '.' : brief));
   }
   p.push('If image 1 has no calm empty area in the upper third, extend its ground upwards to open one up instead of cropping into the dish.');
-  p.push('ZONES (every element has its own area and they never overlap): the BOTTOM-LEFT corner stays empty and calm - the real Pizzarello logo is composited there afterwards; ' + (hatPreis ? 'the BOTTOM-RIGHT corner stays empty and calm as well, a real price badge is composited there later; ' : 'the bottom-right corner stays calm and quiet; ') + 'the text block keeps to the upper area as the canvas note above describes; the dish sits between them and reaches into neither bottom corner. A reserved corner beats any other placement: if the photo already fills one, gently extend and darken its ground there rather than cropping into the dish.');
+  // Reservierte Flaechen exakt aus der Config rechnen statt sie "Ecke" zu nennen:
+  // die Logo-Box reicht bei 1024 Breite bis 47 Prozent hinein, ein "corner" wird
+  // vom Modell viel kleiner angenommen - genau daran ist der CTA im Logo gelandet.
+  const ll = cfg.logo_layout || { box_breite: 420, box_hoehe: 200, rand: 64 };
+  const bB = Number(fmt.breite || 1024);
+  const bH = Number(fmt.hoehe || 1024);
+  const logoQ = Math.round(((Number(ll.rand || 64) + Number(ll.box_breite || 420)) / bB) * 100);
+  const logoH = Math.round(((Number(ll.rand || 64) + Number(ll.box_hoehe || 200)) / bH) * 100);
+  const badgeQ = Math.round((320 / bB) * 100);
+  const badgeH = Math.round((320 / bH) * 100);
+  let zonen = 'RESERVED AREAS (hard constraint - nothing may enter them, they are not merely "corners"): ';
+  zonen += 'the LOGO AREA covers the bottom-left of the picture, reaching ' + logoQ + ' percent across from the left edge and ' + logoH + ' percent up from the bottom. Keep that whole rectangle empty, calm and slightly darker - the real Pizzarello logo is composited into it afterwards. No text, no call-to-action block, no plate, no hand and no food detail may sit inside it. ';
+  zonen += hatPreis
+    ? 'the PRICE AREA covers the bottom-right, reaching ' + badgeQ + ' percent in from the right edge and ' + badgeH + ' percent up from the bottom - keep it just as empty, a real price badge is composited there later. '
+    : 'the bottom-right area stays calm and quiet. ';
+  zonen += 'The text block keeps to the upper area as the canvas note above describes, the subject sits between them, and a reserved area beats every other placement instruction: move, shorten or re-crop whatever would otherwise reach into one.';
+  zonen += ' If the photo already fills a reserved area, gently extend and darken its ground there rather than cropping into the dish.';
+  p.push(zonen);
   if (post.layout === 'pur' || !headline) {
     p.push('NO TEXT: the picture carries no headline, no words and no captions at all.');
   } else {
@@ -58,7 +75,7 @@ if (anpassung) {
     let t = 'TEXT: render the HEADLINE spelled exactly, letter for letter: "' + headline + '" - by far the largest element, set in ' + fontHint + ', in cream-white ' + akzent + '.';
     if (subline) { t += ' Under it, clearly smaller, the SUBLINE spelled exactly: "' + subline + '".'; }
     if (info) { t += ' Smallest of all, uppercase and letter-spaced, the INFO LINE spelled exactly: "' + info + '".'; }
-    if (cta) { t += ' An ACTION LINE spelled exactly: "' + cta + '" - small, inside a rounded rectangle in the terracotta accent colour about #C0563C, in the calm middle area and clear of both bottom corners.'; }
+    if (cta) { t += ' An ACTION LINE spelled exactly: "' + cta + '" - small, inside a rounded rectangle in the terracotta accent colour about #C0563C, placed directly UNDER the headline block in the upper half of the picture, never in the lower third and never inside a reserved area.'; }
     t += ' The wording is German, perfect spelling is critical, and these are the only words in the picture.';
     p.push(t);
     p.push(g.typo || '');

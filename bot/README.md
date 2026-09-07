@@ -157,6 +157,24 @@ höchstens eine kurze Zeile.
 `buffer.kanaele` auf die Plattform des Tages; `Freigabe vorbereiten`, `Buffer-Requests
 bauen`, `Log schreiben` und die 9:16-Ableitung arbeiten damit unverändert weiter.
 
+**Reservierte Flächen stehen als Prozentwerte im Prompt.** Vorher hieß es „halte die
+bottom-left corner frei". Die Logo-Box ist aber 420×200 Pixel bei 64 Rand — auf 1024 Breite
+sind das **47 % der Bildbreite**, keine Ecke. Das Modell reservierte entsprechend zu wenig
+und setzte den CTA-Block mitten hinein, wo ihn das Logo dann überlagerte. Jetzt rechnet der
+Prompt beide Flächen aus `logo_layout` und dem Format aus und benennt sie exakt:
+
+| Format | Logo-Fläche | Preis-Fläche |
+|---|---|---|
+| 1024×1024 | 47 % von links, 26 % von unten | 31 % von rechts, 31 % von unten |
+| 1024×1536 | 47 % von links, 17 % von unten | 31 % von rechts, 21 % von unten |
+
+Ändert sich `logo_layout` oder das Format, ändern sich die Werte im Prompt automatisch mit.
+
+**Die CTA-Fläche sitzt jetzt oben.** Sie lag „in der ruhigen Bildmitte, frei von beiden
+unteren Ecken" — zu vage, und im Hochformat landet das trotzdem tief genug für eine
+Kollision. Jetzt sitzt sie **direkt unter dem Headline-Block in der oberen Bildhälfte**,
+ausdrücklich nie im unteren Drittel. Damit kann sie Logo und Preis-Badge nicht mehr treffen.
+
 **Änderungswünsche haben Vorrang.** Der Anpassungs-Pfad sagte gleichzeitig „behalte Foto,
 Komposition, Gericht und Personen" *und* „setze diese Änderung um". Betraf der Wunsch genau
 das Gericht („zeig statt einer Pizza tanzende Paare"), gewann die Behalten-Klausel — der
