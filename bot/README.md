@@ -157,6 +157,16 @@ höchstens eine kurze Zeile.
 `buffer.kanaele` auf die Plattform des Tages; `Freigabe vorbereiten`, `Buffer-Requests
 bauen`, `Log schreiben` und die 9:16-Ableitung arbeiten damit unverändert weiter.
 
+**Archivfotos nur, wenn sie das Gericht wirklich zeigen.** Die Regel lautete „wähle das
+thematisch am **besten passende** Foto" — eine Bestenauswahl hat aber immer einen Sieger.
+Auf „mach einen Post über einen Salat" wählte der Agent das ähnlichste vorhandene Foto, und
+das war eine Pizza; der Salat-Text landete auf einem Pizza-Bild. Jetzt gilt: das Foto muss
+das beworbene Gericht **zeigen**, „passt ungefähr" reicht ausdrücklich nicht, und im Zweifel
+bleibt `archiv_foto_url` leer — dann wird ein passendes Bild neu erzeugt.
+
+Wichtig dabei: der Foto-Pfad **veredelt** das Bild nur, das Motiv bleibt. Ein falsch
+gewähltes Archivfoto lässt sich später durch keinen Änderungswunsch mehr retten.
+
 **Reservierte Flächen stehen als Prozentwerte im Prompt.** Vorher hieß es „halte die
 bottom-left corner frei". Die Logo-Box ist aber 420×200 Pixel bei 64 Rand — auf 1024 Breite
 sind das **47 % der Bildbreite**, keine Ecke. Das Modell reservierte entsprechend zu wenig

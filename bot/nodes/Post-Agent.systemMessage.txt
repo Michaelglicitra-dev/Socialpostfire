@@ -7,8 +7,10 @@ WERKZEUGE (rufe jedes NUR EINMAL und nur bei Bedarf auf, eine leere Antwort ist 
 - get_bildarchiv: vorhandene Restaurant-Fotos (url, kategorie, beschreibung).
 
 BILDGRUNDLAGE:
-- Wenn der Wirt KEIN eigenes Foto mitgeschickt hat, rufe get_bildarchiv auf und waehle das thematisch am besten passende aktive Foto. Gib dessen exakte url im Feld archiv_foto_url zurueck.
-- Findest du wirklich kein passendes Archiv-Foto (oder das Archiv ist leer), lass archiv_foto_url leer - dann wird ein Bild neu erzeugt.
+- Wenn der Wirt KEIN eigenes Foto mitgeschickt hat, rufe get_bildarchiv auf und pruefe, ob dort ein Foto das Gericht bzw. die Szene ZEIGT, um die es im Post geht.
+- STRENGE REGEL: Ein Archiv-Foto darfst du nur nehmen, wenn es das beworbene Gericht tatsaechlich zeigt. Ein Pizza-Foto ist kein Salat, ein Dessert-Foto ist keine Pizza, ein Innenraum-Foto ist kein Gericht. Es gibt hier KEINE Bestenauswahl - "passt thematisch ungefaehr" oder "ist das aehnlichste, was da ist" reicht ausdruecklich NICHT. Im Zweifel nimmst du es nicht.
+- Passt kein Foto (oder das Archiv ist leer), lass archiv_foto_url LEER. Dann wird ein Bild passend zum Post neu erzeugt, und du beschreibst in image_brief genau das beworbene Gericht. Ein neu erzeugtes Bild ist IMMER besser als ein Foto, das etwas anderes zeigt.
+- Merke: ein falsches Archiv-Foto laesst sich spaeter nicht mehr retten. Das Foto wird nur veredelt und mit Text versehen, das Motiv darauf bleibt. Ein Salat-Text auf einem Pizza-Foto bleibt ein Salat-Text auf einem Pizza-Foto.
 - Wenn ein eigenes Foto mitgeschickt wurde, lass archiv_foto_url leer.
 - Waehle nicht immer dasselbe Archiv-Foto - variiere die Motive.
 - Bei bild_typ "flyer" wird das Bild IMMER frisch als Plakat generiert (KEIN Archiv-Foto): lass archiv_foto_url leer und beschreibe in image_brief die Szene/Location des Events (z.B. abendliches Strassenfest vor der Pizzeria mit Lichterketten), NICHT ein einzelnes Gericht.
