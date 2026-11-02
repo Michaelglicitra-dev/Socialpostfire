@@ -147,6 +147,55 @@ Sechs Data Tables, alle auf die Chat-ID bzw. den Betrieb bezogen:
 Zwei Hilfs-Workflows befüllen Speisekarte und Fotoarchiv und werden **von Hand** ausgelöst,
 wenn sich etwas ändert.
 
+### Spalten
+
+Alle Spalten sind vom Typ **String**, außer wo anders vermerkt. Beim Anlegen für einen neuen
+Kunden werden die Tabellen **leer** erzeugt — niemals Pizzarellos Tabellen kopieren, sonst
+wandern dessen Sessions, Learnings und Log-Einträge mit.
+
+**`sessions`** — der Bot schreibt und liest, gefiltert nach `chat_id`
+
+| Spalte | Inhalt |
+|---|---|
+| `chat_id` | Telegram-Chat-ID des Betreibers |
+| `state` | `IDLE`, `BUSY`, `AWAITING_ANSWER`, `DRAFT_OPEN` |
+| `post_id` | ID des offenen Entwurfs |
+| `draft_json` | der Entwurf als JSON-String |
+| `photo_url` | zuletzt geschicktes Foto |
+| `last_message_id` | für das Nachfassen in Telegram |
+| `updated` | ISO-Zeitstempel, Grundlage der BUSY-Notbremse |
+
+**`learnings`** — Lernschleife schreibt, Agent liest
+
+| Spalte | Inhalt |
+|---|---|
+| `saeule` | zu welchem Thema die Regel gilt |
+| `kind` | Art der Regel |
+| `reason` | Begründung des Betreibers |
+| `learning` | die Regel selbst |
+| `aktiv` | **Boolean** |
+
+**`post_log`** — nur geschrieben, zur Nachvollziehbarkeit
+
+`datum`, `saeule`, `headline`, `post_text`, `hashtags`, `image_url`, `status`,
+`buffer_ids`, `kanaele`, `geplant_fuer`
+
+**`speisekarte`** — vom Indexer befüllt, Agent liest
+
+`kategorie`, `name`, `beschreibung`, `preis`, `aktiv` (**Boolean**)
+
+**`fotos`** — vom Indexer befüllt, Agent liest
+
+`url`, `kategorie`, `beschreibung`, `aktiv` (**Boolean**)
+
+**`angebote`** — von Hand gepflegt, Agent liest
+
+`typ`, `titel`, `beschreibung`, `preis`, `gueltig_von`, `gueltig_bis`, `aktiv` (**Boolean**)
+
+> Die Spaltennamen der drei gelesenen Tabellen stehen so in den Beschreibungen der
+> Agent-Tools (`get_speisekarte`, `get_bildarchiv`, `get_aktuelle_angebote`). Weicht eine
+> Tabelle davon ab, sucht der Agent ins Leere, ohne dass ein Fehler auftritt.
+
 ---
 
 ## 4. Mandantenfähigkeit

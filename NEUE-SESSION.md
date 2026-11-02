@@ -74,7 +74,7 @@ gehören in Prozent, nicht als „Ecke".
 
 1. `bot/steckbrief/index.html` ausfüllen lassen → liefert die Kundendatei als JSON
 2. Als `bot/kunden/<id>.json` ablegen
-3. In n8n sechs Data Tables anlegen, IDs eintragen
+3. In n8n sechs Data Tables **leer** anlegen (Spalten: `ARCHITEKTUR.md`, Abschnitt 3), IDs eintragen
 4. `node bot/build-kunde.mjs <id>`
 5. Import-JSON in n8n importieren — **als neuen Workflow**
 6. Credentials zuordnen; in den Einstellungen *Error Workflow* und MCP-Zugriff setzen
