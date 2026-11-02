@@ -1,7 +1,14 @@
 # Pizzarello Bot — aktueller Stand (Bild-Guideline v3)
 
-> **Das hier ist die aktuelle Variante.** `workflows/hauptflow.ts` und `workflows/webapp.ts`
-> sind der **Altstand** (Web-App-Architektur, verworfen) — siehe [`../LEGACY.md`](../LEGACY.md).
+> **Das hier beschreibt die Bildsprache.** Wie der Bot als Ganzes funktioniert, steht in
+> [`../ARCHITEKTUR.md`](../ARCHITEKTUR.md); der Einstieg für eine neue Session in
+> [`../NEUE-SESSION.md`](../NEUE-SESSION.md). `workflows/hauptflow.ts` und `webapp.ts` sind
+> der **Altstand** — siehe [`../LEGACY.md`](../LEGACY.md).
+>
+> **Mandantenfähig seit 02.11.2026:** Die Bildsprache liegt als Branchen-Profil unter
+> `template/branchen/`, die Kundendaten unter `kunden/<id>.json`. Erzeugt wird mit
+> `node bot/build-kunde.mjs <id>`. Die Dateien in `nodes/` bleiben der gepflegte
+> Pizzarello-Stand, aus dem die Vorlage gebaut wird.
 
 Live-Workflow in n8n: **`Pizzarello Bot`**, ID `B7LuGXIaNnPC5ulk` (aktiv, 87 Nodes,
 rein Telegram-basiert). Sein vollständiger SDK-Quellcode existiert nicht — der Workflow

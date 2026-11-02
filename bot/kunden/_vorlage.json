@@ -1,0 +1,39 @@
+{
+  "id": "<kurzname-klein-ohne-leerzeichen>",
+  "branche": "gastronomie",
+  "stammdaten": {
+    "name": "<Betriebsname>",
+    "kueche": "<ein Satz: was der Betrieb macht, fuer den KI-Agenten>",
+    "standort": "<Strasse Hausnummer, PLZ Ort>",
+    "telefon": "<Telefonnummer>",
+    "website": "<https://...>",
+    "oeffnungszeiten": "<z.B. Mo Ruhetag, Di-Fr 17:00-22:00 Uhr, Sa-So 13:00-22:00 Uhr>",
+    "ton": "<z.B. familiaer-italienisch, herzlich, Du-Ansprache>"
+  },
+  "marke": {
+    "brand_farben": { "primaer": "#000000", "sekundaer": "#000000", "akzent": "#F5E6C8", "dunkel": "#1e1a17" },
+    "logo_url": "<oeffentliche URL des Logos, PNG mit transparentem Hintergrund>",
+    "logo_layout": { "box_breite": 420, "box_hoehe": 200, "rand": 64 }
+  },
+  "telegram": { "chat_id": "<numerische Chat-ID des Betreibers>" },
+  "plattformen": {
+    "instagram": { "key": "instagram", "name": "Instagram", "channelId": "", "aktiv": false, "bild_format": "quadrat", "tags": "max5" },
+    "facebook":  { "key": "facebook",  "name": "Facebook",  "channelId": "", "aktiv": false, "bild_format": "quadrat", "tags": "full" },
+    "tiktok":    { "key": "tiktok",    "name": "TikTok",    "channelId": "", "aktiv": false, "bild_format": "story",   "tags": "full" }
+  },
+  "plattform_rotation": { "1": "instagram", "2": "facebook", "3": "tiktok", "4": "instagram", "5": "facebook", "6": "tiktok", "7": "instagram" },
+  "saeulen_rotation": { "1": "angebote", "2": "saisonal", "3": "community", "4": "angebote", "5": "saisonal", "6": "community", "7": "angebote" },
+  "hashtags": {
+    "angebote": ["#<marke>", "#tagesangebot", "#<ort>"],
+    "saisonal": ["#<marke>", "#saisonal", "#<ort>"],
+    "community": ["#<marke>", "#stammgaeste", "#<ort>"]
+  },
+  "buffer": { "organizationId": "<Buffer Organization-ID>", "posting_zeit": "17:00", "pinterest_url": "<https://...>" },
+  "n8n": {
+    "workflow_name": "<Betriebsname> Bot",
+    "data_tables": {
+      "sessions": "<Data-Table-ID>", "speisekarte": "<Data-Table-ID>", "angebote": "<Data-Table-ID>",
+      "fotos": "<Data-Table-ID>", "learnings": "<Data-Table-ID>", "post_log": "<Data-Table-ID>"
+    }
+  }
+}

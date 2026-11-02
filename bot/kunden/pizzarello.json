@@ -1,0 +1,117 @@
+{
+  "id": "pizzarello",
+  "branche": "gastronomie",
+  "stammdaten": {
+    "name": "Pizzarello",
+    "kueche": "Pizzeria in Oberhausen - handgemachte, hauchduenn-knusprige Pizza zum Abholen und Bestellen",
+    "standort": "Friedrich-Karl-Strasse 19, 46045 Oberhausen",
+    "telefon": "0208 / 888 802",
+    "website": "https://www.pizzarello.net",
+    "oeffnungszeiten": "Mo + Di Ruhetag (ausser Feiertage), Mi-Fr 17:00-22:00 Uhr, Sa-So 13:00-22:00 Uhr",
+    "ton": "familiaer-italienisch, herzlich, ein bisschen verspielt, Du-Ansprache"
+  },
+  "marke": {
+    "brand_farben": {
+      "primaer": "#C8102E",
+      "sekundaer": "#2E7D32",
+      "akzent": "#F5E6C8",
+      "dunkel": "#1e1a17"
+    },
+    "logo_url": "https://i.ibb.co/23g2B67Z/Pizzarello-transp.png",
+    "logo_layout": {
+      "box_breite": 420,
+      "box_hoehe": 200,
+      "rand": 64
+    }
+  },
+  "telegram": {
+    "chat_id": "7582948490"
+  },
+  "plattformen": {
+    "instagram": {
+      "key": "instagram",
+      "name": "Instagram",
+      "channelId": "6a805d6bb2d9d57743816131",
+      "aktiv": true,
+      "bild_format": "quadrat",
+      "tags": "max5"
+    },
+    "facebook": {
+      "key": "facebook",
+      "name": "Facebook",
+      "channelId": "",
+      "aktiv": false,
+      "bild_format": "quadrat",
+      "tags": "full"
+    },
+    "tiktok": {
+      "key": "tiktok",
+      "name": "TikTok",
+      "channelId": "",
+      "aktiv": false,
+      "bild_format": "story",
+      "tags": "full"
+    }
+  },
+  "plattform_rotation": {
+    "1": "instagram",
+    "2": "facebook",
+    "3": "tiktok",
+    "4": "instagram",
+    "5": "facebook",
+    "6": "tiktok",
+    "7": "instagram"
+  },
+  "saeulen_rotation": {
+    "1": "angebote",
+    "2": "saisonal",
+    "3": "community",
+    "4": "angebote",
+    "5": "saisonal",
+    "6": "community",
+    "7": "angebote"
+  },
+  "hashtags": {
+    "angebote": [
+      "#pizzarello",
+      "#tagesangebot",
+      "#pizzaderwoche",
+      "#oberhausen",
+      "#pizzaliebe",
+      "#handmadepizza"
+    ],
+    "saisonal": [
+      "#pizzarello",
+      "#saisonal",
+      "#frischezutaten",
+      "#regional",
+      "#oberhausen",
+      "#italienischekueche",
+      "#handmadepizza"
+    ],
+    "community": [
+      "#pizzarello",
+      "#stammgaeste",
+      "#behindthescenes",
+      "#oberhausen",
+      "#supportlocal",
+      "#lapizzaevita"
+    ]
+  },
+  "buffer": {
+    "organizationId": "69f7afabd110cb66bf840334",
+    "posting_zeit": "17:00",
+    "pinterest_url": "https://www.pizzarello.net"
+  },
+  "n8n": {
+    "workflow_name": "Pizzarello Bot v3",
+    "data_tables": {
+      "sessions": "8WhvJ2bY2B6wKyGY",
+      "speisekarte": "8LOssi3MEAxKEXMd",
+      "angebote": "dVJNivQbpA7YUwAm",
+      "fotos": "x7QjV9d9CI0ZgrBz",
+      "learnings": "DfXfRBdmdGA5AwFs",
+      "post_log": "HAaLrktmGAA8IddT"
+    }
+  }
+}

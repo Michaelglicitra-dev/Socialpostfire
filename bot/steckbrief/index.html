@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bot-Steckbrief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: Formular links, mitlaufendes JSON rechts; unter 900px gestapelt. */
+:root{
+  --ink:#16202b; --ink-weich:#51616f; --papier:#f4f6f8; --feld:#ffffff;
+  --linie:#d2dae1; --akzent:#0b6b5e; --akzent-weich:#d9ebe7; --offen:#9a5b00; --offen-weich:#fbeecf;
+  --display:'Archivo',system-ui,sans-serif; --body:'IBM Plex Sans',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ink:#e6edf3; --ink-weich:#9aaab8; --papier:#111820; --feld:#1a232d;
+  --linie:#2d3a47; --akzent:#4fd1bb; --akzent-weich:#13302c; --offen:#f0b429; --offen-weich:#3a2d10;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --ink:#e6edf3; --ink-weich:#9aaab8; --papier:#111820; --feld:#1a232d;
+  --linie:#2d3a47; --akzent:#4fd1bb; --akzent-weich:#13302c; --offen:#f0b429; --offen-weich:#3a2d10;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+.huelle{max-width:1240px;margin:0 auto;padding:28px 20px 64px}
+header{margin-bottom:28px}
+h1{font-family:var(--display);font-weight:700;font-size:30px;margin:0 0 6px;text-wrap:balance;letter-spacing:-.01em}
+.unter{color:var(--ink-weich);max-width:62ch;margin:0}
+.stand{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+.zaehler{font-family:var(--display);font-weight:600;font-size:13px;padding:5px 11px;border-radius:999px;background:var(--offen-weich);color:var(--offen);border:1px solid transparent}
+.zaehler.fertig{background:var(--akzent-weich);color:var(--akzent)}
+.raster{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:900px){.raster{grid-template-columns:1fr}}
+section{background:var(--feld);border:1px solid var(--linie);border-radius:10px;padding:20px;margin-bottom:18px}
+section>h2{font-family:var(--display);font-weight:600;font-size:17px;margin:0 0 4px;display:flex;align-items:center;gap:9px}
+.marke{font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:var(--akzent-weich);color:var(--akzent)}
+.marke.du{background:var(--offen-weich);color:var(--offen)}
+section>p.hinweis{color:var(--ink-weich);font-size:13.5px;margin:0 0 16px;max-width:62ch}
+.felder{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px}
+.feld{display:flex;flex-direction:column;gap:5px;min-width:0}
+.feld.breit{grid-column:1/-1}
+label{font-size:13px;font-weight:500}
+label .pflicht{color:var(--offen);margin-left:2px}
+.tipp{font-size:12.5px;color:var(--ink-weich)}
+input,select,textarea{font-family:var(--body);font-size:14px;padding:8px 10px;border:1px solid var(--linie);border-radius:6px;background:var(--papier);color:var(--ink);width:100%;min-width:0}
+input[data-id]{font-variant-numeric:tabular-nums}
+textarea{resize:vertical;min-height:62px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--akzent);outline-offset:1px}
+input.leer-pflicht{border-color:var(--offen);background:var(--offen-weich)}
+.farbzeile{display:flex;gap:8px;align-items:center}
+.farbzeile input[type=color]{width:38px;height:34px;padding:2px;flex:0 0 auto;cursor:pointer}
+.kanal{border:1px solid var(--linie);border-radius:8px;padding:13px;margin-bottom:11px;background:var(--papier)}
+.kanal>.kopf{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.kanal>.kopf strong{font-family:var(--display);font-size:14px}
+.schalter{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-weich);margin-left:auto}
+.schalter input{width:auto}
+.wochen{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+@media (max-width:620px){.wochen{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.wochen .feld label{font-size:12px;text-align:center}
+.wochen select{padding:7px 5px;font-size:12.5px}
+.ausgabe{position:sticky;top:18px}
+@media (max-width:900px){.ausgabe{position:static}}
+.ausgabe pre{margin:0;background:var(--papier);border:1px solid var(--linie);border-radius:8px;padding:14px;font-size:12px;line-height:1.5;max-height:60vh;overflow:auto;white-space:pre;font-family:ui-monospace,'SFMono-Regular',Menlo,monospace}
+.knoepfe{display:flex;gap:9px;margin-top:13px;flex-wrap:wrap}
+button{font-family:var(--display);font-weight:600;font-size:13.5px;padding:9px 15px;border-radius:7px;border:1px solid var(--linie);background:var(--feld);color:var(--ink);cursor:pointer}
+button.haupt{background:var(--akzent);border-color:var(--akzent);color:var(--papier)}
+button:hover{border-color:var(--akzent)}
+.fehlt{margin-top:13px;font-size:13px;color:var(--offen)}
+.fehlt ul{margin:5px 0 0;padding-left:19px}
+details{margin-top:13px;border-top:1px solid var(--linie);padding-top:13px}
+summary{cursor:pointer;font-size:13.5px;font-weight:500}
+details .felder{margin-top:13px}
+footer{margin-top:26px;color:var(--ink-weich);font-size:13px;max-width:70ch}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="huelle">
+<header>
+  <h1>Bot-Steckbrief</h1>
+  <p class="unter">Alles, was der Social-Media-Bot über einen Betrieb wissen muss. Grün markierte Abschnitte füllt der Kunde aus, gelb markierte trägst du beim Aufsetzen nach. Rechts entsteht dabei die fertige Kundendatei.</p>
+  <div class="stand"><span class="zaehler" id="zaehler">0 von 0 Pflichtfeldern</span></div>
+</header>
+
+<div class="raster">
+<form id="formular" autocomplete="off">
+
+  <section>
+    <h2><span class="marke">Kunde</span> Betrieb</h2>
+    <p class="hinweis">Diese Angaben nutzt die KI für Texte und Fakten. Je konkreter, desto weniger erfindet sie.</p>
+    <div class="felder">
+      <div class="feld"><label for="name">Name des Betriebs<span class="pflicht">*</span></label><input id="name" data-pflicht placeholder="Pizzarello"></div>
+      <div class="feld"><label for="id">Kurzname<span class="pflicht">*</span></label><input id="id" data-pflicht placeholder="pizzarello"><span class="tipp">Klein, ohne Leerzeichen. Wird für Dateien und Tabellen genutzt.</span></div>
+      <div class="feld breit"><label for="kueche">Was macht der Betrieb?<span class="pflicht">*</span></label><textarea id="kueche" data-pflicht placeholder="Pizzeria in Oberhausen - handgemachte, hauchduenn-knusprige Pizza zum Abholen und Bestellen"></textarea><span class="tipp">Ein Satz, wie du es einem Gast erklären würdest.</span></div>
+      <div class="feld breit"><label for="standort">Adresse</label><input id="standort" placeholder="Friedrich-Karl-Strasse 19, 46045 Oberhausen"></div>
+      <div class="feld"><label for="telefon">Telefon</label><input id="telefon" placeholder="0208 / 888 802"></div>
+      <div class="feld"><label for="website">Website<span class="pflicht">*</span></label><input id="website" data-pflicht placeholder="https://www.pizzarello.net"><span class="tipp">Der Bot liest sie vor jedem Post für aktuelle Infos.</span></div>
+      <div class="feld breit"><label for="oeffnungszeiten">Öffnungszeiten</label><input id="oeffnungszeiten" placeholder="Mo + Di Ruhetag, Mi-Fr 17:00-22:00 Uhr, Sa-So 13:00-22:00 Uhr"></div>
+      <div class="feld breit"><label for="ton">Tonfall</label><input id="ton" placeholder="familiaer-italienisch, herzlich, ein bisschen verspielt, Du-Ansprache"><span class="tipp">Wie soll der Bot klingen? Siezen oder duzen, sachlich oder verspielt.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="marke">Kunde</span> Marke</h2>
+    <p class="hinweis">Das Logo wird nach der Bildgenerierung pixelgenau unten links aufkomponiert, nie von der KI gemalt. Es braucht einen transparenten Hintergrund.</p>
+    <div class="felder">
+      <div class="feld breit"><label for="logo_url">Logo-URL<span class="pflicht">*</span></label><input id="logo_url" data-pflicht placeholder="https://i.ibb.co/.../logo-transparent.png"><span class="tipp">PNG mit transparentem Hintergrund, öffentlich erreichbar.</span></div>
+      <div class="feld"><label for="f_primaer">Primärfarbe</label><div class="farbzeile"><input type="color" id="f_primaer_p" value="#C8102E" aria-label="Primärfarbe wählen"><input id="f_primaer" value="#C8102E"></div></div>
+      <div class="feld"><label for="f_sekundaer">Sekundärfarbe</label><div class="farbzeile"><input type="color" id="f_sekundaer_p" value="#2E7D32" aria-label="Sekundärfarbe wählen"><input id="f_sekundaer" value="#2E7D32"></div></div>
+      <div class="feld"><label for="f_akzent">Schriftfarbe im Bild<span class="pflicht">*</span></label><div class="farbzeile"><input type="color" id="f_akzent_p" value="#F5E6C8" aria-label="Schriftfarbe wählen"><input id="f_akzent" data-pflicht value="#F5E6C8"></div><span class="tipp">Headline-Farbe auf dunklem Grund. Hell halten.</span></div>
+      <div class="feld"><label for="f_dunkel">Dunkler Grundton</label><div class="farbzeile"><input type="color" id="f_dunkel_p" value="#1e1a17" aria-label="Grundton wählen"><input id="f_dunkel" value="#1e1a17"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="marke">Kunde</span> Telegram und Buffer</h2>
+    <p class="hinweis">Über Telegram bekommt der Betreiber seine Entwürfe und gibt sie frei. Buffer plant die freigegebenen Posts ein.</p>
+    <div class="felder">
+      <div class="feld"><label for="chat_id">Telegram-Chat-ID<span class="pflicht">*</span></label><input id="chat_id" data-id data-pflicht placeholder="7582948490"><span class="tipp">In Telegram <strong>@userinfobot</strong> anschreiben, er antwortet mit der ID.</span></div>
+      <div class="feld"><label for="buffer_org">Buffer Organization-ID<span class="pflicht">*</span></label><input id="buffer_org" data-id data-pflicht placeholder="69f7afabd110cb66bf840334"><span class="tipp">In der Buffer-URL nach <code>/org/</code>.</span></div>
+      <div class="feld"><label for="posting_zeit">Uhrzeit der Veröffentlichung</label><input id="posting_zeit" value="17:00"></div>
+      <div class="feld"><label for="pinterest_url">Ziel-URL für Pinterest</label><input id="pinterest_url" placeholder="https://www.pizzarello.net"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="marke">Kunde</span> Kanäle</h2>
+    <p class="hinweis">Ein Post geht an genau einen Kanal, und die Kanäle wechseln sich über die Woche ab. So ist jedes Bild einzigartig und hat immer das richtige Format. Kanäle ohne ID werden übersprungen.</p>
+    <div id="kanaele"></div>
+    <details>
+      <summary>Wochenplan: welcher Kanal an welchem Tag</summary>
+      <div class="wochen" id="wochen_plattform"></div>
+    </details>
+    <details>
+      <summary>Themenplan: worüber an welchem Tag gepostet wird</summary>
+      <div class="wochen" id="wochen_saeule"></div>
+    </details>
+  </section>
+
+  <section>
+    <h2><span class="marke">Kunde</span> Hashtags</h2>
+    <p class="hinweis">Basis-Tags je Thema. Der Bot ergänzt pro Post weitere passende. Mit Komma oder Leerzeichen trennen, das Rautezeichen setzt sich automatisch.</p>
+    <div class="felder">
+      <div class="feld breit"><label for="tags_angebote">Angebote</label><input id="tags_angebote" placeholder="pizzarello, tagesangebot, oberhausen"></div>
+      <div class="feld breit"><label for="tags_saisonal">Saisonales</label><input id="tags_saisonal" placeholder="pizzarello, saisonal, frischezutaten"></div>
+      <div class="feld breit"><label for="tags_community">Community</label><input id="tags_community" placeholder="pizzarello, stammgaeste, supportlocal"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="marke du">Du</span> n8n-Einrichtung</h2>
+    <p class="hinweis">Diese Felder füllst du beim Aufsetzen aus, nicht der Kunde. Lege in n8n sechs Data Tables an und trage ihre IDs hier ein — die ID steht in der URL der Tabelle.</p>
+    <div class="felder">
+      <div class="feld breit"><label for="workflow_name">Name des Workflows<span class="pflicht">*</span></label><input id="workflow_name" data-pflicht placeholder="Pizzarello Bot"></div>
+      <div class="feld"><label for="dt_sessions">sessions<span class="pflicht">*</span></label><input id="dt_sessions" data-id data-pflicht placeholder="8WhvJ2bY2B6wKyGY"></div>
+      <div class="feld"><label for="dt_speisekarte">speisekarte<span class="pflicht">*</span></label><input id="dt_speisekarte" data-id data-pflicht></div>
+      <div class="feld"><label for="dt_angebote">angebote<span class="pflicht">*</span></label><input id="dt_angebote" data-id data-pflicht></div>
+      <div class="feld"><label for="dt_fotos">fotos<span class="pflicht">*</span></label><input id="dt_fotos" data-id data-pflicht></div>
+      <div class="feld"><label for="dt_learnings">learnings<span class="pflicht">*</span></label><input id="dt_learnings" data-id data-pflicht></div>
+      <div class="feld"><label for="dt_post_log">post_log<span class="pflicht">*</span></label><input id="dt_post_log" data-id data-pflicht></div>
+    </div>
+  </section>
+</form>
+
+<aside class="ausgabe">
+  <section>
+    <h2>Kundendatei</h2>
+    <p class="hinweis">Entsteht beim Ausfüllen. Kopieren und als <code>bot/kunden/&lt;kurzname&gt;.json</code> ablegen, dann <code>node bot/build-kunde.mjs &lt;kurzname&gt;</code>.</p>
+    <pre id="json" aria-live="polite"></pre>
+    <div class="knoepfe">
+      <button type="button" class="haupt" id="kopieren">JSON kopieren</button>
+      <button type="button" id="beispiel">Beispiel einsetzen</button>
+      <button type="button" id="leeren">Leeren</button>
+    </div>
+    <div class="fehlt" id="fehlt"></div>
+  </section>
+</aside>
+</div>
+
+<footer>Die Eingaben bleiben in diesem Browser und werden nirgendwohin geschickt. Ein angefangener Steckbrief wird lokal gespeichert und ist beim nächsten Öffnen wieder da.</footer>
+</div>
+
+<script>
+(function(){
+  var TAGE=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  var KANAELE=[
+    {key:'instagram',name:'Instagram',format:'quadrat',tags:'max5',hilfe:'Quadratisch 1:1. Wird im Feed nie beschnitten.'},
+    {key:'facebook',name:'Facebook',format:'quadrat',tags:'full',hilfe:'Quadratisch 1:1.'},
+    {key:'tiktok',name:'TikTok',format:'story',tags:'full',hilfe:'Hochkant, wird auf 9:16 erweitert.'}
+  ];
+  var SAEULEN=[['angebote','Angebote'],['saisonal','Saisonales'],['community','Community']];
+  var FORMATE=[['quadrat','Quadratisch 1:1'],['hoch','Hochkant 2:3'],['story','Story 9:16'],['quer','Quer 3:2']];
+  var SPEICHER='bot-steckbrief-v1';
+
+  var kanaeleBox=document.getElementById('kanaele');
+  KANAELE.forEach(function(k){
+    var d=document.createElement('div'); d.className='kanal';
+    d.innerHTML='<div class="kopf"><strong>'+k.name+'</strong>'+
+      '<label class="schalter"><input type="checkbox" id="an_'+k.key+'"> aktiv</label></div>'+
+      '<div class="felder">'+
+      '<div class="feld breit"><label for="ch_'+k.key+'">Buffer Channel-ID</label><input id="ch_'+k.key+'" data-id placeholder="leer lassen, wenn noch nicht eingerichtet"></div>'+
+      '<div class="feld"><label for="fm_'+k.key+'">Bildformat</label><select id="fm_'+k.key+'">'+
+      FORMATE.map(function(f){return '<option value="'+f[0]+'"'+(f[0]===k.format?' selected':'')+'>'+f[1]+'</option>';}).join('')+
+      '</select><span class="tipp">'+k.hilfe+'</span></div></div>';
+    kanaeleBox.appendChild(d);
+  });
+
+  function wochen(ziel,id,optionen,vorgabe){
+    var box=document.getElementById(ziel);
+    TAGE.forEach(function(t,i){
+      var d=document.createElement('div'); d.className='feld';
+      var sel=vorgabe[i];
+      d.innerHTML='<label for="'+id+'_'+(i+1)+'">'+t+'</label><select id="'+id+'_'+(i+1)+'">'+
+        optionen.map(function(o){return '<option value="'+o[0]+'"'+(o[0]===sel?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select>';
+      box.appendChild(d);
+    });
+  }
+  wochen('wochen_plattform','pf',KANAELE.map(function(k){return [k.key,k.name];}),
+    ['instagram','facebook','tiktok','instagram','facebook','tiktok','instagram']);
+  wochen('wochen_saeule','sa',SAEULEN,
+    ['angebote','saisonal','community','angebote','saisonal','community','angebote']);
+
+  var $=function(id){return document.getElementById(id);};
+  var wert=function(id){var e=$(id);return e?String(e.value||'').trim():'';};
+
+  function tags(id,marke){
+    var roh=wert(id); if(!roh) return [];
+    return roh.split(/[,\s]+/).filter(Boolean).map(function(t){
+      t=t.replace(/^#+/,''); return t?'#'+t:'';
+    }).filter(Boolean);
+  }
+  function rotation(id){
+    var o={}; for(var i=1;i<=7;i++){ o[String(i)]=wert(id+'_'+i); } return o;
+  }
+
+  function bauen(){
+    var id=wert('id')||'<kurzname>';
+    var plattformen={};
+    KANAELE.forEach(function(k){
+      plattformen[k.key]={key:k.key,name:k.name,channelId:wert('ch_'+k.key),
+        aktiv:$('an_'+k.key).checked,bild_format:wert('fm_'+k.key),tags:k.tags};
+    });
+    return {
+      id:id, branche:'gastronomie',
+      stammdaten:{name:wert('name'),kueche:wert('kueche'),standort:wert('standort'),
+        telefon:wert('telefon'),website:wert('website'),
+        oeffnungszeiten:wert('oeffnungszeiten'),ton:wert('ton')},
+      marke:{brand_farben:{primaer:wert('f_primaer'),sekundaer:wert('f_sekundaer'),
+        akzent:wert('f_akzent'),dunkel:wert('f_dunkel')},
+        logo_url:wert('logo_url'),logo_layout:{box_breite:420,box_hoehe:200,rand:64}},
+      telegram:{chat_id:wert('chat_id')},
+      plattformen:plattformen,
+      plattform_rotation:rotation('pf'),
+      saeulen_rotation:rotation('sa'),
+      hashtags:{angebote:tags('tags_angebote'),saisonal:tags('tags_saisonal'),community:tags('tags_community')},
+      buffer:{organizationId:wert('buffer_org'),posting_zeit:wert('posting_zeit')||'17:00',
+        pinterest_url:wert('pinterest_url')},
+      n8n:{workflow_name:wert('workflow_name'),data_tables:{
+        sessions:wert('dt_sessions'),speisekarte:wert('dt_speisekarte'),angebote:wert('dt_angebote'),
+        fotos:wert('dt_fotos'),learnings:wert('dt_learnings'),post_log:wert('dt_post_log')}}
+    };
+  }
+
+  var pflicht=[].slice.call(document.querySelectorAll('[data-pflicht]'));
+  function beschriftung(e){
+    var l=document.querySelector('label[for="'+e.id+'"]');
+    return l?l.textContent.replace('*','').trim():e.id;
+  }
+
+  function zeichnen(){
+    $('json').textContent=JSON.stringify(bauen(),null,2);
+    var offen=[];
+    pflicht.forEach(function(e){
+      var leer=!String(e.value||'').trim();
+      e.classList.toggle('leer-pflicht',leer);
+      if(leer) offen.push(beschriftung(e));
+    });
+    var z=$('zaehler'), voll=pflicht.length-offen.length;
+    z.textContent=voll+' von '+pflicht.length+' Pflichtfeldern';
+    z.classList.toggle('fertig',offen.length===0);
+    $('fehlt').innerHTML=offen.length
+      ? 'Noch offen:<ul><li>'+offen.join('</li><li>')+'</li></ul>'
+      : 'Vollständig. JSON kopieren und als Kundendatei ablegen.';
+    try{ localStorage.setItem(SPEICHER,JSON.stringify(bauen())); }catch(e){}
+  }
+
+  function einsetzen(d){
+    if(!d) return;
+    var s=d.stammdaten||{},m=d.marke||{},f=(m.brand_farben)||{},b=d.buffer||{},n=(d.n8n||{}).data_tables||{};
+    var setz=function(id,v){ var e=$(id); if(e&&v!=null) e.value=v; };
+    setz('id',d.id); setz('name',s.name); setz('kueche',s.kueche); setz('standort',s.standort);
+    setz('telefon',s.telefon); setz('website',s.website); setz('oeffnungszeiten',s.oeffnungszeiten); setz('ton',s.ton);
+    setz('logo_url',m.logo_url);
+    ['primaer','sekundaer','akzent','dunkel'].forEach(function(k){
+      setz('f_'+k,f[k]); var p=$('f_'+k+'_p'); if(p&&/^#[0-9a-f]{6}$/i.test(f[k]||'')) p.value=f[k];
+    });
+    setz('chat_id',(d.telegram||{}).chat_id);
+    setz('buffer_org',b.organizationId); setz('posting_zeit',b.posting_zeit); setz('pinterest_url',b.pinterest_url);
+    setz('workflow_name',(d.n8n||{}).workflow_name);
+    ['sessions','speisekarte','angebote','fotos','learnings','post_log'].forEach(function(k){ setz('dt_'+k,n[k]); });
+    KANAELE.forEach(function(k){
+      var p=(d.plattformen||{})[k.key]||{};
+      setz('ch_'+k.key,p.channelId); setz('fm_'+k.key,p.bild_format);
+      if($('an_'+k.key)) $('an_'+k.key).checked=!!p.aktiv;
+    });
+    ['pf','sa'].forEach(function(pre){
+      var q=pre==='pf'?(d.plattform_rotation||{}):(d.saeulen_rotation||{});
+      for(var i=1;i<=7;i++) setz(pre+'_'+i,q[String(i)]);
+    });
+    (d.hashtags?['angebote','saisonal','community']:[]).forEach(function(k){
+      setz('tags_'+k,(d.hashtags[k]||[]).join(', '));
+    });
+    zeichnen();
+  }
+
+  document.addEventListener('input',function(e){
+    if(e.target.type==='color'){ var z=$(e.target.id.replace(/_p$/,'')); if(z) z.value=e.target.value; }
+    zeichnen();
+  });
+  document.addEventListener('change',zeichnen);
+  $('name').addEventListener('input',function(){
+    if(!$('id').dataset.getippt) $('id').value=$('name').value.toLowerCase().replace(/[^a-z0-9]+/g,'');
+    if(!$('workflow_name').dataset.getippt && $('name').value) $('workflow_name').value=$('name').value+' Bot';
+  });
+  $('id').addEventListener('input',function(){ $('id').dataset.getippt='1'; });
+  $('workflow_name').addEventListener('input',function(){ $('workflow_name').dataset.getippt='1'; });
+
+  $('kopieren').addEventListener('click',function(){
+    var b=$('kopieren');
+    navigator.clipboard.writeText($('json').textContent).then(function(){
+      b.textContent='Kopiert'; setTimeout(function(){b.textContent='JSON kopieren';},1600);
+    },function(){ b.textContent='Bitte von Hand markieren'; setTimeout(function(){b.textContent='JSON kopieren';},2600); });
+  });
+  $('leeren').addEventListener('click',function(){
+    document.querySelectorAll('input,textarea').forEach(function(e){
+      if(e.type==='checkbox') e.checked=false; else if(e.type!=='color') e.value='';
+      delete e.dataset.getippt;
+    });
+    $('posting_zeit').value='17:00';
+    ['primaer:#C8102E','sekundaer:#2E7D32','akzent:#F5E6C8','dunkel:#1e1a17'].forEach(function(p){
+      var t=p.split(':'); $('f_'+t[0]).value=t[1];
+    });
+    try{ localStorage.removeItem(SPEICHER); }catch(e){}
+    zeichnen();
+  });
+  $('beispiel').addEventListener('click',function(){
+    einsetzen({id:'pizzarello',stammdaten:{name:'Pizzarello',
+      kueche:'Pizzeria in Oberhausen - handgemachte, hauchduenn-knusprige Pizza zum Abholen und Bestellen',
+      standort:'Friedrich-Karl-Strasse 19, 46045 Oberhausen',telefon:'0208 / 888 802',
+      website:'https://www.pizzarello.net',
+      oeffnungszeiten:'Mo + Di Ruhetag (ausser Feiertage), Mi-Fr 17:00-22:00 Uhr, Sa-So 13:00-22:00 Uhr',
+      ton:'familiaer-italienisch, herzlich, ein bisschen verspielt, Du-Ansprache'},
+      marke:{brand_farben:{primaer:'#C8102E',sekundaer:'#2E7D32',akzent:'#F5E6C8',dunkel:'#1e1a17'},
+      logo_url:'https://i.ibb.co/23g2B67Z/Pizzarello-transp.png'},
+      telegram:{chat_id:'7582948490'},
+      plattformen:{instagram:{channelId:'6a805d6bb2d9d57743816131',aktiv:true,bild_format:'quadrat'},
+        facebook:{channelId:'',aktiv:false,bild_format:'quadrat'},
+        tiktok:{channelId:'',aktiv:false,bild_format:'story'}},
+      hashtags:{angebote:['#pizzarello','#tagesangebot','#oberhausen'],
+        saisonal:['#pizzarello','#saisonal','#frischezutaten'],
+        community:['#pizzarello','#stammgaeste','#supportlocal']},
+      buffer:{organizationId:'69f7afabd110cb66bf840334',posting_zeit:'17:00',pinterest_url:'https://www.pizzarello.net'},
+      n8n:{workflow_name:'Pizzarello Bot',data_tables:{sessions:'8WhvJ2bY2B6wKyGY',speisekarte:'8LOssi3MEAxKEXMd',
+        angebote:'dVJNivQbpA7YUwAm',fotos:'x7QjV9d9CI0ZgrBz',learnings:'DfXfRBdmdGA5AwFs',post_log:'HAaLrktmGAA8IddT'}}});
+  });
+  document.getElementById('formular').addEventListener('submit',function(e){e.preventDefault();});
+
+  var gespeichert=null;
+  try{ gespeichert=JSON.parse(localStorage.getItem(SPEICHER)||'null'); }catch(e){}
+  if(gespeichert && gespeichert.stammdaten && gespeichert.stammdaten.name) einsetzen(gespeichert);
+  else zeichnen();
+})();
+</script>
+</body>
+</html>

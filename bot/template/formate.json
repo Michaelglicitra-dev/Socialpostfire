@@ -1,0 +1,32 @@
+{
+  "formate": {
+    "quadrat": {
+      "gen": "1024x1024",
+      "breite": 1024,
+      "hoehe": 1024,
+      "vertikal": false,
+      "hinweis": "CANVAS: the picture is SQUARE (1:1). The text block keeps to the upper third and the dish fills the middle and lower area - there is less height than in a portrait picture, so keep the text to a headline and at most one short line under it. The lower part of the square is largely taken by the reserved logo and price areas, so keep the dish centred and the text high."
+    },
+    "hoch": {
+      "gen": "1024x1536",
+      "breite": 1024,
+      "hoehe": 1536,
+      "vertikal": false,
+      "hinweis": "CANVAS: the picture is TALL (2:3 portrait). There is generous height, so the text block sits comfortably in the upper third and the dish fills the lower two thirds. The reserved areas sit along the bottom edge, so the dish should end above them."
+    },
+    "story": {
+      "gen": "1024x1536",
+      "breite": 1024,
+      "hoehe": 1536,
+      "vertikal": true,
+      "hinweis": "CANVAS: the picture is TALL (2:3 portrait) and will later be placed on a 9:16 story canvas, so keep every important element - text, dish, both reserved corners - well inside the frame and away from the very top and bottom edges."
+    },
+    "quer": {
+      "gen": "1536x1024",
+      "breite": 1536,
+      "hoehe": 1024,
+      "vertikal": false,
+      "hinweis": "CANVAS: the picture is WIDE (3:2 landscape). Set the text block in the left third and let the dish fill the right two thirds, cropped at the right edge."
+    }
+  }
+}

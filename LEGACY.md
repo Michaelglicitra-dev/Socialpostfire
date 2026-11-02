@@ -14,7 +14,9 @@ Diese Dateien beschreiben **frühere Architekturen** und laufen nicht mehr:
 Die Web-App wurde verworfen; die Freigabe läuft wieder komplett über Telegram.
 Zugangscode und VAPID-Schlüssel aus dem Handover werden nicht mehr gebraucht.
 
-👉 **Aktueller Stand: [`bot/`](./bot/)** — Live-Workflow `Pizzarello Bot` (`B7LuGXIaNnPC5ulk`).
+👉 **Aktueller Stand:** [`ARCHITEKTUR.md`](./ARCHITEKTUR.md) für das Gesamtbild,
+[`NEUE-SESSION.md`](./NEUE-SESSION.md) als Einstieg, [`bot/`](./bot/) für den Code.
+Live-Workflow: `Pizzarello Bot v3` (`HPPLCn5Fo2V6IIMh`).
 
 Der Altstand bleibt im Repo, weil die Bild-Guideline v3 dort entwickelt wurde und die
 Prompt-Bausteine sich eins zu eins vergleichen lassen.
