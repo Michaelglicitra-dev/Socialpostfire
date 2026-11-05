@@ -41,7 +41,7 @@ bot/
   pruefe.mjs                        Tests
   preview.mjs                       rendert Bild-Prompts ohne n8n
   live/Pizzarello-Bot-v3.import.json  Vorlage, aus der generiert wird
-  steckbrief/index.html             Kunden-Formblatt
+  steckbrief/index.html             gefuehrte Einrichtungsstrecke fuer den Kunden
   nodes/                            gepflegte Einzel-Nodes (Pizzarello)
 ```
 
@@ -72,7 +72,8 @@ gehören in Prozent, nicht als „Ecke".
 
 ## Einen neuen Kunden aufsetzen
 
-1. `bot/steckbrief/index.html` ausfüllen lassen → liefert die Kundendatei als JSON
+1. Kunden durch `bot/steckbrief/index.html` schicken (acht Schritte, erklaert jeden
+   Dienst) → am Ende kopiert er die Kundendatei als JSON und schickt sie zurueck
 2. Als `bot/kunden/<id>.json` ablegen
 3. In n8n sechs Data Tables **leer** anlegen (Spalten: `ARCHITEKTUR.md`, Abschnitt 3), IDs eintragen
 4. `node bot/build-kunde.mjs <id>`

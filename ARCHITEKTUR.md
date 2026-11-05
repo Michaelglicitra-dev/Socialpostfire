@@ -231,7 +231,8 @@ Branche werden die ersetzt, die Struktur bleibt.
 
 ## 5. Einen neuen Kunden aufsetzen
 
-1. **Formblatt ausfüllen lassen** → liefert die Kundendatei als JSON
+1. **Kunden durch die Einrichtungsstrecke schicken** (`bot/steckbrief/index.html`) →
+   liefert die Kundendatei als JSON
 2. `bot/kunden/<id>.json` ablegen (Vorlage: `bot/kunden/_vorlage.json`)
 3. In n8n **sechs Data Tables anlegen** und ihre IDs in die Kundendatei eintragen
 4. `node bot/build-kunde.mjs <id>` ausführen
