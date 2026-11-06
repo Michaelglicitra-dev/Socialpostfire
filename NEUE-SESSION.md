@@ -31,7 +31,8 @@ Nachschlagen im Repo.
 ```
 ARCHITEKTUR.md                      maßgebliche Doku
 bot/
-  template/branchen/<branche>.json  Bildsprache: Guideline, Layouts  <- das Produkt
+  template/branchen/gastronomie.json Bildsprache fuer Gastronomie   <- das Produkt
+  template/branchen/allgemein.json  branchenneutrale Fassung
   template/formate.json             Leinwaende (branchenneutral)
   template/Restaurant-Konfiguration.template.js
   kunden/<kunde>.json               Stammdaten, Marke, Kanaele, Tabellen-IDs
@@ -86,9 +87,10 @@ gehören in Prozent, nicht als „Ecke".
 
 ## Eine neue Branche aufnehmen
 
-`bot/template/branchen/gastronomie.json` kopieren und die rund 30 gastronomiespezifischen
-Begriffe ersetzen (Gericht, Kruste, Teig, Steinofen, Speisekarte). Struktur und Layouts
-bleiben. Danach in der Kundendatei `"branche": "<neue-branche>"` setzen.
+Es gibt zwei Profile: `gastronomie.json` (Gericht, Kruste, Teig) und `allgemein.json`
+(branchenneutral, spricht von „subject" und „product"). Für eine weitere Branche eines
+davon kopieren und die Begriffe ersetzen — Struktur und Layout-Schlüssel bleiben, darauf
+achtet `bot/pruefe.mjs`. Danach in der Kundendatei `"branche": "<neue-branche>"` setzen.
 
 Nicht vergessen: die System Message des `Post-Agent` ist ebenfalls gastronomiegeprägt
 („Wirt", „Speisekarte", „Gericht") und gehört mittelfristig ins Branchen-Profil.

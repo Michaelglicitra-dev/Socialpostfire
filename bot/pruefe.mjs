@@ -28,6 +28,23 @@ const laufeConfig = (code, weekday) => {
   return new Function('$input', '$now', code)({ first: () => ({ json: {} }) }, now)[0].json;
 };
 
+// Jedes Branchen-Profil muss dieselbe Struktur haben wie gastronomie: gleiche
+// Layout- und Guideline-Schluessel. Sonst laeuft der Prompt-Aufbau ins Leere,
+// ohne dass ein Fehler auftritt.
+const branchen = readdirSync(join(root, 'bot/template/branchen')).filter((f) => f.endsWith('.json'));
+const leit = JSON.parse(lies('bot/template/branchen/gastronomie.json'));
+const schluessel = (o) => Object.keys(o).sort().join(',');
+for (const datei of branchen) {
+  const b = JSON.parse(lies(`bot/template/branchen/${datei}`));
+  const name = datei.replace(/\.json$/, '');
+  sage(schluessel(b.layouts) === schluessel(leit.layouts), `${name}: dieselben acht Layouts`);
+  sage(schluessel(b.bild_guideline) === schluessel(leit.bild_guideline), `${name}: dieselben Guideline-Bausteine`);
+  sage(schluessel(b.bild_guideline.module) === schluessel(leit.bild_guideline.module), `${name}: dieselben Inhaltsmodule`);
+  sage(schluessel(b.bild_guideline.stile) === schluessel(leit.bild_guideline.stile), `${name}: dieselben Stil-Familien`);
+  const leer = Object.keys(b.layouts).filter((k) => !b.layouts[k].bild || !b.layouts[k].stil || !b.layouts[k].font);
+  sage(leer.length === 0, `${name}: jedes Layout hat Beschreibung, Stil und Schrift${leer.length ? ' - fehlt bei ' + leer.join(', ') : ''}`);
+}
+
 const kunden = readdirSync(join(root, 'bot/kunden'))
   .filter((f) => f.endsWith('.json') && !f.startsWith('_'))
   .map((f) => f.replace(/\.json$/, ''));

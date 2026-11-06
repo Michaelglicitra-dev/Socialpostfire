@@ -223,9 +223,16 @@ zum Einspielen von Hand.
 **Regressionsschutz:** `bot/pruefe.mjs` vergleicht den generierten Pizzarello-Config-Node an
 allen sieben Wochentagen mit dem gepflegten Live-Node. Weichen sie ab, ist die Zerlegung kaputt.
 
-Eine neue Branche ist eine neue Datei unter `bot/template/branchen/`. Die Gastronomie-Fassung
-enthält rund 30 branchenspezifische Begriffe (Gericht, Kruste, Teig, Steinofen) — für eine andere
-Branche werden die ersetzt, die Struktur bleibt.
+Es gibt zwei Profile: **`gastronomie`** (Gericht, Kruste, Teig, Steinofen) und **`allgemein`**
+(branchenneutral, spricht von Subjekt und Produkt). Eine weitere Branche ist eine Kopie mit
+ersetzten Begriffen — Struktur und Layout-Schlüssel müssen gleich bleiben, sonst läuft der
+Prompt-Aufbau ins Leere, ohne dass ein Fehler auftritt. `bot/pruefe.mjs` vergleicht deshalb
+jedes Profil gegen `gastronomie`: gleiche acht Layouts, gleiche Guideline-Bausteine, gleiche
+Inhaltsmodule und Stil-Familien.
+
+Die Einrichtungsstrecke (`bot/steckbrief/index.html`) hat oben einen Umschalter zwischen
+beiden. Er wechselt Palette, Typografie, Beispieltexte **und** den Wert, der als `branche`
+in der Kundendatei landet.
 
 ---
 
